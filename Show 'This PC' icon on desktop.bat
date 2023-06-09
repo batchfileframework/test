@@ -27,13 +27,33 @@ if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
 REM call :trim-DEMO
 
-call :rnd-DEMO
+
+call :GetRandomString-DEMO
+REM call :ReadyMadeLoop-DEMO
+REM call :rnd-DEMO
 REM call :len-DEMO
 REM call :StringCompare-DEMO
 REM call :GetCharMap-DEMO
 REM Call :SetNonEmptyValueOnlyIfNotDefined-DEMO
 REM Call :EchoArray-DEMO
 GoTo :END
+
+:GetRandomString-DEMO
+
+call :GetRandomString 10 output NOSPECIALCHARS
+echo %output%
+set "output="
+pause
+call :GetRandomString 20 output NOSPECIALCHARS
+echo %output%
+set "output="
+pause
+call :GetRandomString 30 output NOSPECIALCHARS
+echo %output%
+set "output="
+pause
+GoTo :EOF
+
 
 :StringCompare-DEMO
 
@@ -190,6 +210,11 @@ echo starttime %_rnd_starttime% endtime %_rnd_endtime%
 
 
 :rnd-DEMO-test6
+
+
+
+
+
 Call :ClearVariablesByPrefix _rnd
 set /a "_rnd_DEMO.index=0"
 set /a "_rnd_DEMO.end=20"
@@ -204,13 +229,16 @@ call :rnd _rnd_DEMO.result "%_rnd_DEMO.min%" "%_rnd_DEMO.max%"
 REM set _rnd_DEMO.result=62
 set _rnd_DEMO.result=%_rnd_DEMO.index%
 Call :Asc2Char %_rnd_DEMO.result% _rnd_DEMO.char
-set "_rnd_DEMO.char=%_rnd_DEMO.char:^=^^%"
-set "_rnd_DEMO.char=%_rnd_DEMO.char:<=^<%"
-set "_rnd_DEMO.char=%_rnd_DEMO.char:>=^>%"
-set "_rnd_DEMO.char=%_rnd_DEMO.char:&=^&%"
-set "_rnd_DEMO.char=%_rnd_DEMO.char:|=^|%"
-set "_rnd_DEMO.char=%_rnd_DEMO.char:"=""%"
+set "_rnd_DEMO.char.escaped=%_rnd_DEMO.char.escaped:^=^^%"
+set "_rnd_DEMO.char=%_rnd_DEMO.char.escaped:<=^<%"
+set "_rnd_DEMO.char=%_rnd_DEMO.char.escaped:>=^>%"
+set "_rnd_DEMO.char=%_rnd_DEMO.char.escaped:&=^&%"
+set "_rnd_DEMO.char=%_rnd_DEMO.char.escaped:|=^|%"
+set "_rnd_DEMO.char=%_rnd_DEMO.char.escaped:"=""%"
 set "_rnd_DEMO.string=%_rnd_DEMO.string%%_rnd_DEMO.char%"
+set "_rnd_DEMO.string.escaped=%_rnd_DEMO.string%%_rnd_DEMO.char.escaped%"
+if %_rnd_DEMO.result% gtr 99 ( set "_rnd_spacer= " ) else 
+echo [rnd out] %_rnd_DEMO.result% [char] %_rnd_DEMO.char% [string] "%_rnd_DEMO.string%"
 echo [rnd out] %_rnd_DEMO.result% [char] %_rnd_DEMO.char% [string] "%_rnd_DEMO.string%"
 set /a "_rnd_DEMO.index+=1"
 if %_rnd_DEMO.index% leq %_rnd_DEMO.end% GoTo :rnd-DEMO-test6-loop
@@ -242,69 +270,9 @@ echo random generated string [begin]"%_rnd_DEMO.string%"[end]
 
 GoTo :EOF
 
-:ReadyMadeLoop-DEMO
 
-set "_ReadyMadeLoop[0].pre=echo _ReadyMadeLoop_start %%_ReadyMadeLoop_start%% _ReadyMadeLoop_end %%_ReadyMadeLoop_end%% _ReadyMadeLoop_increment %%_ReadyMadeLoop_increment%%"
-set "_ReadyMadeLoop[1].pre=set /a "_ReadyMadeLoop_value=0" "
-set "_ReadyMadeLoop[2].pre=set /a "_ReadyMadeLoop_value+=1" "
-set "_ReadyMadeLoop[3].pre=set /a "_ReadyMadeLoop_value+=1""
 
-set "_ReadyMadeLoop[0]=echo in the loop _ReadyMadeLoop_start %%_ReadyMadeLoop_start%%"
-set "_ReadyMadeLoop[1]=echo in the loop _ReadyMadeLoop_value %%_ReadyMadeLoop_value%%"
 
-set "_ReadyMadeLoop[0].post=echo this is a test"
-
-Call :ReadyMadeLoop 0 10 1
-
-GoTo :EOF
-
-::Usage Call :ReadyMadeLoop start end increment
-:: set _ReadyMadeLop[0 to 10] with your commands to be executed inside the loop
-:: set _ReadyMadeLop[0 to 10].pre and .post for commands outside the loop 
-:ReadyMadeLoop
-call :SetNonEmptyValue "%~2" _ReadyMadeLoop_start "%~3" _ReadyMadeLoop_end "%~4" _ReadyMadeLoop_increment
-if %_ReadyMadeLoop_end% lss %_ReadyMadeLoop_start% ( set "_ReadyMadeLoop_direction=geq" ) else ( set "_ReadyMadeLoop_direction=leq" )
-%_ReadyMadeLoop[0].pre%
-%_ReadyMadeLoop[1].pre%
-%_ReadyMadeLoop[2].pre%
-%_ReadyMadeLoop[3].pre%
-%_ReadyMadeLoop[4].pre%
-%_ReadyMadeLoop[5].pre%
-%_ReadyMadeLoop[6].pre%
-%_ReadyMadeLoop[7].pre%
-%_ReadyMadeLoop[8].pre%
-%_ReadyMadeLoop[9].pre%
-%_ReadyMadeLoop[10].pre%
-
-:ReadyMadeLoop-loop
-
-%_ReadyMadeLoop[0]%
-%_ReadyMadeLoop[1]%
-%_ReadyMadeLoop[2]%
-%_ReadyMadeLoop[3]%
-%_ReadyMadeLoop[4]%
-%_ReadyMadeLoop[5]%
-%_ReadyMadeLoop[6]%
-%_ReadyMadeLoop[7]%
-%_ReadyMadeLoop[8]%
-%_ReadyMadeLoop[9]%
-%_ReadyMadeLoop[10]%
-
-if %_ReadyMadeLoop_start% %_ReadyMadeLoop_direction% %_ReadyMadeLoop_end% GoTo :ReadyMadeLoop-loop
-
-%_ReadyMadeLoop[0].post%
-%_ReadyMadeLoop[1].post%
-%_ReadyMadeLoop[2].post%
-%_ReadyMadeLoop[3].post%
-%_ReadyMadeLoop[4].post%
-%_ReadyMadeLoop[5].post%
-%_ReadyMadeLoop[6].post%
-%_ReadyMadeLoop[7].post%
-%_ReadyMadeLoop[8].post%
-%_ReadyMadeLoop[9].post%
-%_ReadyMadeLoop[10].post%
-
-GoTo :EOF
 
 
 :len-DEMO
@@ -397,9 +365,97 @@ REM call :len 1 LenResult
 REM echo 1 len %LenResult% & set "LenResult="
 
 
+GoTo :EOF
 
+:IsSpecialChar-DEMO
+set "forbiden.char[-1]=a"
+set "forbiden.char[0]=>"
+set "forbiden.char[1]=<"
+set "forbiden.char[2]=&"
+set "forbiden.char[3]=|"
+set "forbiden.char[4]=%%"
+set forbiden.char[5]="
+set "forbiden.char[6]=^"
+set forbiden.char[7]=~
+set forbiden.char[8]=!
+set forbiden.char[9]=@
+
+set forbiden.char
+
+echo.
+echo checking forbiden.char[x] array for special characters
+echo.
+
+Call :IsSpecialChar forbiden.char[-1] && echo found special char in "%forbiden.char[-1]%" || echo didn't find special char in "%forbiden.char[-1]%"
+Call :IsSpecialChar forbiden.char[0] && echo found special char in "%forbiden.char[0]%" || echo didn't find special char in "%forbiden.char[0]%"
+Call :IsSpecialChar forbiden.char[1] && echo found special char in "%forbiden.char[1]%" || echo didn't find special char in "%forbiden.char[1]%"
+Call :IsSpecialChar forbiden.char[2] && echo found special char in "%forbiden.char[2]%" || echo didn't find special char in "%forbiden.char[2]%"
+Call :IsSpecialChar forbiden.char[3] && echo found special char in "%forbiden.char[3]%" || echo didn't find special char in "%forbiden.char[3]%"
+Call :IsSpecialChar forbiden.char[4] && echo found special char in "%forbiden.char[4]%" || echo didn't find special char in "%forbiden.char[4]%"
+Call :IsSpecialChar forbiden.char[5] && echo found special char in %forbiden.char[5]:"=""% || echo didn't find special char in %forbiden.char[5]:"=""%
+Call :IsSpecialChar forbiden.char[6] && echo found special char in "%forbiden.char[6]%" || echo didn't find special char in "%forbiden.char[6]%"
+Call :IsSpecialChar forbiden.char[7] && echo found special char in "%forbiden.char[7]%" || echo didn't find special char in "%forbiden.char[7]%"
+Call :IsSpecialChar forbiden.char[8] && echo found special char in "%forbiden.char[8]%" || echo didn't find special char in "%forbiden.char[8]%"
+Call :IsSpecialChar forbiden.char[9] && echo found special char in "%forbiden.char[9]%" || echo didn't find special char in "%forbiden.char[9]%"
+
+echo.
+echo checking forbiden.char[x] array for special characters, using for loop 
+for /l %%a in (-1,1,9) do (Call :IsSpecialChar forbiden.char[%%a] && call echo found special char in forbiden.char[%%a] || call echo didn't find special char in forbiden.char[%%a])
+
+echo.
+echo checking for forbidden characters in a sentence
+
+set "forbiden.char[-1]=This is a string"
+set "forbiden.char[0]=This is > string"
+set "forbiden.char[1]=This is < string"
+set "forbiden.char[2]=This is & string"
+set "forbiden.char[3]=This is | string"
+set "forbiden.char[4]=This is %% string"
+set forbiden.char[5]=This is "  string
+set "forbiden.char[6]=This is ^ string"
+set forbiden.char[7]=This is ~ string
+set forbiden.char[8]=This is ! string
+set forbiden.char[9]=This is @ string
+
+Call :IsSpecialChar forbiden.char[-1] && echo found special char in "%forbiden.char[-1]%" || echo didn't find special char in "%forbiden.char[-1]%"
+Call :IsSpecialChar forbiden.char[0] && echo found special char in "%forbiden.char[0]%" || echo didn't find special char in "%forbiden.char[0]%"
+Call :IsSpecialChar forbiden.char[1] && echo found special char in "%forbiden.char[1]%" || echo didn't find special char in "%forbiden.char[1]%"
+Call :IsSpecialChar forbiden.char[2] && echo found special char in "%forbiden.char[2]%" || echo didn't find special char in "%forbiden.char[2]%"
+Call :IsSpecialChar forbiden.char[3] && echo found special char in "%forbiden.char[3]%" || echo didn't find special char in "%forbiden.char[3]%"
+Call :IsSpecialChar forbiden.char[4] && echo found special char in "%forbiden.char[4]%" || echo didn't find special char in "%forbiden.char[4]%"
+Call :IsSpecialChar forbiden.char[5] && echo found special char in %forbiden.char[5]:"=""% || echo didn't find special char in %forbiden.char[5]:"=""%
+Call :IsSpecialChar forbiden.char[6] && echo found special char in "%forbiden.char[6]%" || echo didn't find special char in "%forbiden.char[6]%"
+Call :IsSpecialChar forbiden.char[7] && echo found special char in "%forbiden.char[7]%" || echo didn't find special char in "%forbiden.char[7]%"
+Call :IsSpecialChar forbiden.char[8] && echo found special char in "%forbiden.char[8]%" || echo didn't find special char in "%forbiden.char[8]%"
+Call :IsSpecialChar forbiden.char[9] && echo found special char in "%forbiden.char[9]%" || echo didn't find special char in "%forbiden.char[9]%"
+
+echo.
+echo checking for forbidden characters in a sentence, using for loop 
+for /l %%a in (-1,1,9) do (Call :IsSpecialChar forbiden.char[%%a] && call echo found special char in forbiden.char[%%a] || call echo didn't find special char in forbiden.char[%%a])
+
+echo.
+echo testing output variable of IsSpecialChar (does not work, value is sticky ?)
+echo.
+set "myoutput="
+Call :IsSpecialChar forbiden.char[-1] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[-1]%"
+Call :IsSpecialChar forbiden.char[0] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[0]%"
+Call :IsSpecialChar forbiden.char[1] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[1]%"
+Call :IsSpecialChar forbiden.char[2] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[2]%"
+Call :IsSpecialChar forbiden.char[3] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[3]%"
+Call :IsSpecialChar forbiden.char[4] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[4]%"
+Call :IsSpecialChar forbiden.char[5] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[5]%"
+Call :IsSpecialChar forbiden.char[6] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[6]%"
+Call :IsSpecialChar forbiden.char[7] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[7]%"
+Call :IsSpecialChar forbiden.char[8] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[8]%"
+Call :IsSpecialChar forbiden.char[9] myoutput & call echo special char found is %%myoutput%% in "%forbiden.char[9]%"
+
+echo.
+echo checking for forbidden characters with output value, in a sentence, using for loop 
+for /l %%a in (-1,1,9) do Call :IsSpecialChar forbiden.char[%%a] myoutput & call echo special char found is %%myoutput%% in "forbiden.char[%%a]"
 
 GoTo :EOF
+
+
 
 :Split-DEMO
 
@@ -641,7 +697,33 @@ Call :EchoArray testarray 3 6 ".pelican"
 GoTo :EOF
 
 
+:ReadyMadeLoop-DEMO
 
+Call :ClearVariablesByPrefix _ReadyMadeLoop
+
+set _ReadyMadeLoop[0].pre=echo hello, this is pre
+set _ReadyMadeLoop[0]=call echo hello, this is main %%_ReadyMadeLoop_start%%
+set _ReadyMadeLoop[0].post=echo hello, this is post
+Call :ReadyMadeLoop 0 10 1
+
+pause
+
+Call :ClearVariablesByPrefix _ReadyMadeLoop
+set "_ReadyMadeLoop[0].pre=call echo _ReadyMadeLoop_start %%_ReadyMadeLoop_start%% _ReadyMadeLoop_end %%_ReadyMadeLoop_end%% _ReadyMadeLoop_increment %%_ReadyMadeLoop_increment%%"
+set "_ReadyMadeLoop[1].pre=set /a "_ReadyMadeLoop_value=0" "
+set "_ReadyMadeLoop[2].pre=set /a "_ReadyMadeLoop_value+=1" "
+set "_ReadyMadeLoop[3].pre=set /a "_ReadyMadeLoop_value+=1""
+set "_ReadyMadeLoop[10].pre=echo last function in the pre section"
+
+set "_ReadyMadeLoop[0]=call echo in the loop _ReadyMadeLoop_start %%_ReadyMadeLoop_start%%"
+set "_ReadyMadeLoop[1]=call echo in the loop _ReadyMadeLoop_value %%_ReadyMadeLoop_value%%"
+set _ReadyMadeLoop[10]=if "[%_ReadyMadeLoop_start%]"=="[5]" echo We even have an if statement at index=5, but it doesn't work, 
+
+set "_ReadyMadeLoop[0].post=echo this is a test"
+set "_ReadyMadeLoop[10].post=echo the last function in post section"
+Call :ReadyMadeLoop 0 10 1
+
+GoTo :EOF
 
 :FindValuesInArray-DEMO
 
@@ -1871,6 +1953,57 @@ echo set /a _StringCompare.MatchingPercent=%_StringCompare.MatchingChars%/%_Stri
 set /a _StringCompare.MatchingPercent=%_StringCompare.MatchingChars%/%_StringCompare_StringA.len%
 Call :SetIfNamedVariable "%_StringCompare.MatchingPercent%" "%~3" "%_StringCompare.MatchingChars%" "%~4" "%_StringCompare_StringA.len%" "%~5" "%_StringCompare_StringB.len%" "%~6"
 exit /b %_StringCompare.MatchingPercent%
+
+::Usage Call :ReadyMadeLoop start end increment
+:: set _ReadyMadeLop[0 to 10] with your commands to be executed inside the loop
+:: set _ReadyMadeLop[0 to 10].pre and .post for commands outside the loop 
+:ReadyMadeLoop
+call :SetNonEmptyValue "%~1" _ReadyMadeLoop_start "%~2" _ReadyMadeLoop_end "%~3" _ReadyMadeLoop_increment
+if %_ReadyMadeLoop_end% lss %_ReadyMadeLoop_start% ( set "_ReadyMadeLoop_direction=geq" ) else ( set "_ReadyMadeLoop_direction=leq" )
+%_ReadyMadeLoop[0].pre%
+%_ReadyMadeLoop[1].pre%
+%_ReadyMadeLoop[2].pre%
+%_ReadyMadeLoop[3].pre%
+%_ReadyMadeLoop[4].pre%
+%_ReadyMadeLoop[5].pre%
+%_ReadyMadeLoop[6].pre%
+%_ReadyMadeLoop[7].pre%
+%_ReadyMadeLoop[8].pre%
+%_ReadyMadeLoop[9].pre%
+%_ReadyMadeLoop[10].pre%
+
+:ReadyMadeLoop-loop
+
+%_ReadyMadeLoop[0]%
+%_ReadyMadeLoop[1]%
+%_ReadyMadeLoop[2]%
+%_ReadyMadeLoop[3]%
+%_ReadyMadeLoop[4]%
+%_ReadyMadeLoop[5]%
+%_ReadyMadeLoop[6]%
+%_ReadyMadeLoop[7]%
+%_ReadyMadeLoop[8]%
+%_ReadyMadeLoop[9]%
+%_ReadyMadeLoop[10]%
+
+set /a "_ReadyMadeLoop_start+=%_ReadyMadeLoop_increment%"
+
+if %_ReadyMadeLoop_start% %_ReadyMadeLoop_direction% %_ReadyMadeLoop_end% GoTo :ReadyMadeLoop-loop
+
+%_ReadyMadeLoop[0].post%
+%_ReadyMadeLoop[1].post%
+%_ReadyMadeLoop[2].post%
+%_ReadyMadeLoop[3].post%
+%_ReadyMadeLoop[4].post%
+%_ReadyMadeLoop[5].post%
+%_ReadyMadeLoop[6].post%
+%_ReadyMadeLoop[7].post%
+%_ReadyMadeLoop[8].post%
+%_ReadyMadeLoop[9].post%
+%_ReadyMadeLoop[10].post%
+
+GoTo :EOF
+
 
 ::Usage Call :IsInString "%InputString%" SearchString optional OutputBool
 :IsInString 
@@ -3141,26 +3274,9 @@ if "[%~1]"=="[]" ( set "_GetCharMapString_Output=CharMap" ) else ( set "_GetChar
 Call :SetArrayParameters _GetCharMapString_Output "" 0 255 0
 :GetCharMapString-loop
 cmd /c exit %_GetCharMapString_Output.index%
-set "_GetCharMapString_Output.lastchar=%=exitcodeascii%"
-REM echo yes %_GetCharMapString_Output.index% %_GetCharMapString_Output.lastchar% %_GetCharMapString_Output.lastchar:"=""%
-REM if defined _GetCharMapString_Output.lastchar if "[%_GetCharMapString_Output.lastchar:"=""%]"=="[]" echo it is "
-REM if "[%_GetCharMapString_Output.lastchar:"=""%]"=="[""]" echo yes %_GetCharMapString_Output.index% %_GetCharMapString_Output.lastchar%
-REM if "[%_GetCharMapString_Output.lastchar%]"=="[]" set "_GetCharMapString_Output.lastchar= "
-if not defined _GetCharMapString_Output.lastchar set "_GetCharMapString_Output.lastchar= "
-REM if '[^%_GetCharMapString_Output.lastchar%]'=='[^"]' set _GetCharMapString_Output.lastchar=DOUBLEQUOTES
-REM echo if "[%_GetCharMapString_Output.lastchar%]"=="[%%]" echo PERCENTSIGN 
-REM echo if "[%_GetCharMapString_Output.lastchar%%_GetCharMapString_Output.lastchar%]"=="[%%%%]" echo PERCENTSIGN 
-REM if "[%_GetCharMapString_Output.lastchar%]"=="[%%]" echo PERCENTSIGN & set _GetCharMapString_Output.lastchar=PERCENTSIGN
-REM if "[%_GetCharMapString_Output.lastchar%%_GetCharMapString_Output.lastchar%]"=="[%%%%]" echo 2PERCENTSIGN & set _GetCharMapString_Output.lastchar=PERCENTSIGN
-set _GetCharMapString_Output.value=%_GetCharMapString_Output.value%%_GetCharMapString_Output.lastchar%
-REM set "_GetCharMapString_Output.value=%_GetCharMapString_Output.value%%_GetCharMapString_Output.lastchar%"
+set _GetCharMapString_Output.value=%_GetCharMapString_Output.value%%=exitcodeascii%
 set /a _GetCharMapString_Output.index+=1
 if %_GetCharMapString_Output.index% leq %_GetCharMapString_Output.ubound% GoTo :GetCharMapString-loop
-echo about to finish
-REM set "%_GetCharMapString_Output%=%_GetCharMapString_Output.value:DOUBLEQUOTES=^"%"
-REM set "%_GetCharMapString_Output%=%_GetCharMapString_Output.value:DOUBLEQUOTES="%"
-REM set "%_GetCharMapString_Output%=%_GetCharMapString_Output.value:DOUBLEQUOTES=""%"
-REM set %_GetCharMapString_Output%=%_GetCharMapString_Output.value:DOUBLEQUOTES="%
 set %_GetCharMapString_Output%=%_GetCharMapString_Output.value%
 Call :ClearVariablesByPrefix _GetCharMapString
 GoTo :EOF
@@ -3203,19 +3319,70 @@ REM :len-end
 REM set /a "%~2=%_len%"
 REM exit /b %_len% & Call :ClearVariablesByPrefix _len
 
+::Usage Call :Asc2String Output 26 45 45 57 
+:Asc2String
+run cmd %~2
+append  exitascii from %~2 to output string
+if %~3 not empty shift and gogo
+set output string to output
+GoTo :EOF
+
+::Usage Call :GetRandomString CharacterCount OutputString NOSPECIALCHARS
+:GetRandomString
+set "_GetRandomString_charlimit=%~1"
+if "[%~3]"=="NOSPECIALCHARS" set "_GetRandomString_nospecialchar=true"
+set _GetRandomString_charmap=!"#$%%^&'()*+,-./0123456789:;^<=^>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^^_`abcdefghijklmnopqrstuvwxyz{^|}~
+echo _GetRandomString_charmap "%_GetRandomString_charmap%"
+for /l %%a in (0,1,95) do (call echo _GetRandomString_charmap "%%_GetRandomString_charmap:~%%a,1%%")
+
+set /a _GetRandomString_charcount=0
+echo hello
+:GetRandomString-loop
+REM echo set /a _GetRandomString_nextchar=%RANDOM% * (0 - 128 + 1) / 32768 + 0
+set /a _GetRandomString_nextchar=%RANDOM% * (0 - 128 + 1) / 32768 + 0
+REM echo _GetRandomString_nextchar %_GetRandomString_nextchar%
+if "[%_GetRandomString_nospecialchar%]"=="[true]" for %%a in (2 3 6 7 29 31) do ( if "[%%a]"=="[%_GetRandomString_nextchar%]" GoTo :GetRandomString-loop)
+call set "_GetRandomString_output=%_GetRandomString_output%%%_GetRandomString_charmap:~%_GetRandomString_nextchar%,1%%
+set /a _GetRandomString_charcount+=1
+if %_GetRandomString_charcount% leq %_GetRandomString_charlimit% GoTo :GetRandomString-loop
+GoTo :EOF
+
+::Usage Call :IsSpecialChar byref InputString
+:IsSpecialChar
+setlocal EnableDelayedExpansion
+	(set^ tmp=!%~1!)
+	REM for %%a in (^^ ^> ^< ^& ^| %% ^") do ( echo %%a )
+	for %%a in (^^ ^> ^< ^& ^| %% ^") do ( if "!tmp:%%a=!" NEQ "!tmp!" ( set "_IsSpecialChar_found=true" ) )
+endlocal & set _IsSpecialChar_found=%_IsSpecialChar_found%
+if not "[%~2]"=="[]" if "[%_IsSpecialChar_found%]"=="[true]" ( set "%~2=true" ) else ( set "%~2=false" )
+if "[%_IsSpecialChar_found%]"=="[true]" ( set /a "_IsSpecialChar_found=0" ) else ( set "_IsSpecialChar_found=1" )
+set "_IsSpecialChar_found=" & exit /b %_IsSpecialChar_found%
+
+
 ::Usage Call :lenUsingFile VariableName OutputResult
 :lenUsingFileByRef
 call set "_lenUsingFile=%%%1%%" 
-echo lref %_lenUsingFile%
+echo lenUsingFileByRef %_lenUsingFile%
 GoTo :lenUsingFile-skip-preamble
 ::Usage Call :lenUsingFile "%InputString%" OutputResult
 :lenUsingFile
+
 set "_lenUsingFile=%~1"
 set "_lenUsingFile=%_lenUsingFile:^^=^%"
 set "_lenUsingFile=%_lenUsingFile:""="%"
-echo l %_lenUsingFile%
-:lenUsingFile-skip-preamble
+echo lenUsingFile %_lenUsingFile%
+:lenUsingFile-skip-preamble 
+echo at :lenUsingFile-skip-preamble 
+echo lenUsingFile-skip-preamble %_lenUsingFile%
 Call :GetTempFile _lenUsingFile.tempfile
+
+set "_lenUsingFile=%_lenUsingFile:^=^^%"
+set "_lenUsingFile=%_lenUsingFile:<=^<%"
+set "_lenUsingFile=%_lenUsingFile:>=^>%"
+set "_lenUsingFile=%_lenUsingFile:&=^&%"
+set "_lenUsingFile=%_lenUsingFile:|=^|%"
+REM set "_lenUsingFile=%_lenUsingFile:"=""%"
+@echo on
 ECHO."%_lenUsingFile%">"%_lenUsingFile.tempfile%"
 FOR %%? IN ("%_lenUsingFile.tempfile%") DO SET /A _lenUsingFile.len=%%~z?-4 & DEL "%_lenUsingFile.tempfle%"
 set /a "%~2=%_lenUsingFile.len%"
@@ -3229,7 +3396,7 @@ REM https://stackoverflow.com/a/8566001
 REM setlocal enableDelayedExpansion
 REM endlocal & set "_len=!%1!" & GoTo :len-skip-preamble
 call set "_len=%%%1%%" 
-echo lref %_len%
+echo lenByRef %_len%
 GoTo :len-skip-preamble
 
 ::Usage Call :len "%InputString%" OutputResult
@@ -3238,7 +3405,7 @@ GoTo :len-skip-preamble
 set "_len=%~1"
 set "_len=%_len:^^=^%"
 set "_len=%_len:""="%"
-echo l %_len%
+echo len %_len%
 :len-skip-preamble
 if not defined _len set /a "_len.count=0" GoTo :len-end
 set /a "_len.count=1"
@@ -3284,7 +3451,7 @@ set "_len.count=" & set "_len=" & exit /b %_len.count%
 REM https://stackoverflow.com/a/5841587
 
 ::Usage Call :len InputVariable OutputResult
-:lenfaster
+:lenfast2
 (   
     setlocal EnableDelayedExpansion
     (set^ tmp=!%~2!)
