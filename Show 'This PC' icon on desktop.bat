@@ -28,7 +28,9 @@ if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 REM call :trim-DEMO
 
 
-call :GetRandomString-DEMO
+call :ListUnescapedSpecialCharactersInString-DEMO
+REM call :PrintCharMap-DEMO
+REM call :GetRandomString-DEMO
 REM call :ReadyMadeLoop-DEMO
 REM call :rnd-DEMO
 REM call :len-DEMO
@@ -38,11 +40,17 @@ REM Call :SetNonEmptyValueOnlyIfNotDefined-DEMO
 REM Call :EchoArray-DEMO
 GoTo :END
 
+:PrintCharMap-DEMO
+Call :PrintCharMap
+Call :PrintCharMap FULLRANGE
+GoTo :EOF
+
 :GetRandomString-DEMO
 
-call :GetRandomString 10 output NOSPECIALCHARS
-echo %output%
+call :GetRandomString 25 output NOSPECIALCHARS
+REM echo %output%
 set "output="
+goto :eof
 pause
 call :GetRandomString 20 output NOSPECIALCHARS
 echo %output%
@@ -207,13 +215,7 @@ set "_rnd_endtime=%time%"
 set _rnd_DEMO.result[
 echo starttime %_rnd_starttime% endtime %_rnd_endtime%
 
-
-
 :rnd-DEMO-test6
-
-
-
-
 
 Call :ClearVariablesByPrefix _rnd
 set /a "_rnd_DEMO.index=0"
@@ -1079,7 +1081,6 @@ GoTo :EOF
 
 :GetArrayParameters-DEMO
 
-
 set "mytestarray[0]=bla"
 set "mytestarray[1]=bla"
 set "mytestarray[2]=bla"
@@ -1131,24 +1132,793 @@ echo set _test4params
 set _test4params
 echo.
 
+GoTo :EOF
 
+:ElseIF-DEMO
+
+set "_mychar=a"
+
+if "%_mychar%"=="b" ( echo it was b) else if "%_mychar%"=="c" ( echo it was c ) else if "%_mychar%"=="a" ( echo it was a ) else ( echo it was else )
+
+	if "%_mychar%"=="b" ( 
+		echo it was b
+		) else if "%_mychar%"=="c" ( 
+		echo it was c 
+		) else if "%_mychar%"=="a" ( 
+		echo it was a 
+		) else ( 
+		echo it was else 
+		)
+
+set "_mychar=b"
+
+if "%_mychar%"=="b" ( echo it was b) else if "%_mychar%"=="c" ( echo it was c ) else if "%_mychar%"=="a" ( echo it was a ) else ( echo it was else )
+
+	if "%_mychar%"=="b" ( 
+		echo it was b
+		) else if "%_mychar%"=="c" ( 
+		echo it was c 
+		) else if "%_mychar%"=="a" ( 
+		echo it was a 
+		) else ( 
+		echo it was else 
+		)
+
+set "_mychar=c"
+
+if "%_mychar%"=="b" ( echo it was b) else if "%_mychar%"=="c" ( echo it was c ) else if "%_mychar%"=="a" ( echo it was a ) else ( echo it was else )
+
+	if "%_mychar%"=="b" ( 
+		echo it was b
+		) else if "%_mychar%"=="c" ( 
+		echo it was c 
+		) else if "%_mychar%"=="a" ( 
+		echo it was a 
+		) else ( 
+		echo it was else 
+		)
+
+set "_mychar=%%"
+
+if "%_mychar%"=="b" ( echo it was b) else if "%_mychar%"=="c" ( echo it was c ) else if "%_mychar%"=="a" ( echo it was a ) else ( echo it was else )
+
+	if "%_mychar%"=="b" ( 
+		echo it was b
+		) else if "%_mychar%"=="c" ( 
+		echo it was c 
+		) else if "%_mychar%"=="a" ( 
+		echo it was a 
+		) else ( 
+		echo it was else 
+		)
+GoTo :EOF
+
+:IsCharDoubleQuote-DEMO
+set _mydouble="
+Call :IsCharDoubleQuote _mydouble && echo it is doublequotes || echo it is not doublequotes
+set _mydouble=a
+Call :IsCharDoubleQuote _mydouble && echo it is doublequotes || echo it is not doublequotes
+
+goto :eof
+
+:ListSpecialCharactersInString-DEMO
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=ab%%cdef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abc%%def
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=abcd"ef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abcde"f
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=abcd&ef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abc^&def
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=ab<cdef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set _mystring=a^<bcdef
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=ab>cdef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abc^>def
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=abcd|ef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abcde^|f
+set _mystring
+Call :ListSpecialCharactersInString _mystring
+
+echo.
+echo now with output index of all special characters found
+
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab%%cdef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc%%def
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd"ef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde"f
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd&ef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^&def
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab<cdef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=a^<bcdef
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab>cdef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^>def
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd|ef"
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde^|f
+set _mystring
+Call :ListSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+set IndexOfSpecialChar[
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+
+
+
+REM set "_mystring=abc^"def%%ghi^&k^<l^>m^^n|"
+REM Call :InsertEscapeCharacters _mystring
+
+goto :eof
+
+
+:ListUnescapedSpecialCharactersInString-DEMO
+
+REM goto :ListUnescapedSpecialCharactersInString-DEMO-1
+REM goto :ListUnescapedSpecialCharactersInString-DEMO-2
+REM goto :ListUnescapedSpecialCharactersInString-DEMO-3
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=ab%%cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abc%%def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=abcd"ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abcde"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=abcd&ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abc^&def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=ab<cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=a^<bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=ab>cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abc^>def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=abcd|ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abcde^|f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+echo Same as previous, but with added escape characters as needed so satify "properly escaped"  status
+
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=ab%%%%cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=abc%%%%def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=abcd^"ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=abcde^^"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=abcd^&ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=abc^^^&def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=ab^<cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=a^^^<bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=ab^>cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=abc^^^>def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=abcd^|ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=abcde^^^|f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+
+:ListUnescapedSpecialCharactersInString-DEMO-1
+
+echo.
+echo Output in array form of all unescaped special character
+
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab%%cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc%%def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd"ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd&ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^&def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab<cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=a^<bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab>cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^>def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd|ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde^|f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+
+:ListUnescapedSpecialCharactersInString-DEMO-2
+
+
+
+echo.
+echo Same as previous, but with added escape characters as needed so satify "properly escaped"  status
+
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab%%%%cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc%%%%def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^"ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde^^"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^&ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^^^&def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab^<cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=a^^^<bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab^>cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^^^>def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^|ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde^^^|f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+
+echo.
+echo Same as previous, but with one escape carret too many on each line, excess adjacent escape characters like carret, percentsigns (and doublequotes) need more attention
+
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab%%%%%cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc%%%%%def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^^"ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde^^^"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^^&ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+rem broken 'def' is not recognized as an internal or external command,
+echo.
+set _mystring=abc^^^^&def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab^^<cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+rem broken The system cannot find the file specified. ??  <bcdef
+echo.
+set _mystring=a^^^^<bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab^^>cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+REM broken
+echo.
+set _mystring=abc^^^^>def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^^|ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+
+REM This breaks the script on first set line
+REM echo.
+REM set _mystring=abcde^^^^|f
+REM set _mystring
+REM Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+REM Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+REM Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo demo finished
+
+REM set "_mystring=abc^"def%%ghi^&k^<l^>m^^n|"
+REM Call :InsertEscapeCharacters _mystring
+
+goto :eof
+
+:GetRandomString-DEMO
+
+set OutputString=
+echo call :GetRandomString 20 OutputString 
+call :GetRandomString 20 OutputString 
+echo %OutputString%
+echo.
+set OutputString=
+echo call :GetRandomString 20 OutputString USESPECIALCHARS
+call :GetRandomString 20 OutputString USESPECIALCHARS
+echo %OutputString%
+echo.
+set OutputString=
+echo call :GetRandomString 20 OutputString USESPECIALCHARS DONTESCAPE
+call :GetRandomString 20 OutputString USESPECIALCHARS DONTESCAPE
+echo %OutputString%
+echo.
+set OutputString=
+echo call :GetRandomString 20 OutputString FULLRANGE
+call :GetRandomString 20 OutputString FULLRANGE
+echo %OutputString%
+echo.
+set OutputString=
+echo call :GetRandomString 20 OutputString FULLRANGE USESPECIALCHARS DONTESCAPE
+call :GetRandomString 20 OutputString FULLRANGE USESPECIALCHARS DONTESCAPE
+echo %OutputString%
+
+REM call :GetRandomString 20 OutputString 
+REM echo %OutputString%
+REM call :GetRandomString 20 OutputString 
+REM echo %OutputString%
 
 GoTo :EOF
 
 
-Call :ClearVariablesByPrefix  OptionalFeatures
-call :GetOptionalFeatures
+:testfunc
+echo %*
+echo %1
+echo %~1
+goto :eof
 
-set OptionalFeatures[
-Set "_CopyValuesFromArray_SearchSuffix=.state"
-Call :CopyValuesFromArray OptionalFeatures OptionalFeatures.disabled Disabled
-set OptionalFeatures.disabled
-Call :CopyValuesFromArray OptionalFeatures OptionalFeatures.enabled Enabled
-set OptionalFeatures.enabled
-set "_RemoveValuesFromArray_ArrayToRemoveFrom.suffix=.state"
-Call :RemoveValuesFromArray OptionalFeatures Disabled Enabled
+:testfunc-DEMO
+call :testfunc 1test"test
+echo.
+call :testfunc "1test"test"
+echo.
+call :testfunc 2test""test
+echo.
+call :testfunc "2test""test"
+echo.
+call :testfunc 3test"""test
+echo.
+call :testfunc "3test"""test"
+echo.
+call :testfunc 4test""""test
+echo.
+call :testfunc "4test""""test"
+echo.
+call :testfunc 5test"""""test
+echo.
+call :testfunc "5test"""""test"
+echo.
+call :testfunc 1test^"test
+echo.
+call :testfunc "1test^"test"
+echo.
+call :testfunc 2test^"^"test
+echo.
+call :testfunc "2test^"^"test"
+echo.
+call :testfunc 3test^"^"^"test
+echo.
+call :testfunc "3test^"^"^"test"
+echo.
+call :testfunc 4test^"^"^"^"test
+echo.
+call :testfunc "4test^"^"^"^"test"
+echo.
+call :testfunc 5test^"^"^"^"^"test
+echo.
+call :testfunc "5test^"^"^"^"^"test"
 
-set OptionalFeatures[
+goto :eof
+REM Call :ClearVariablesByPrefix  OptionalFeatures
+REM call :GetOptionalFeatures
+
+REM set OptionalFeatures[
+REM Set "_CopyValuesFromArray_SearchSuffix=.state"
+REM Call :CopyValuesFromArray OptionalFeatures OptionalFeatures.disabled Disabled
+REM set OptionalFeatures.disabled
+REM Call :CopyValuesFromArray OptionalFeatures OptionalFeatures.enabled Enabled
+REM set OptionalFeatures.enabled
+REM set "_RemoveValuesFromArray_ArrayToRemoveFrom.suffix=.state"
+REM Call :RemoveValuesFromArray OptionalFeatures Disabled Enabled
+
+REM set OptionalFeatures[
 
 REM Call :FindUniqueValues InputArray OutputArray .suffixName
 REM set _SplitArrayByValue_PartialMatch=true
@@ -1868,12 +2638,12 @@ GoTo :EOF
 :SetArrayParameters
 call set /a "_SetArrayParameters.lbound=%%%~2.lbound%%"  2>nul
 call set /a "_SetArrayParameters.ubound=%%%~2.ubound%%" 2>nul
-call set /a "_SetArrayParameters.count=%%%~2.count%%" 2>nul
+REM call set /a "_SetArrayParameters.count=%%%~2.count%%" 2>nul
 call set /a "_SetArrayParameters.index=%%%~2.index%%" 2>nul
 if not "[%~3]"=="[]" call :IsNumeric "%~3" || set /a "_SetArrayParameters.lbound=%~3" 2>nul
 if not "[%~4]"=="[]" call :IsNumeric "%~4" || set /a "_SetArrayParameters.ubound=%~4" 2>nul
 if not "[%~5]"=="[]" call :IsNumeric "%~5" || set /a "_SetArrayParameters.index=%~5" 2>nul
-if not "[%~6]"=="[]" call :IsNumeric "%~6" || set /a "_SetArrayParameters.count=%~6" 2>nul
+REM if not "[%~6]"=="[]" call :IsNumeric "%~6" || set /a "_SetArrayParameters.count=%~6" 2>nul
 if "[%_SetArrayParameters.count%]"=="[]" if not "[%_SetArrayParameters.lbound%]"=="[]" if not "[%_SetArrayParameters.ubound%]"=="[]" set /a _SetArrayParameters.count=%_SetArrayParameters.ubound%-%_SetArrayParameters.lbound%+1  2>nul
 if not "[%_SetArrayParameters.lbound%]"=="[]" Call :IsNumeric "%_SetArrayParameters.lbound%" || set /a "%~1.lbound=%_SetArrayParameters.lbound%" 2>nul
 if not "[%_SetArrayParameters.ubound%]"=="[]" Call :IsNumeric "%_SetArrayParameters.ubound%" || set /a "%~1.ubound=%_SetArrayParameters.ubound%" 2>nul
@@ -1884,20 +2654,22 @@ GoTo :EOF
 
 ::Usage Call :GetArrayParameters InputArray ParameterVariable optional Initialize optional StartIndex=0
 :GetArrayParameters
+call set _GetArrayParameters.lbound=%%%~1.lbound%%
+call set _GetArrayParameters.ubound=%%%~1.ubound%%
+call set _GetArrayParameters.count=%%%~1.count%%
+call set _GetArrayParameters.index=%%%~1.index%%
 if "[%~3]"=="[Initialize]" (
 	if "[%_GetArrayParameters.lbound%]"=="[]" set /a _GetArrayParameters.lbound=0
 	if "[%_GetArrayParameters.ubound%]"=="[]" set /a _GetArrayParameters.ubound=-1
 	if "[%_GetArrayParameters.count%]"=="[]" set /a _GetArrayParameters.count=%_GetArrayParameters.ubound%-%_GetArrayParameters.lbound%+1  2>nul
 	if "[%_GetArrayParameters.index%]"=="[]" if "[%~4]"=="[]" ( set /a "_GetArrayParameters.index=0" ) else ( set /a "_GetArrayParameters.index=%~4" 2>nul )
 )
-call set _GetArrayParameters.lbound=%%%~1.lbound%%
-call set _GetArrayParameters.ubound=%%%~1.ubound%%
-call set _GetArrayParameters.count=%%%~1.count%%
-call set _GetArrayParameters.index=%%%~1.index%%
+set _GetArrayParameters.name=%~1
 set "%~2.lbound=%_GetArrayParameters.lbound%"
 set "%~2.ubound=%_GetArrayParameters.ubound%"
 set "%~2.count=%_GetArrayParameters.count%"
 set "%~2.index=%_GetArrayParameters.index%"
+if "[%_GetArrayParameters.name%]" NEQ "" set "%~2=%_GetArrayParameters.name%"
 Call :ClearVariablesByPrefix _GetArrayParameters & if "[%_GetArrayParameters.ubound%]"=="[]" ( exit /b 1 ) else ( exit /b 0 )
 GoTo :EOF
 ::GetArrayParameters-END
@@ -3327,8 +4099,336 @@ if %~3 not empty shift and gogo
 set output string to output
 GoTo :EOF
 
-::Usage Call :GetRandomString CharacterCount OutputString NOSPECIALCHARS
+::Usage Call :DoesStringContainSpecialCharacters
+:DoesStringContainSpecialCharacters
+setlocal enabledelayedexpansion
+echo !%~1! | findstr /C:"%%"
+endlocal
+GoTo :EOF
+
+
+::Usage Call :IsCharDoubleQuote byref InputVariable
+:IsCharDoubleQuote 
+setlocal enabledelayedexpansion
+if !%~1!==^" ( set errorlevel=0 ) else ( set errorlevel=1 )
+endlocal & exit /b %errorlevel%
+
+
+
+
+
+
+REM set pos=0
+REM :NextChar
+    REM echo Char %pos% is '!mytext:~%pos%,1!'
+    REM set /a pos=pos+1
+    REM if "!mytext:~%pos%,1!" NEQ "" goto NextChar
+
+::Usage Call :ListUnescapedSpecialCharactersInString byref InputVariable byref optional OutputArray optional SILENT
+:ListUnescapedSpecialCharactersInString
+Call :ClearVariablesByPrefix _ListUnescapedSpecialCharactersInString
+if "[%~2]" NEQ "[]" Call :GetArrayParameters %~2 _ListUnescapedSpecialCharactersInString_OutputArray Initialize -1
+if "[%~3]" EQU "[SILENT]" ( set "_ListUnescapedSpecialCharactersInString_silent=true" ) else ( set "_ListUnescapedSpecialCharactersInString_silent=false" )
+set /a "_ListUnescapedSpecialCharactersInString_previous_index=-1"
+set /a "_ListUnescapedSpecialCharactersInString_index=0"
+set /a "_ListUnescapedSpecialCharactersInString_next_index=1"
+set "_ListUnescapedSpecialCharactersInString_quote_state=unquoted"
+set /a "_ListUnescapedSpecialCharactersInString_quote_count=0"
+setlocal enabledelayedexpansion
+:ListUnescapedSpecialCharactersInString-loop
+set "_ListUnescapedSpecialCharactersInString_previous_char=" & set "_ListUnescapedSpecialCharactersInString_next_char=" & set "_ListUnescapedSpecialCharactersInString_char="
+if %_ListUnescapedSpecialCharactersInString_previous_index% GEQ 0 set "_ListUnescapedSpecialCharactersInString_previous_char=!%~1:~%_ListUnescapedSpecialCharactersInString_previous_index%,1!"
+set "_ListUnescapedSpecialCharactersInString_char=!%~1:~%_ListUnescapedSpecialCharactersInString_index%,1!"
+set "_ListUnescapedSpecialCharactersInString_next_char=!%~1:~%_ListUnescapedSpecialCharactersInString_next_index%,1!"
+set "_ListUnescapedSpecialCharactersInString_escaped=false"
+set "_ListUnescapedSpecialCharactersInString_prev_type="
+set "_ListUnescapedSpecialCharactersInString_next_type="
+set "_ListUnescapedSpecialCharactersInString_current_type="
+
+if !_ListUnescapedSpecialCharactersInString_previous_char!==%% ( 
+	set "_ListUnescapedSpecialCharactersInString_prev_type=percentsign"
+) else if !_ListUnescapedSpecialCharactersInString_previous_char!==^" ( 
+	set "_ListUnescapedSpecialCharactersInString_prev_type=doublequotes"
+) else if !_ListUnescapedSpecialCharactersInString_previous_char!==^& ( 
+	set "_ListUnescapedSpecialCharactersInString_prev_type=ampersand"
+) else if !_ListUnescapedSpecialCharactersInString_previous_char!==^< ( 
+	set "_ListUnescapedSpecialCharactersInString_prev_type=lessthan"
+) else if !_ListUnescapedSpecialCharactersInString_previous_char!==^> ( 
+	set "_ListUnescapedSpecialCharactersInString_prev_type=greaterthan"
+) else if !_ListUnescapedSpecialCharactersInString_previous_char!==^^ ( 
+	set "_ListUnescapedSpecialCharactersInString_prev_type=carret"
+) else if !_ListUnescapedSpecialCharactersInString_previous_char!==^| ( 
+	set "_ListUnescapedSpecialCharactersInString_prev_type=pipe"
+) else ( 
+	set "_ListUnescapedSpecialCharactersInString_prev_type=else"
+)
+
+
+if !_ListUnescapedSpecialCharactersInString_next_char!==%% ( 
+	set "_ListUnescapedSpecialCharactersInString_next_type=percentsign"
+) else if !_ListUnescapedSpecialCharactersInString_next_char!==^" ( 
+	set "_ListUnescapedSpecialCharactersInString_next_type=doublequotes"
+) else if !_ListUnescapedSpecialCharactersInString_next_char!==^& ( 
+	set "_ListUnescapedSpecialCharactersInString_next_type=ampersand"
+) else if !_ListUnescapedSpecialCharactersInString_next_char!==^< ( 
+	set "_ListUnescapedSpecialCharactersInString_next_type=lessthan"
+) else if !_ListUnescapedSpecialCharactersInString_next_char!==^> ( 
+	set "_ListUnescapedSpecialCharactersInString_next_type=greaterthan"
+) else if !_ListUnescapedSpecialCharactersInString_next_char!==^^ ( 
+	set "_ListUnescapedSpecialCharactersInString_next_type=carret"
+) else if !_ListUnescapedSpecialCharactersInString_next_char!==^| ( 
+	set "_ListUnescapedSpecialCharactersInString_next_type=pipe"
+) else ( 
+	set "_ListUnescapedSpecialCharactersInString_next_type=else"
+)
+
+
+if !_ListUnescapedSpecialCharactersInString_char!==%% ( 
+	set "_ListUnescapedSpecialCharactersInString_current_type=percentsign"
+	if "[!_ListUnescapedSpecialCharactersInString_prev_type!]" EQU "[percentsign]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	if "[!_ListUnescapedSpecialCharactersInString_next_type!]" EQU "[percentsign]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	REM Clusters of uneven numbers of percentsigns will look escaped to this logic
+	if "[%_ListUnescapedSpecialCharactersInString_silent%]" NEQ "[true]" if "[!_ListUnescapedSpecialCharactersInString_escaped!]" NEQ "[true]" ( echo Unescaped character %% at index !_ListUnescapedSpecialCharactersInString_index! )
+) else if !_ListUnescapedSpecialCharactersInString_char!==^" ( 
+	set "_ListUnescapedSpecialCharactersInString_current_type=doublequotes"
+	if "[!_ListUnescapedSpecialCharactersInString_prev_type!]" EQU "[carret]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	REM if "[!_ListUnescapedSpecialCharactersInString_next_type!]" EQU "[]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	if "[%_ListUnescapedSpecialCharactersInString_silent%]" NEQ "[true]" if "[!_ListUnescapedSpecialCharactersInString_escaped!]" NEQ "[true]" ( echo Unescaped character ^" at index !_ListUnescapedSpecialCharactersInString_index! )
+) else if !_ListUnescapedSpecialCharactersInString_char!==^& (
+	set "_ListUnescapedSpecialCharactersInString_current_type=ampersand"
+	if "[!_ListUnescapedSpecialCharactersInString_prev_type!]" EQU "[carret]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	REM if "[!_ListUnescapedSpecialCharactersInString_next_type!]" EQU "[]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	if "[%_ListUnescapedSpecialCharactersInString_silent%]" NEQ "[true]" if "[!_ListUnescapedSpecialCharactersInString_escaped!]" NEQ "[true]" ( echo Unescaped character ^& at index !_ListUnescapedSpecialCharactersInString_index! )
+) else if !_ListUnescapedSpecialCharactersInString_char!==^< ( 
+	set "_ListUnescapedSpecialCharactersInString_current_type=lessthan"
+	if "[!_ListUnescapedSpecialCharactersInString_prev_type!]" EQU "[carret]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	REM if "[!_ListUnescapedSpecialCharactersInString_next_type!]" EQU "[]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	if "[%_ListUnescapedSpecialCharactersInString_silent%]" NEQ "[true]" if "[!_ListUnescapedSpecialCharactersInString_escaped!]" NEQ "[true]" ( echo Unescaped character ^< at index !_ListUnescapedSpecialCharactersInString_index! )
+) else if !_ListUnescapedSpecialCharactersInString_char!==^> ( 
+	set "_ListUnescapedSpecialCharactersInString_current_type=greaterthan"
+	if "[!_ListUnescapedSpecialCharactersInString_prev_type!]" EQU "[carret]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	REM if "[!_ListUnescapedSpecialCharactersInString_next_type!]" EQU "[]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	if "[%_ListUnescapedSpecialCharactersInString_silent%]" NEQ "[true]" if "[!_ListUnescapedSpecialCharactersInString_escaped!]" NEQ "[true]" ( echo Unescaped character ^> at index !_ListUnescapedSpecialCharactersInString_index! )
+) else if !_ListUnescapedSpecialCharactersInString_char!==^^ ( 
+	set "_ListUnescapedSpecialCharactersInString_current_type=carret"
+	if "[!_ListUnescapedSpecialCharactersInString_prev_type!]" EQU "[carret]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	if "[!_ListUnescapedSpecialCharactersInString_next_type!]" NEQ "[else]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	if "[%_ListUnescapedSpecialCharactersInString_silent%]" NEQ "[true]" if "[!_ListUnescapedSpecialCharactersInString_escaped!]" NEQ "[true]" ( echo Unescaped character ^^ at index !_ListUnescapedSpecialCharactersInString_index! )
+) else if !_ListUnescapedSpecialCharactersInString_char!==^| ( 
+	set "_ListUnescapedSpecialCharactersInString_current_type=pipe"
+	if "[!_ListUnescapedSpecialCharactersInString_prev_type!]" EQU "[carret]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	REM if "[!_ListUnescapedSpecialCharactersInString_next_type!]" EQU "[]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	if "[%_ListUnescapedSpecialCharactersInString_silent%]" NEQ "[true]" if "[!_ListUnescapedSpecialCharactersInString_escaped!]" NEQ "[true]" ( echo Unescaped character ^| at index !_ListUnescapedSpecialCharactersInString_index! )
+) else ( 
+	set "_ListUnescapedSpecialCharactersInString_current_type=else"
+	set "_ListUnescapedSpecialCharactersInString_escaped=true"
+	if "[%_ListUnescapedSpecialCharactersInString_silent%]" NEQ "[true]" echo Character does not need escaping !_ListUnescapedSpecialCharactersInString_char! index !_ListUnescapedSpecialCharactersInString_index!
+)
+
+if "[!_ListUnescapedSpecialCharactersInString_quote_state!]"=="[quoted]" if "[!_ListUnescapedSpecialCharactersInString_current_type!]" NEQ "[doublequotes]" set "_ListUnescapedSpecialCharactersInString_escaped=true"
+
+REM this logic does not handle uneven numbers of double quotes or percentsigns	
+REM in either case, WHERE to add extra percentsign and doublequotes ? Maybe just prefix with carrets ?
+endlocal & set "_ListUnescapedSpecialCharactersInString_current_type=%_ListUnescapedSpecialCharactersInString_current_type%" & set "_ListUnescapedSpecialCharactersInString_escaped=%_ListUnescapedSpecialCharactersInString_escaped%" & set "_ListUnescapedSpecialCharactersInString_quote_state=%_ListUnescapedSpecialCharactersInString_quote_state%"
+if "[%_ListUnescapedSpecialCharactersInString_current_type%]" NEQ "[else]" if "[%_ListUnescapedSpecialCharactersInString_escaped%]" NEQ "[true]" set /a "_ListUnescapedSpecialCharactersInString_OutputArray.ubound+=1" 
+if "[%_ListUnescapedSpecialCharactersInString_current_type%]" NEQ "[else]" if "[%_ListUnescapedSpecialCharactersInString_escaped%]" NEQ "[true]" set "%_ListUnescapedSpecialCharactersInString_OutputArray%[%_ListUnescapedSpecialCharactersInString_OutputArray.ubound%]=%_ListUnescapedSpecialCharactersInString_index%" & set "%_ListUnescapedSpecialCharactersInString_OutputArray%[%_ListUnescapedSpecialCharactersInString_OutputArray.ubound%].type=%_ListUnescapedSpecialCharactersInString_current_type%"
+
+if "[%_ListUnescapedSpecialCharactersInString_current_type%]" EQU "[doublequotes]" if "[%_ListUnescapedSpecialCharactersInString_escaped%]" NEQ "[true]" set /a "_ListUnescapedSpecialCharactersInString_quote_count+=1
+if "[%_ListUnescapedSpecialCharactersInString_current_type%]" EQU "[doublequotes]" if "[%_ListUnescapedSpecialCharactersInString_escaped%]" NEQ "[true]" set /a "%_ListUnescapedSpecialCharactersInString_OutputArray%.quotecount=%_ListUnescapedSpecialCharactersInString_quote_count%"
+if "[%_ListUnescapedSpecialCharactersInString_current_type%]" EQU "[doublequotes]" if "[%_ListUnescapedSpecialCharactersInString_escaped%]" NEQ "[true]" if "[%_ListUnescapedSpecialCharactersInString_quote_state%]"=="[unquoted]" ( set "%_ListUnescapedSpecialCharactersInString_OutputArray%[%_ListUnescapedSpecialCharactersInString_OutputArray.ubound%].quoting=startquote" ) else ( set "%_ListUnescapedSpecialCharactersInString_OutputArray%[%_ListUnescapedSpecialCharactersInString_OutputArray.ubound%].quoting=endquote" )
+if "[%_ListUnescapedSpecialCharactersInString_current_type%]" EQU "[doublequotes]" if "[%_ListUnescapedSpecialCharactersInString_escaped%]" NEQ "[true]" if "[%_ListUnescapedSpecialCharactersInString_quote_state%]"=="[unquoted]" ( set "_ListUnescapedSpecialCharactersInString_quote_state=quoted" ) else ( set "_ListUnescapedSpecialCharactersInString_quote_state=unquoted" )
+
+
+set /a "_ListUnescapedSpecialCharactersInString_previous_index+=1"
+set /a "_ListUnescapedSpecialCharactersInString_index+=1"
+set /a "_ListUnescapedSpecialCharactersInString_next_index+=1"
+setlocal enabledelayedexpansion
+if "!%~1:~%_ListUnescapedSpecialCharactersInString_index%,1!" NEQ "" GoTo :ListUnescapedSpecialCharactersInString-loop
+endlocal 
+
+Call :SetArrayParameters "%_ListUnescapedSpecialCharactersInString_OutputArray%" _ListUnescapedSpecialCharactersInString_OutputArray
+Call :ClearVariablesByPrefix _ListUnescapedSpecialCharactersInString
+GoTo :EOF
+
+::Usage Call :ListSpecialCharactersInString byref InputVariable byref optional OutputArray optional SILENT
+:ListSpecialCharactersInString
+set "_ListSpecialCharactersInString_char="
+if "[%~2]" NEQ "[]" Call :GetArrayParameters %~2 _ListSpecialCharactersInString_OutputArray Initialize -1
+REM if "[%~2]" NEQ "[]" echo _ListSpecialCharactersInString_OutputArray %~2 %_ListSpecialCharactersInString_OutputArray%
+REM if "[%~2]" NEQ "[]" set _ListSpecialCharactersInString_OutputArray
+if "[%~3]" EQU "[SILENT]" ( set "_ListSpecialCharactersInString_silent=true" ) else ( set "_ListSpecialCharactersInString_silent=false" )
+set /a "_ListSpecialCharactersInString_index=0"
+setlocal enabledelayedexpansion
+:ListSpecialCharactersInString-loop
+set "_ListSpecialCharactersInString_char=!%~1:~%_ListSpecialCharactersInString_index%,1!"
+
+	if !_ListSpecialCharactersInString_char!==%% ( 
+		if "[%_ListSpecialCharactersInString_silent%]" NEQ "[true]" echo Special character %% at index !_ListSpecialCharactersInString_index!
+		if "[%~2]" NEQ "[]" set "_ListSpecialCharactersInString_current_type=percentsign"
+	) else if !_ListSpecialCharactersInString_char!==^" ( 
+		if "[%_ListSpecialCharactersInString_silent%]" NEQ "[true]" echo Special character " at index !_ListSpecialCharactersInString_index!
+		if "[%~2]" NEQ "[]" set "_ListSpecialCharactersInString_current_type=doublequotes"
+	) else if !_ListSpecialCharactersInString_char!==^& ( 
+		if "[%_ListSpecialCharactersInString_silent%]" NEQ "[true]" echo Special character ^& at index !_ListSpecialCharactersInString_index!
+		if "[%~2]" NEQ "[]" set "_ListSpecialCharactersInString_current_type=ampersand"
+	) else if !_ListSpecialCharactersInString_char!==^< ( 
+		if "[%_ListSpecialCharactersInString_silent%]" NEQ "[true]" echo Special character ^< at index !_ListSpecialCharactersInString_index!
+		if "[%~2]" NEQ "[]" set "_ListSpecialCharactersInString_current_type=lessthan"
+	) else if !_ListSpecialCharactersInString_char!==^> ( 
+		if "[%_ListSpecialCharactersInString_silent%]" NEQ "[true]" echo Special character ^> at index !_ListSpecialCharactersInString_index!
+		if "[%~2]" NEQ "[]" set "_ListSpecialCharactersInString_current_type=greaterthan"
+	) else if !_ListSpecialCharactersInString_char!==^^ ( 
+		if "[%_ListSpecialCharactersInString_silent%]" NEQ "[true]" echo Special character ^^ at index !_ListSpecialCharactersInString_index!
+		if "[%~2]" NEQ "[]" set "_ListSpecialCharactersInString_current_type=carret"
+	) else if !_ListSpecialCharactersInString_char!==^| ( 
+		if "[%_ListSpecialCharactersInString_silent%]" NEQ "[true]" echo Special character ^| at index !_ListSpecialCharactersInString_index!
+		if "[%~2]" NEQ "[]" set "_ListSpecialCharactersInString_current_type=pipe"
+	) else ( 
+		if "[%_ListSpecialCharactersInString_silent%]" NEQ "[true]" echo Normal character else !_ListSpecialCharactersInString_char! at index !_ListSpecialCharactersInString_index!
+	)
+
+endlocal & set "_ListSpecialCharactersInString_current_type=%_ListSpecialCharactersInString_current_type%"
+if "[%_ListSpecialCharactersInString_current_type%]" NEQ "[]" set /a "_ListSpecialCharactersInString_OutputArray.ubound+=1" 
+if "[%_ListSpecialCharactersInString_current_type%]" NEQ "[]" set "%_ListSpecialCharactersInString_OutputArray%[%_ListSpecialCharactersInString_OutputArray.ubound%]=%_ListSpecialCharactersInString_index%" & set "%_ListSpecialCharactersInString_OutputArray%[%_ListSpecialCharactersInString_OutputArray.ubound%].type=%_ListSpecialCharactersInString_current_type%"
+set "_ListSpecialCharactersInString_current_type="
+set /a "_ListSpecialCharactersInString_index+=1"
+setlocal enabledelayedexpansion
+if "!%~1:~%_ListSpecialCharactersInString_index%,1!" NEQ "" GoTo :ListSpecialCharactersInString-loop
+endlocal 
+
+Call :SetArrayParameters "%_ListSpecialCharactersInString_OutputArray%" _ListSpecialCharactersInString_OutputArray
+Call :ClearVariablesByPrefix _ListSpecialCharactersInString
+GoTo :EOF
+
+REM NON WORKING
+::Usage Call :InsertEscapeCharacters byref InputVariable
+:InsertEscapeCharacters
+setlocal enabledelayedexpansion
+set "_InsertEscapeCharacters_char="
+set /a "_InsertEscapeCharacters_index=0"
+:InsertEscapeCharacters-loop
+set "_InsertEscapeCharacters_char=!%~1:~%_InsertEscapeCharacters_index%,1!"
+
+	if !_InsertEscapeCharacters_char!==a ( 
+		echo it was a index !_InsertEscapeCharacters_index!
+		) else if !_InsertEscapeCharacters_char!==^" ( 
+		echo it was " index !_InsertEscapeCharacters_index!
+		) else if !_InsertEscapeCharacters_char!==^& ( 
+		echo it was ^& index !_InsertEscapeCharacters_index!
+		) else if !_InsertEscapeCharacters_char!==^< ( 
+		echo it was ^< index !_InsertEscapeCharacters_index!
+		) else if !_InsertEscapeCharacters_char!==^> ( 
+		echo it was ^> index !_InsertEscapeCharacters_index!
+		) else if !_InsertEscapeCharacters_char!==^^ ( 
+		echo it was ^^ index !_InsertEscapeCharacters_index!
+		) else if !_InsertEscapeCharacters_char!==^| ( 
+		echo it was ^| index !_InsertEscapeCharacters_index!
+		) else ( 
+		echo it was else !_InsertEscapeCharacters_char! index !_InsertEscapeCharacters_index!
+		)
+
+set /a "_InsertEscapeCharacters_index+=1"
+if "!%~1:~%_InsertEscapeCharacters_index%,1!" NEQ "" GoTo :InsertEscapeCharacters-loop
+endlocal
+GoTo :EOF
+
+::Usage Call :PrintCharMap FULLRANGE
+:PrintCharMap
+set /a "_PrintCharMap_index=32" & set /a "_PrintCharMap_count=126"
+if "[%~1]"=="[FULLRANGE]" set /a "_PrintCharMap_index=0" & set /a "_PrintCharMap_count=255"
+:PrintCharMap-loop
+cmd /c exit %_PrintCharMap_index%
+setlocal enabledelayedexpansion
+echo %_PrintCharMap_index% !=exitcodeascii!
+endlocal
+set /a "_PrintCharMap_index+=1"
+if %_PrintCharMap_index% LEQ %_PrintCharMap_count% GoTo :PrintCharMap-loop
+GoTo :EOF
+
+
+
+::Usage Call :GetRandomString CharacterCount OutputString USESPECIALCHARS DONTESCAPE FULLRANGE
 :GetRandomString
+Call :ClearVariablesByPrefix _GetRandomString
+set /a "_GetRandomString_count=%~1"
+set "_GetRandomString_output=%~2"
+:GetRandomString-arguments
+if "[%~3]" EQU "[USESPECIALCHARS]" set "_GetRandomString_usespecialchar=true"
+if "[%~3]" EQU "[DONTESCAPE]" set "_GetRandomString_dontescape=true"
+if "[%~3]" EQU "[FULLRANGE]" set "_GetRandomString_fullrange=true"
+if "[%~4]" NEQ "[]" ( shift & GoTo :GetRandomString-arguments )
+set /a "_GetRandomString_index=0"
+:GetRandomString-loop
+set "_GetRandomString_escapechar="
+set /a _GetRandomString_next_ascii=%RANDOM% * (126 - 32 + 1) / 32768 + 32
+if "[%_GetRandomString_fullrange%]" EQU "[true]" set /a _GetRandomString_next_ascii=%RANDOM% * (255 - 0 + 1) / 32768 + 0
+if "[%_GetRandomString_usespecialchar%]" NEQ "[true]" ( 
+	for %%a in (34 37 38 60 62 94 124) do ( if "[%_GetRandomString_next_ascii%]"=="[%%a]" GoTo :GetRandomString-loop )
+	)
+if "[%_GetRandomString_usespecialchar%]" EQU "[true]" if %_GetRandomString_next_ascii% EQU 37 set "_GetRandomString_escapechar=%%"
+if "[%_GetRandomString_usespecialchar%]" EQU "[true]" ( 
+	for %%a in (38 60 62 94 124) do ( if "[%_GetRandomString_next_ascii%]"=="[%%a]" set "_GetRandomString_escapechar=^" ) 
+	)
+if "[%_GetRandomString_dontescape%]" EQU "[true]" set "_GetRandomString_escapechar="
+cmd /c exit %_GetRandomString_next_ascii%
+setlocal enabledelayedexpansion
+REM echo 2 !=exitcodeascii!
+REM set "_GetRandomString_string=!_GetRandomString_string!%_GetRandomString_escapechar%!=exitcodeascii!"	
+set _GetRandomString_string=!_GetRandomString_string!!_GetRandomString_escapechar!!=exitcodeascii!
+echo 3 !=exitcodeascii! !_GetRandomString_string!
+REM endlocal & set "_GetRandomString_string=!_GetRandomString_string!"
+endlocal & set "_GetRandomString_string=%_GetRandomString_string%"
+REM set "_GetRandomString_string=!_GetRandomString_string!" & endlocal
+REM set "_GetRandomString_string=%_GetRandomString_string%" & endlocal
+if "[%_GetRandomString_usespecialchar%]" EQU "[true]" echo 4 "%_GetRandomString_string%"
+REM echo 4 %_GetRandomString_string%
+set /a "_GetRandomString_index+=1"
+if %_GetRandomString_index% LSS %_GetRandomString_count% GoTo :GetRandomString-loop
+set "%_GetRandomString_output%=%_GetRandomString_string%"
+goto :eof
+
+
+set "_outputfile=851-2.txt"
+set /a _index=0
+REM set special=^
+set "special=^"
+echo special is "%special%" X%special%X
+del 851-2.txt
+REM set "special=^^"
+:GetRandomString-test
+cmd /c exit %_index%
+REM echo %_index% "%=exitcodeascii%"
+REM if %_index% equ 37 echo.%special%%=exitcodeascii%>>851-2.txt & goto :GetRandomString-test-skip
+REM if "%=exitcodeascii%" EQU "%%" echo %_index% was %%
+setlocal enabledelayedexpansion 
+if "!=exitcodeascii!"=="%%" echo %_index% was %%
+if "!=exitcodeascii!"==""" echo %_index% was doublequotes
+if "!=exitcodeascii!"=="&" echo %_index% was ^&
+if "!=exitcodeascii!"=="<" echo %_index% was ^<
+if "!=exitcodeascii!"==">" echo %_index% was ^>
+if "!=exitcodeascii!"=="^" echo %_index% was ^^
+if "!=exitcodeascii!"=="|" echo %_index% was ^|
+endlocal
+
+if %_index% equ 34 echo.%special%%=exitcodeascii%>>%_outputfile%& goto :GetRandomString-test-skip
+if %_index% equ 38 echo.%special%%=exitcodeascii%>>%_outputfile%& goto :GetRandomString-test-skip
+if %_index% equ 60 echo.%special%%=exitcodeascii%>>%_outputfile%& goto :GetRandomString-test-skip
+if %_index% equ 62 echo.%special%%=exitcodeascii%>>%_outputfile%& goto :GetRandomString-test-skip
+if %_index% equ 94 echo.%special%%=exitcodeascii%>>%_outputfile%& goto :GetRandomString-test-skip
+if %_index% equ 124 echo.%special%%=exitcodeascii%>>%_outputfile%& goto :GetRandomString-test-skip
+echo.%=exitcodeascii%>>%_outputfile%
+REM echo."%=exitcodeascii%">>851-2.txt
+REM echo.%special%%=exitcodeascii%^>>851-2.txt
+REM type 851-2.txt
+REM :GetRandomString-test-skip
+FOR %%? IN ("%_outputfile%") DO echo %_index% "%=exitcodeascii%" size %%~z?
+set /a _index+=1
+if %_index% leq 255 goto :GetRandomString-test
+
+goto :eof
+cmd /c exit %~1
+set "%2=%=exitcodeascii%"
+
 set "_GetRandomString_charlimit=%~1"
 if "[%~3]"=="NOSPECIALCHARS" set "_GetRandomString_nospecialchar=true"
 set _GetRandomString_charmap=!"#$%%^&'()*+,-./0123456789:;^<=^>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^^_`abcdefghijklmnopqrstuvwxyz{^|}~
@@ -3337,11 +4437,11 @@ for /l %%a in (0,1,95) do (call echo _GetRandomString_charmap "%%_GetRandomStrin
 
 set /a _GetRandomString_charcount=0
 echo hello
-:GetRandomString-loop
+REM :GetRandomString-loop
 REM echo set /a _GetRandomString_nextchar=%RANDOM% * (0 - 128 + 1) / 32768 + 0
-set /a _GetRandomString_nextchar=%RANDOM% * (0 - 128 + 1) / 32768 + 0
+set /a _GetRandomString_nextchar=%RANDOM% * (32 - 128 + 1) / 32768 + 32
 REM echo _GetRandomString_nextchar %_GetRandomString_nextchar%
-if "[%_GetRandomString_nospecialchar%]"=="[true]" for %%a in (2 3 6 7 29 31) do ( if "[%%a]"=="[%_GetRandomString_nextchar%]" GoTo :GetRandomString-loop)
+REM if "[%_GetRandomString_nospecialchar%]"=="[true]" for %%a in (2 3 6 7 29 31) do ( if "[%%a]"=="[%_GetRandomString_nextchar%]" GoTo :GetRandomString-loop)
 call set "_GetRandomString_output=%_GetRandomString_output%%%_GetRandomString_charmap:~%_GetRandomString_nextchar%,1%%
 set /a _GetRandomString_charcount+=1
 if %_GetRandomString_charcount% leq %_GetRandomString_charlimit% GoTo :GetRandomString-loop
