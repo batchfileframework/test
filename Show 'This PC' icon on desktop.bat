@@ -26,7 +26,633 @@ if not "[%verbose%]"=="[]" echo Verbose level : %verbose%
 if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
 REM call :trim-DEMO
+echo.
+echo increasing number of percent signs, set without quotes, echo without quotes
+echo.
 
+set testvar=%
+set testvar
+echo 1 %testvar%
+
+set testvar=%%
+set testvar
+echo 2 %testvar%
+
+set testvar=%%%
+set testvar
+echo 3 %testvar%
+
+set testvar=%%%%
+set testvar
+echo 4 %testvar%
+
+set testvar=%%%%%
+set testvar
+echo 5 %testvar%
+
+set testvar=%%%%%%
+set testvar
+echo 6 %testvar%
+
+set testvar=%%%%%%%
+set testvar
+echo 7 %testvar%
+
+set testvar=%%%%%%%%
+set testvar
+echo 8 %testvar%
+
+echo observations : single percentsigns are discarded, double percentsigns are reduced to one
+echo three percentsigns, two of them get reduced to one and the extra is discarded
+echo four percentsigns gets reduced to two and so on
+
+echo.
+echo increasing number of percent signs, set with quote, echo without quote
+echo.
+
+set "testvar=%"
+set testvar
+echo 1 %testvar%
+
+set "testvar=%%"
+set testvar
+echo 2 %testvar%
+
+set "testvar=%%%"
+set testvar
+echo 3 %testvar%
+
+set "testvar=%%%%"
+set testvar
+echo 4 %testvar%
+
+set "testvar=%%%%%"
+set testvar
+echo 5 %testvar%
+
+set "testvar=%%%%%%"
+set testvar
+echo 6 %testvar%
+
+set "testvar=%%%%%%%"
+set testvar
+echo 7 %testvar%
+
+set "testvar=%%%%%%%%"
+set testvar
+echo 8 %testvar%
+
+echo observation, putting set variable in quotes had no effect on percentsigns parsing
+
+echo.
+echo increasing number of percent signs, set without quotes, echo with quotes
+echo.
+
+set testvar=%
+set testvar
+echo 1 "%testvar%"
+
+set testvar=%%
+set testvar
+echo 2 "%testvar%"
+
+set testvar=%%%
+set testvar
+echo 3 "%testvar%"
+
+set testvar=%%%%
+set testvar
+echo 4 "%testvar%"
+
+set testvar=%%%%%
+set testvar
+echo 5 "%testvar%"
+
+set testvar=%%%%%%
+set testvar
+echo 6 "%testvar%"
+
+set testvar=%%%%%%%
+set testvar
+echo 7 "%testvar%"
+
+set testvar=%%%%%%%%
+set testvar
+echo 8 "%testvar%"
+
+echo observation, putting echo variable in double quotes had no effect on percentsigns parsing
+
+echo.
+echo increasing number of percent signs, set with quote, echo with quote
+echo.
+
+set "testvar=%"
+set testvar
+echo 1 "%testvar%"
+
+set "testvar=%%"
+set testvar
+echo 2 "%testvar%"
+
+set "testvar=%%%"
+set testvar
+echo 3 "%testvar%"
+
+set "testvar=%%%%"
+set testvar
+echo 4 "%testvar%"
+
+set "testvar=%%%%%"
+set testvar
+echo 5 "%testvar%"
+
+set "testvar=%%%%%%"
+set testvar
+echo 6 "%testvar%"
+
+set "testvar=%%%%%%%"
+set testvar
+echo 7 "%testvar%"
+
+set "testvar=%%%%%%%%"
+set testvar
+echo 8 "%testvar%"
+
+echo observation, again doublequotes have had no effect on percent sign parsing
+
+echo.
+echo increasing number of percent signs, set without quotes, echo without quotes
+echo added letter A or B alternating before and after every percentsign
+echo.
+
+set testvar=A%B
+set testvar
+echo 1 %testvar%
+
+set testvar=A%B%A
+set testvar
+echo 2 %testvar%
+
+set testvar=A%B%A%B
+set testvar
+echo 3 %testvar%
+
+set testvar=A%B%A%B%A
+set testvar
+echo 4 %testvar%
+
+set testvar=A%B%A%B%A%A
+set testvar
+echo 5 %testvar%
+
+set testvar=A%B%A%B%A%B%A
+set testvar
+echo 6 %testvar%
+
+set testvar=A%B%A%B%A%B%A%B
+set testvar
+echo 7 %testvar%
+
+set testvar=A%B%A%B%A%B%A%B%A
+set testvar
+echo 8 %testvar%
+
+echo observation, all characters enclosed between sets of percentsigns are expanded into variable
+echo in this case, empty variables
+echo.
+echo increasing number of percent signs, set with quotes, echo without quotes
+echo added letter A or B alternating before and after every percentsign
+echo.
+
+set "testvar=A%B"
+set testvar
+echo 1 %testvar%
+
+set "testvar=A%B%A"
+set testvar
+echo 2 %testvar%
+
+set "testvar=A%B%A%B"
+set testvar
+echo 3 %testvar%
+
+set "testvar=A%B%A%B%A"
+set testvar
+echo 4 %testvar%
+
+set "testvar=A%B%A%B%A%A"
+set testvar
+echo 5 %testvar%
+
+set "testvar=A%B%A%B%A%B%A"
+set testvar
+echo 6 %testvar%
+
+set "testvar=A%B%A%B%A%B%A%B"
+set testvar
+echo 7 %testvar%
+
+set "testvar=A%B%A%B%A%B%A%B%A"
+set testvar
+echo 8 %testvar%
+
+echo observation, set with quotes had no effect of percentsign parsing
+echo.
+echo increasing number of percent signs, set without quotes, echo with quotes
+echo added letter A or B alternating before and after every percentsign
+echo.
+
+set testvar=A%B
+set testvar
+echo 1 "%testvar%"
+
+set testvar=A%B%A
+set testvar
+echo 2 "%testvar%"
+
+set testvar=A%B%A%B
+set testvar
+echo 3 "%testvar%"
+
+set testvar=A%B%A%B%A
+set testvar
+echo 4 "%testvar%"
+
+set testvar=A%B%A%B%A%A
+set testvar
+echo 5 "%testvar%"
+
+set testvar=A%B%A%B%A%B%A
+set testvar
+echo 6 "%testvar%"
+
+set testvar=A%B%A%B%A%B%A%B
+set testvar
+echo 7 "%testvar%"
+
+set testvar=A%B%A%B%A%B%A%B%A
+set testvar
+echo 8 "%testvar%"
+
+echo observation, echo with quotes had no effect of percentsign parsing
+
+echo.
+echo increasing number of percent signs, set with quotes, echo with quotes
+echo added letter A or B alternating before and after every percentsign
+echo.
+
+set "testvar=A%B"
+set testvar
+echo 1 "%testvar%"
+
+set "testvar=A%B%A"
+set testvar
+echo 2 "%testvar%"
+
+set "testvar=A%B%A%B"
+set testvar
+echo 3 "%testvar%"
+
+set "testvar=A%B%A%B%A"
+set testvar
+echo 4 "%testvar%"
+
+set "testvar=A%B%A%B%A%A"
+set testvar
+echo 5 "%testvar%"
+
+set "testvar=A%B%A%B%A%B%A"
+set testvar
+echo 6 "%testvar%"
+
+set "testvar=A%B%A%B%A%B%A%B"
+set testvar
+echo 7 "%testvar%"
+
+set "testvar=A%B%A%B%A%B%A%B%A"
+set testvar
+echo 8 "%testvar%"
+
+echo observation, set and set with quotes had no effect of percentsign parsing
+
+echo.
+echo increasing number of percent signs, set without quotes, echo without quotes
+echo added letter AAA or BBB alternating before and after every percentsign
+echo.
+
+set testvar=AAA%BBB
+set testvar
+echo 1 %testvar%
+
+set testvar=AAA%BBB%AAA
+set testvar
+echo 2 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB
+set testvar
+echo 3 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 4 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA%AAA
+set testvar
+echo 5 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 6 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA%BBB
+set testvar
+echo 7 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 8 %testvar%
+
+observation no change in pattern from single characters to triple characters
+
+echo.
+echo increasing number of percent signs, set with quotes, echo without quotes
+echo added letter AAA or BBB alternating before and after every percentsign
+echo.
+
+set "testvar=AAA%BBB"
+set testvar
+echo 1 %testvar%
+
+set "testvar=AAA%BBB%AAA"
+set testvar
+echo 2 %testvar%
+
+set "testvar=AAA%BBB%AAA%BBB"
+set testvar
+echo 3 %testvar%
+
+set "testvar=AAA%BBB%AAA%BBB%AAA"
+set testvar
+echo 4 %testvar%
+
+set "testvar=AAA%BBB%AAA%BBB%AAA%AAA"
+set testvar
+echo 5 %testvar%
+
+set "testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA"
+set testvar
+echo 6 %testvar%
+
+set "testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA%BBB"
+set testvar
+echo 7 %testvar%
+
+set "testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA%BBB%AAA"
+set testvar
+echo 8 %testvar%
+
+observation no change in pattern from single characters to triple characters
+
+echo.
+echo increasing number of percent signs, set without quotes, echo with quotes
+echo added letter AAA or BBB alternating before and after every percentsign
+echo.
+
+set testvar=AAA%BBB
+set testvar
+echo 1 "%testvar%"
+
+set testvar=AAA%BBB%AAA
+set testvar
+echo 2 "%testvar%"
+
+set testvar=AAA%BBB%AAA%BBB
+set testvar
+echo 3 "%testvar%"
+
+set testvar=AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 4 "%testvar%"
+
+set testvar=AAA%BBB%AAA%BBB%AAA%AAA
+set testvar
+echo 5 "%testvar%"
+
+set testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 6 "%testvar%"
+
+set testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA%BBB
+set testvar
+echo 7 "%testvar%"
+
+set testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 8 "%testvar%"
+
+observation no change in pattern from single characters to triple characters
+
+echo.
+echo increasing number of percent signs, set with quotes, echo with quotes
+echo added letter AAA or BBB alternating before and after every percentsign
+echo.
+
+set "testvar=AAA%BBB"
+set testvar
+echo 1 "%testvar%"
+
+set "testvar=AAA%BBB%AAA"
+set testvar
+echo 2 "%testvar%"
+
+set "testvar=AAA%BBB%AAA%BBB"
+set testvar
+echo 3 "%testvar%"
+
+set "testvar=AAA%BBB%AAA%BBB%AAA"
+set testvar
+echo 4 "%testvar%"
+
+set "testvar=AAA%BBB%AAA%BBB%AAA%AAA"
+set testvar
+echo 5 "%testvar%"
+
+set "testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA"
+set testvar
+echo 6 "%testvar%"
+
+set "testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA%BBB"
+set testvar
+echo 7 "%testvar%"
+
+set "testvar=AAA%BBB%AAA%BBB%AAA%BBB%AAA%BBB%AAA"
+set testvar
+echo 8 "%testvar%"
+
+observation no change in pattern from single characters to triple characters
+
+echo.
+echo increasing number of percent signs
+echo added letter AAA or BBB alternating before and after every percentsign
+echo This one will have 8 percent signs with various locations to include doublequotes
+echo.
+
+
+set testvar=A"AA%BBB%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 1 %testvar%
+
+set testvar=AAA%B"BB%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 2 %testvar%
+
+set testvar=AAA%BBB%AA"A%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 3 %testvar%
+
+set testvar=AAA%B"BB%AA"A%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 4 %testvar%
+
+set testvar=A"AA%B"BB%AA"A%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 5 %testvar%
+
+set testvar=AAA"%"BBB%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 6 %testvar%
+
+set testvar=A"A"A%BBB%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 7 %testvar%
+
+set testvar=AAA%B"B"B%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 8 %testvar%
+
+set testvar=AAA%BBB%AAA%"BBB"%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 9 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA%"B"B"B"%AAA%BBB%AAA
+set testvar
+echo 1 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA%BBB%AA"A%BBB%AAA
+set testvar
+echo 2 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA%"B"B"B%AA"A%BBB%AAA
+set testvar
+echo 3 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA%BBB%"A"A"A%BBB%AAA
+set testvar
+echo 4 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA%BBB%A"A"A"%BBB%AAA
+set testvar
+echo 5 %testvar%
+
+set testvar=AAA%BBB%AAA%BBB%AAA%BBB%"A"A"A"%BBB%AAA
+set testvar
+echo 6 %testvar%
+
+
+echo observation, no matter where the quotes are places, appears to have no impact on the percentsign parsing
+
+echo.
+echo same pattern as previous, this time with added carrets ^^ for escaping percent signs
+echo Doublequotes are left in, expected to have no effects on percent sign parsing
+echo.
+
+
+set testvar=A"AA^%BBB^%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 1 %testvar%
+
+set testvar=AAA%B"BB%^A^A^A%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 2 %testvar%
+
+set testvar=AAA^%BBB%AA"A%BBB%AAA%BBB%AAA%BBB%AAA
+set testvar
+echo 3 %testvar%
+
+set testvar=AAA^%BBB%AA"A%BBB%AA^A%BBB%AAA%BBB%AAA
+set testvar
+echo 3 %testvar%
+
+set testvar=AAA^%BBB^^%AA"A%BBB%AA^A%BBB%AAA%BBB%AAA
+set testvar
+echo 3 %testvar%
+
+set testvar=AAA^^%BBB^^%AA"A%BBB%AA^A%BBB%AAA%BBB%AAA
+set testvar
+echo 3 %testvar%
+
+set testvar=AAA^^%BBB^^%AA"A%BBB%AA^A%BBB%AAA%BBB%AAA
+set testvar
+echo 3 "%testvar%"
+
+set "testvar=^AAA^^%BBB^^%AA"A%BBB%AA^A%BBB%A^^AA%BBB%A^^^AA"
+set testvar
+echo 3 "%testvar%"
+
+echo observation, carrets appear to have no effect on  percentsign parsing
+echo unquoted carrets are parsed and removed at both the set and the echo step unless they are inside of quotes
+
+
+REM set testvar=AAA%B"BB%AA"A%BBB%AAA%BBB%AAA%BBB%AAA
+REM set testvar
+REM echo 4 %testvar%
+
+REM set testvar=A"AA%B"BB%AA"A%BBB%AAA%BBB%AAA%BBB%AAA
+REM set testvar
+REM echo 5 %testvar%
+
+REM set testvar=AAA"%"BBB%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+REM set testvar
+REM echo 6 %testvar%
+
+REM set testvar=A"A"A%BBB%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+REM set testvar
+REM echo 7 %testvar%
+
+REM set testvar=AAA%B"B"B%AAA%BBB%AAA%BBB%AAA%BBB%AAA
+REM set testvar
+REM echo 8 %testvar%
+
+REM set testvar=AAA%BBB%AAA%"BBB"%AAA%BBB%AAA%BBB%AAA
+REM set testvar
+REM echo 9 %testvar%
+
+REM set testvar=AAA%BBB%AAA%BBB%AAA%"B"B"B"%AAA%BBB%AAA
+REM set testvar
+REM echo 1 %testvar%
+
+REM set testvar=AAA%BBB%AAA%BBB%AAA%BBB%AA"A%BBB%AAA
+REM set testvar
+REM echo 2 %testvar%
+
+REM set testvar=AAA%BBB%AAA%BBB%AAA%"B"B"B%AA"A%BBB%AAA
+REM set testvar
+REM echo 3 %testvar%
+
+REM set testvar=AAA%BBB%AAA%BBB%AAA%BBB%"A"A"A%BBB%AAA
+REM set testvar
+REM echo 4 %testvar%
+
+REM set testvar=AAA%BBB%AAA%BBB%AAA%BBB%A"A"A"%BBB%AAA
+REM set testvar
+REM echo 5 %testvar%
+
+REM set testvar=AAA%BBB%AAA%BBB%AAA%BBB%"A"A"A"%BBB%AAA
+REM set testvar
+REM echo 6 %testvar%
+goto :end
+
+echo observation,
 
 call :ListUnescapedSpecialCharactersInString-DEMO
 REM call :PrintCharMap-DEMO
