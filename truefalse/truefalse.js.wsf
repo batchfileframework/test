@@ -1,0 +1,30 @@
+<job>
+<script language="JScript">
+<![CDATA[
+    var WshShell = WScript.CreateObject("WScript.Shell");
+
+    // Print "Hello, World!"
+    WScript.Echo("Hello, World!");
+
+    // Get the command line arguments
+    var args = WScript.Arguments;
+
+    // Check if a command line argument was provided
+    if (args.length > 0) {
+        // Get the first command line argument
+        var arg = args.Item(0).toLowerCase();
+
+        // Check if the argument is "true" or "false"
+        if (arg === "true") {
+            WScript.Echo("The argument was true.");
+        } else if (arg === "false") {
+            WScript.Echo("The argument was false.");
+        } else {
+            WScript.Echo("The argument was not a recognizable boolean value.");
+        }
+    } else {
+        WScript.Echo("No argument was provided.");
+    }
+]]>
+</script>
+</job>

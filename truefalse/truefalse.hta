@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>HTA Script</TITLE>
+<HTA:APPLICATION ID="HTAApp"
+    APPLICATIONNAME="HTAScript"
+    SCROLL="yes"
+    SINGLEINSTANCE="yes"/>
+<SCRIPT Language="VBScript">
+Sub Window_OnLoad
+    Dim WshShell, cmdArgs, arg
+    
+    ' Create WScript Shell object
+    Set WshShell = CreateObject("WScript.Shell")
+    Set cmdArgs = WScript.Arguments
+
+    ' Print Hello World!
+    MsgBox "Hello, World!"
+
+    ' Check if a command line argument was provided
+    If cmdArgs.Count > 0 Then
+        ' Get the first command line argument
+        arg = LCase(cmdArgs.Item(0))
+
+        ' Check if the argument is "true" or "false"
+        If arg = "true" Then
+            MsgBox "The argument was true."
+        ElseIf arg = "false" Then
+            MsgBox "The argument was false."
+        Else
+            MsgBox "The argument was not a recognizable boolean value."
+        End If
+    Else
+        MsgBox "No argument was provided."
+    End If
+
+    ' Clean up
+    Set WshShell = Nothing
+End Sub
+</SCRIPT>
+</HEAD>
+<BODY>
+</BODY>
+</HTML>

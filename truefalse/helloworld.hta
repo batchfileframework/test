@@ -1,0 +1,19 @@
+<HTML>
+<HEAD>
+<TITLE>HTA Script</TITLE>
+<HTA:APPLICATION ID="HTAApp"
+    APPLICATIONNAME="HTAScript"
+    SCROLL="yes"
+    SINGLEINSTANCE="yes"/>
+<SCRIPT Language="VBScript">
+Sub Window_OnLoad
+    Dim currentTime
+    currentTime = Time()
+    document.getElementById("display").innerHTML = "Hello, World! The current time is " & currentTime
+End Sub
+</SCRIPT>
+</HEAD>
+<BODY>
+    <div id="display"></div>
+</BODY>
+</HTML>

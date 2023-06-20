@@ -1,0 +1,22 @@
+#import <Foundation/Foundation.h>
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        NSLog(@"Hello, world!");
+
+        if (argc > 1) {
+            NSString *arg = [NSString stringWithUTF8String:argv[1]].lowercaseString;
+
+            if ([arg isEqualToString:@"true"]) {
+                NSLog(@"The argument was true.");
+            } else if ([arg isEqualToString:@"false"]) {
+                NSLog(@"The argument was false.");
+            } else {
+                NSLog(@"The argument was not a recognizable boolean value.");
+            }
+        } else {
+            NSLog(@"No argument was provided.");
+        }
+    }
+    return 0;
+}
