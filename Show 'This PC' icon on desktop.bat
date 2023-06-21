@@ -27,9 +27,10 @@ if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
 REM call :trim-DEMO
 
-
-
-call :ArrayToFile-DEMO
+call :AddEscapeCharacters-DEMO
+REM call :runps-DEMO
+REM call :CharArray2String-DEMO
+REM call :ArrayToFile-DEMO
 REM call :EchoFile-DEMO
 REM call :ListUnescapedSpecialCharactersInString-DEMO
 REM call :PrintCharMap-DEMO
@@ -42,6 +43,1380 @@ REM call :GetCharMap-DEMO
 REM Call :SetNonEmptyValueOnlyIfNotDefined-DEMO
 REM Call :EchoArray-DEMO
 GoTo :END
+
+
+:AddEscapeCharacters-DEMO
+
+echo.
+set "_mystring=abcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a%%bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a^bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a<bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a>bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a|bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a&bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a<>bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a||bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a&&bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=ab"c^^d"ef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+set _outstring
+echo %_outstring%
+
+
+echo cleaner output
+
+echo.
+set "_mystring=abcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a%%bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a^bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a<bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a>bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a|bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a&bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a<>bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a||bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=a&&bcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+set " _mystring=" & set "_outstring=" & echo.
+set "_mystring=ab"c^^d"ef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+GoTo :EOF
+
+
+:ListUnescapedSpecialCharactersInString-DEMO
+
+REM goto :ListUnescapedSpecialCharactersInString-DEMO-1
+REM goto :ListUnescapedSpecialCharactersInString-DEMO-2
+goto :ListUnescapedSpecialCharactersInString-DEMO-3
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=ab%%cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abc%%def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=abcd"ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abcde"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=abcd&ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abc^&def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=ab<cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=a^<bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=ab>cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abc^>def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set "_mystring=abcd|ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+set _mystring=abcde^|f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring
+
+echo.
+echo Same as previous, but with added escape characters as needed so satify "properly escaped"  status
+
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=ab%%%%cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=abc%%%%def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=abcd^"ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=abcde^^"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=abcd^&ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=abc^^^&def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=ab^<cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=a^^^<bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=ab^>cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=abc^^^>def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set "_mystring=abcd^|ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+echo.
+set _mystring=abcde^^^|f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring 
+
+
+:ListUnescapedSpecialCharactersInString-DEMO-1
+
+echo.
+echo Output in array form of all unescaped special character
+
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab%%cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc%%def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd"ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd&ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^&def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab<cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=a^<bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab>cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^>def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd|ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde^|f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+
+:ListUnescapedSpecialCharactersInString-DEMO-2
+
+
+
+echo.
+echo Same as previous, but with added escape characters as needed so satify "properly escaped"  status
+
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab%%%%cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc%%%%def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^"ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde^^"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^&ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^^^&def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab^<cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=a^^^<bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab^>cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^^^>def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^|ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde^^^|f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+
+echo.
+echo Same as previous, but with one escape carret too many on each line, excess adjacent escape characters like carret, percentsigns (and doublequotes) need more attention
+
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a%bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab%%%%%cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc%%%%%def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^^"ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abcde^^^"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^^&ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+rem broken 'def' is not recognized as an internal or external command,
+echo.
+set _mystring=abc^^^^&def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab^^<cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+rem broken The system cannot find the file specified. ??  <bcdef
+echo.
+set _mystring=a^^^^<bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab^^>cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+REM broken
+echo.
+set _mystring=abc^^^^>def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abcd^^|ef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+
+:ListUnescapedSpecialCharactersInString-DEMO-3
+
+echo.
+set "_mystring=abcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a^bcdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=abc^def"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a^b"cde"f"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab"c^de"f"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=a^b"cdef"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set "_mystring=ab"c^def"
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+
+echo same thing but set without enclosing double quotes
+
+echo.
+set _mystring=abcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=a^bcdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=abc^def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=a^b"cde"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=ab"c^de"f
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=a^b"cdef
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo.
+set _mystring=ab"c^def
+set _mystring
+Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar
+Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+
+REM This breaks the script on first set line
+REM echo.
+REM set _mystring=abcde^^^^|f
+REM set _mystring
+REM Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
+REM Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
+REM Call :ClearVariablesByPrefix IndexOfSpecialChar
+
+echo demo finished
+
+REM set "_mystring=abc^"def%%ghi^&k^<l^>m^^n|"
+REM Call :InsertEscapeCharacters _mystring
+
+goto :eof
+
+
+
+:runps-DEMO
+
+set "ps_argument_1="
+
+set pscommand[0]=Write-Host "Result is 1"
+set pscommand[1]=Write-Host ^"Result is 2^"
+set pscommand[2]=Write-Host ^"Result is 3^";
+set pscommand[3]=Write-Host ^"Result is first^"; Write-Host ^"Result is second^";
+set pscommand[4]=if ($true) { Write-Host "Result is True"; } else { Write-Host "Result is False"; }
+set pscommand[5]=if ($false) { Write-Host "Result is True"; } else { Write-Host "Result is False"; }
+
+set pscommand[6]=if ($true)^
+{^
+Write-Host "Result is True"; ^
+} else {^
+Write-Host "Result is False"; ^
+}
+
+set pscommand[7]=if ($false)^
+{^
+Write-Host ^"Result is True^"; ^
+} else {^
+Write-Host ^"Result is False^"; ^
+}
+
+set pscommand[8]=if ($true)^
+{^
+Write-Host ^"Result is True^"; ^
+} else {^
+Write-Host ^"Result is False^"; ^
+}
+
+set pscommand[9]=if ($%ps_argument_1%)^
+{^
+Write-Host ^"Result is True^"; ^
+} else {^
+Write-Host ^"Result is False^"; ^
+}
+
+
+set pscommand[10]=if ($true)^
+{^
+Write-Host "Result is True"; ^
+} else {^
+Write-Host "Result is False"; ^
+}
+
+set pscommand[11]=if ($false)^
+{^
+Write-Host "Result is True"; ^
+} else {^
+Write-Host "Result is False"; ^
+}
+
+set pscommand[12]=if ($%ps_argument_1%)^
+{^
+Write-Host "Result is True"; ^
+} else {^
+Write-Host "Result is False"; ^
+}
+
+
+REM goto :runps-DEMO-skip
+
+echo running pscommand
+echo simple command, no string escaping
+set pscommand[0]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[0]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[0]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[0]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[0]!"
+endlocal 
+echo.
+
+echo running pscommand 
+echo simple command, string escaping escaped
+set pscommand[1]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[1]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[1]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[1]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[1]!"
+endlocal 
+echo.
+
+echo running pscommand 
+echo simple command, no string escaping plus terminator ";"
+set pscommand[2]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[2]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[2]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[2]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[2]!"
+endlocal 
+echo.
+
+echo running pscommand 
+echo two simple command, string escaping escaped, separated by terminators ";"
+set pscommand[3]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[3]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[3]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[3]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[3]!"
+endlocal 
+echo.
+
+echo running pscommand 
+echo simple decision, strings not escaped, value is true
+set pscommand[4]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[4]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[4]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[4]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[4]!"
+endlocal 
+echo.
+
+echo running pscommand 
+echo simple decision, strings not escaped, value is false
+set pscommand[5]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[5]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[5]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[5]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[5]!"
+endlocal 
+echo.
+
+echo running pscommand 
+echo simple decision, value is true, quotes not escaped, written in multiline format
+set pscommand[6]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[6]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[6]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[6]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[6]!"
+endlocal 
+echo.
+
+echo running pscommand 
+echo simple decision, value is false, quotes escaped, written in multiline format
+set pscommand[7]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[7]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[7]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[7]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[7]!"
+endlocal 
+echo.
+
+echo running pscommand 
+echo simple decision, value is false, quotes escaped, written in multiline format
+set pscommand[8]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[8]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[8]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[8]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[8]!"
+endlocal 
+echo.
+
+set "ps_argument_1=true"
+echo running pscommand with ps_argument_1 = %ps_argument_1%
+echo simple decision, value is determined by variable ps_argument_1
+echo quotes escaped, written in multiline format
+echo this will not work because pscommand[9] was created with empty ps_argument_1
+set pscommand[9]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[9]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[9]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[9]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[9]!"
+endlocal 
+echo.
+
+set "ps_argument_1=false"
+echo running pscommand with ps_argument_1 = %ps_argument_1%
+echo simple decision, value is determined by variable ps_argument_1
+echo quotes escaped, written in multiline format
+echo this will not work because pscommand[9] was created with empty ps_argument_1
+set pscommand[9]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[9]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[9]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[9]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[9]!"
+endlocal 
+echo.
+
+echo running pscommand 
+echo simple decision, value is true, quotes not escaped, written in multiline format
+set pscommand[10]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[10]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[10]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[10]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[10]!"
+endlocal 
+echo.
+
+echo running pscommand 
+echo simple decision, value is true, quotes not escaped, written in multiline format
+set pscommand[11]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[11]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[11]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[11]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[11]!"
+endlocal 
+echo.
+
+set "ps_argument_1=true"
+echo running pscommand with ps_argument_1 = %ps_argument_1%
+echo simple decision, value is determined by variable ps_argument_1
+echo quotes not escaped, written in multiline format
+echo this will not work because pscommand[12] was created with empty ps_argument_1
+set pscommand[12]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[12]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[12]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[12]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[12]!"
+endlocal 
+echo.
+
+set "ps_argument_1=false"
+echo running pscommand with ps_argument_1 = %ps_argument_1%
+echo this will not work because pscommand[12] was created with empty ps_argument_1
+set pscommand[12]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[12]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[12]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[12]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[12]!"
+endlocal 
+echo.
+
+
+set "ps_argument_1=true"
+set pscommand[9]=if ($%ps_argument_1%)^
+{^
+Write-Host ^"Result is True^"; ^
+} else {^
+Write-Host ^"Result is False^"; ^
+}
+echo running pscommand with ps_argument_1 = %ps_argument_1%
+echo simple decision, value is determined by variable ps_argument_1
+echo quotes escaped, written in multiline format
+echo this time, pscommand set with internal variable pre-set
+set pscommand[9]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[9]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[9]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[9]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[9]!"
+endlocal 
+echo.
+
+
+set "ps_argument_1=false"
+set pscommand[9]=if ($%ps_argument_1%)^
+{^
+Write-Host ^"Result is True^"; ^
+} else {^
+Write-Host ^"Result is False^"; ^
+}
+echo running pscommand with ps_argument_1 = %ps_argument_1%
+echo simple decision, value is determined by variable ps_argument_1
+echo quotes escaped, written in multiline format
+echo this time, pscommand set with internal variable pre-set
+set pscommand[9]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[9]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[9]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[9]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[9]!"
+endlocal 
+echo.
+
+
+
+set "ps_argument_1=true"
+set pscommand[12]=if ($%ps_argument_1%)^
+{^
+Write-Host "Result is True"; ^
+} else {^
+Write-Host "Result is False"; ^
+}
+echo running pscommand with ps_argument_1 = %ps_argument_1%
+echo simple decision, value is determined by variable ps_argument_1
+echo quotes not escaped, written in multiline format
+set pscommand[12]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[12]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[12]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[12]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[12]!"
+endlocal 
+echo.
+
+set "ps_argument_1=false"
+set pscommand[12]=if ($%ps_argument_1%)^
+{^
+Write-Host "Result is True"; ^
+} else {^
+Write-Host "Result is False"; ^
+}
+echo running pscommand with ps_argument_1 = %ps_argument_1%
+set pscommand[12]
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[12]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[12]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[12]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[12]!"
+endlocal 
+echo.
+
+:runps-DEMO-skip
+
+
+REM set pscommand[14]=Add-Type -TypeDefinition @"^
+REM using System;^
+REM public class LogicCheck^
+REM {^
+    REM public static void Check(bool condition)^
+    REM {^
+        REM if (condition)^
+        REM {^
+            REM Console.WriteLine("Result is True");^
+        REM }^
+        REM else^
+        REM {^
+            REM Console.WriteLine("Result is False");^
+        REM }^
+    REM }^
+REM }^"@^
+REM [LogicCheck]::Check($false)
+
+REM set pscommand[14]=Add-Type -TypeDefinition @" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } "@ [LogicCheck]::Check($false)
+
+REM set pscommand[14]
+REM echo running command to hide cursor
+REM echo.
+REM echo on
+
+echo.
+echo 1
+powershell -command Add-Type -TypeDefinition @" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } "@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition @" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } "@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition @" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } "@ [LogicCheck]::Check($false)
+echo 2
+powershell -command Add-Type -TypeDefinition @' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } '@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition @' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } '@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition @' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } '@ [LogicCheck]::Check($false)
+echo 3
+powershell -command Add-Type -TypeDefinition @\" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } \"@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition @\" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } \"@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition @\" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } \"@ [LogicCheck]::Check($false)
+echo 4
+powershell -command Add-Type -TypeDefinition @"using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } }"@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition @"using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } }"@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition @"using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } }"@ [LogicCheck]::Check($false)
+echo 5
+powershell -command 'Add-Type -TypeDefinition @" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } "@ [LogicCheck]::Check($false)'
+powershell -command 'Add-Type -TypeDefinition @" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } "@ [LogicCheck]::Check($false)'
+powershell -command 'Add-Type -TypeDefinition @" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } "@ [LogicCheck]::Check($false)'
+echo 6
+powershell -command Add-Type -TypeDefinition @^" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } ^"@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition @^" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } ^"@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition @^" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } ^"@ [LogicCheck]::Check($false)
+echo 7
+powershell -command Add-Type -TypeDefinition ^@^" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } ^"^@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition ^@^" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } ^"^@ [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition ^@^" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } ^"^@ [LogicCheck]::Check($false)
+echo 8
+powershell -command " Add-Type -TypeDefinition @" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } "@ [LogicCheck]::Check($false) "
+powershell -command " Add-Type -TypeDefinition @" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } "@ [LogicCheck]::Check($false) "
+powershell -command " Add-Type -TypeDefinition @" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } "@ [LogicCheck]::Check($false) "
+echo 9
+powershell -command Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } [LogicCheck]::Check($false)
+echo 10
+powershell -command " Add-Type -TypeDefinition @' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } '@ [LogicCheck]::Check($false) "
+powershell -command " Add-Type -TypeDefinition @' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } '@ [LogicCheck]::Check($false) "
+powershell -command " Add-Type -TypeDefinition @' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } '@ [LogicCheck]::Check($false) "
+echo 11
+powershell -command "Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } [LogicCheck]::Check($false)"
+powershell -command "Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } [LogicCheck]::Check($false)"
+powershell -command "Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } [LogicCheck]::Check($false)"
+echo 12
+powershell -command 'Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } [LogicCheck]::Check($false)'
+powershell -command 'Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } [LogicCheck]::Check($false)'
+powershell -command 'Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } [LogicCheck]::Check($false)'
+echo 13
+powershell -command Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } [LogicCheck]::Check($false)
+echo 14
+powershell -command Add-Type -TypeDefinition ' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } ' [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition ' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } ' [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition ' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } ' [LogicCheck]::Check($false)
+echo 15
+powershell -command Add-Type -TypeDefinition " using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } " [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition " using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } " [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition " using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } " [LogicCheck]::Check($false)
+echo 16
+powershell -command Add-Type -TypeDefinition \" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } \" [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition \" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } \" [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition \" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } \" [LogicCheck]::Check($false)
+echo 17
+powershell -command Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } [LogicCheck]::Check($false)
+powershell -command Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } [LogicCheck]::Check($false)
+echo 18
+powershell -command Add-Type -TypeDefinition ' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } [LogicCheck]::Check($false)'
+powershell -command Add-Type -TypeDefinition ' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } [LogicCheck]::Check($false)'
+powershell -command Add-Type -TypeDefinition ' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } [LogicCheck]::Check($false)'
+echo 19
+powershell -command Add-Type -TypeDefinition " using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } [LogicCheck]::Check($false)"
+powershell -command Add-Type -TypeDefinition " using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } [LogicCheck]::Check($false)"
+powershell -command Add-Type -TypeDefinition " using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } [LogicCheck]::Check($false)"
+echo 20
+powershell -command Add-Type -TypeDefinition \" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } [LogicCheck]::Check($false) \"
+powershell -command Add-Type -TypeDefinition \" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } [LogicCheck]::Check($false) \"
+powershell -command Add-Type -TypeDefinition \" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } [LogicCheck]::Check($false) \"
+echo 21
+powershell -command " Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } [LogicCheck]::Check($false)"
+powershell -command " Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } [LogicCheck]::Check($false)"
+powershell -command " Add-Type -TypeDefinition using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } [LogicCheck]::Check($false)"
+echo 22
+powershell -command " Add-Type -TypeDefinition ' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } ' [LogicCheck]::Check($false)"
+powershell -command " Add-Type -TypeDefinition ' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } ' [LogicCheck]::Check($false)"
+powershell -command " Add-Type -TypeDefinition ' using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } ' [LogicCheck]::Check($false)"
+echo 23
+powershell -command " Add-Type -TypeDefinition "" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } "" [LogicCheck]::Check($false)"
+powershell -command " Add-Type -TypeDefinition "" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } "" [LogicCheck]::Check($false)"
+powershell -command " Add-Type -TypeDefinition "" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } "" [LogicCheck]::Check($false)"
+echo 24
+powershell -command " Add-Type -TypeDefinition \" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True"); } else { Console.WriteLine("Result is False"); } } } \" [LogicCheck]::Check($false) "
+powershell -command " Add-Type -TypeDefinition \" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(\"Result is True\"); } else { Console.WriteLine(\"Result is False\"); } } } \" [LogicCheck]::Check($false) "
+powershell -command " Add-Type -TypeDefinition \" using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine(^"Result is True^"); } else { Console.WriteLine(^"Result is False^"); } } } \" [LogicCheck]::Check($false) "
+
+REM echo no delayed expansion, without quotes
+REM powershell -command %pscommand[14]%
+
+REM echo.
+REM echo no delayed expansion, in quotes
+REM powershell -command "%pscommand[14]%"
+
+REM setlocal enableDelayedExpansion
+REM echo delayed expansion, without quotes
+REM powershell -command !pscommand[14]!
+
+REM echo delayed expansion, in quotes
+REM powershell -command "!pscommand[14]!"
+
+REM endlocal 
+REM echo.
+
+REM powershell -command Add-Type -TypeDefinition "using System; public class LogicCheck { public static void Check(bool condition) { if (condition) { Console.WriteLine("Result is True");        } else { Console.WriteLine("Result is False"); } } }" [LogicCheck]::Check($false)
+
+
+goto :eof
+
+
+set pscommand[13]=Add-Type -TypeDefinition @^"^
+using System;^
+using System.Runtime.InteropServices;^
+public class ConsoleUtils {^
+    private const int STD_OUTPUT_HANDLE = -11;^
+    [StructLayout(LayoutKind.Sequential)]^
+    public struct COORD {^
+        public short X;^
+        public short Y;^
+    };^
+    [StructLayout(LayoutKind.Sequential)]^
+    public struct CONSOLE_CURSOR_INFO {^
+        public uint Size;^
+        public bool Visible;^
+    };^
+    [DllImport(^"kernel32.dll^", SetLastError = true)]^
+    public static extern IntPtr GetStdHandle(int nStdHandle);^
+    [DllImport(^"kernel32.dll^")]^
+    public static extern bool GetConsoleCursorInfo(IntPtr hConsoleOutput, out CONSOLE_CURSOR_INFO cci);^
+    [DllImport(^"kernel32.dll^")]^
+    public static extern bool SetConsoleCursorInfo(IntPtr hConsoleOutput, ref CONSOLE_CURSOR_INFO cci);^
+    public static void HideCursor() {^
+        IntPtr consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);^
+        CONSOLE_CURSOR_INFO cci;^
+        if (GetConsoleCursorInfo(consoleHandle, out cci)) {^
+            cci.Visible = false;^
+            SetConsoleCursorInfo(consoleHandle, ref cci);^
+        }^
+    };^
+};^
+^"@ -IgnoreWarnings^
+[ConsoleUtils]::HideCursor()
+
+
+
+
+set pscommand[13]
+echo running command to hide cursor
+echo.
+REM echo on
+echo no delayed expansion, without quotes
+powershell -command %pscommand[13]%
+echo no delayed expansion, in quotes
+powershell -command "%pscommand[13]%"
+setlocal enableDelayedExpansion
+echo delayed expansion, without quotes
+powershell -command !pscommand[13]!
+echo delayed expansion, in quotes
+powershell -command "!pscommand[13]!"
+endlocal 
+echo.
+
+
+
+
+GoTo :EOF
+REM call :runps-DEMO-set-pscommand
+
+
+REM GoTo :EOF
+
+
+
+:CharArray2String-DEMO
+
+Call :ClearVariablesByPrefix testarray
+set testarray[0]=t
+set testarray[1]=e
+set testarray[2]="
+set testarray[3]=t
+set testarray[4]=5
+set testarray[5]="
+set testarray[6]=5
+set testarray[7]="
+set testarray[8]=5
+set testarray[9]=5
+set testarray
+Call :CharArray2String testarray _CharArray2String-DEMO
+
+echo %_CharArray2String-DEMO%
+
+GoTo :EOF
 
 
 :ArrayToFile-DEMO
@@ -1402,455 +2777,7 @@ REM Call :InsertEscapeCharacters _mystring
 goto :eof
 
 
-:ListUnescapedSpecialCharactersInString-DEMO
 
-REM goto :ListUnescapedSpecialCharactersInString-DEMO-1
-REM goto :ListUnescapedSpecialCharactersInString-DEMO-2
-REM goto :ListUnescapedSpecialCharactersInString-DEMO-3
-
-echo.
-set "_mystring=a%bcdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set "_mystring=ab%%cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set _mystring=abc%%def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set "_mystring=abcd"ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set _mystring=abcde"f
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set "_mystring=abcd&ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set _mystring=abc^&def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set "_mystring=ab<cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set _mystring=a^<bcdef
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set "_mystring=ab>cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set _mystring=abc^>def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set "_mystring=abcd|ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-set _mystring=abcde^|f
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring
-
-echo.
-echo Same as previous, but with added escape characters as needed so satify "properly escaped"  status
-
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=a%bcdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set "_mystring=ab%%%%cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set _mystring=abc%%%%def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set "_mystring=abcd^"ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set _mystring=abcde^^"f
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set "_mystring=abcd^&ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set _mystring=abc^^^&def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set "_mystring=ab^<cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set _mystring=a^^^<bcdef
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set "_mystring=ab^>cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set _mystring=abc^^^>def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set "_mystring=abcd^|ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-echo.
-set _mystring=abcde^^^|f
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring 
-
-
-:ListUnescapedSpecialCharactersInString-DEMO-1
-
-echo.
-echo Output in array form of all unescaped special character
-
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=a%bcdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=ab%%cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abc%%def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=abcd"ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abcde"f
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=abcd&ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abc^&def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=ab<cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=a^<bcdef
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=ab>cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abc^>def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=abcd|ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abcde^|f
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-
-:ListUnescapedSpecialCharactersInString-DEMO-2
-
-
-
-echo.
-echo Same as previous, but with added escape characters as needed so satify "properly escaped"  status
-
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=a%bcdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=ab%%%%cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abc%%%%def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=abcd^"ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abcde^^"f
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=abcd^&ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abc^^^&def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=ab^<cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=a^^^<bcdef
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=ab^>cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abc^^^>def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=abcd^|ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abcde^^^|f
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-
-echo.
-echo Same as previous, but with one escape carret too many on each line, excess adjacent escape characters like carret, percentsigns (and doublequotes) need more attention
-
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=a%bcdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=ab%%%%%cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abc%%%%%def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=abcd^^"ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set _mystring=abcde^^^"f
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=abcd^^&ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-rem broken 'def' is not recognized as an internal or external command,
-echo.
-set _mystring=abc^^^^&def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=ab^^<cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-rem broken The system cannot find the file specified. ??  <bcdef
-echo.
-set _mystring=a^^^^<bcdef
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=ab^^>cdef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-REM broken
-echo.
-set _mystring=abc^^^^>def
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo.
-set "_mystring=abcd^^|ef"
-set _mystring
-Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-
-REM This breaks the script on first set line
-REM echo.
-REM set _mystring=abcde^^^^|f
-REM set _mystring
-REM Call :ListUnescapedSpecialCharactersInString _mystring IndexOfSpecialChar SILENT
-REM Call :IsArrayDefinedBySet IndexOfSpecialChar[ && set IndexOfSpecialChar[ || echo Array IndexOfSpecialChar[x] is empty 
-REM Call :ClearVariablesByPrefix IndexOfSpecialChar
-
-echo demo finished
-
-REM set "_mystring=abc^"def%%ghi^&k^<l^>m^^n|"
-REM Call :InsertEscapeCharacters _mystring
-
-goto :eof
 
 :GetRandomString-DEMO
 
@@ -3415,7 +4342,7 @@ if %_SimpleDoubleNestedLoop.index% leq %_SimpleDoubleNestedLoop.ubound% GoTo :Si
 GoTo :EOF
 
 
-
+::Usage Call :FindArrayBounds InputArray OutputValue
 ::Usage Call :lbound InputArray OutputValue
 ::Usage Call :ubound InputArray OutputValue
 :FindArrayBounds
@@ -3484,6 +4411,13 @@ if "[%~3]"=="[Initialize]" (
 	if "[%_GetArrayParameters.ubound%]"=="[]" set /a _GetArrayParameters.ubound=-1
 	if "[%_GetArrayParameters.count%]"=="[]" set /a _GetArrayParameters.count=%_GetArrayParameters.ubound%-%_GetArrayParameters.lbound%+1  2>nul
 	if "[%_GetArrayParameters.index%]"=="[]" if "[%~4]"=="[]" set /a "_GetArrayParameters.index=0"
+) else (
+	if "[%_GetArrayParameters.lbound%]"=="[]" set "_GetArrayParameters_bounds_incomplete=true" & set "_GetArrayParameters_lbound_empty=true"
+	if "[%_GetArrayParameters.ubound%]"=="[]" set "_GetArrayParameters_bounds_incomplete=true" & set "_GetArrayParameters_ubound_empty=true"
+	if "[%_GetArrayParameters_bounds_incomplete%]"=="[true]" Call :FindArrayBounds %%%~1%% _GetArrayParameters_bounds_incomplete
+	if "[%_GetArrayParameters_lbound_empty%]"=="[true]" set "_GetArrayParameters.lbound=%_GetArrayParameters_bounds_incomplete.lbound%"
+	if "[%_GetArrayParameters_ubound_empty%]"=="[true]" set "_GetArrayParameters.ubound=%_GetArrayParameters_bounds_incomplete.ubound%"
+	if "[%_GetArrayParameters.count%]"=="[]" set /a _GetArrayParameters.count=%_GetArrayParameters.ubound%-%_GetArrayParameters.lbound%+1  2>nul
 )
 if "[%~4]" NEQ "[]" ( set /a "_GetArrayParameters.index=%~4" 2>nul )
 set _GetArrayParameters.name=%~1
@@ -4796,6 +5730,22 @@ Call :SetArrayParameters _String2CharArray_Output "" 0 %_String2CharArray_Input.
 call set %_String2CharArray_Output%[%_String2CharArray_Output%.index]=%%_String2CharArray_Input:~%_String2CharArray_Output.index%,%_String2CharArray_Step%%%
 set /a "_String2CharArray_Output.index+=%_String2CharArray_Step%"
 if %_String2CharArray_Output.index% leq %_String2CharArray_Output.ubound% GoTo :String2CharArray-loop
+Call :ClearVariablesByPrefix _String2CharArray
+GoTo :EOF
+
+::Usage Call :CharArray2String CharArray OutputString
+:CharArray2String
+Call :ClearVariablesByPrefix _CharArray2String
+Call :GetArrayParameters %~1 _CharArray2String_InputArray "" 0
+set _CharArray2String_InputArray
+setlocal enableDelayedExpansion
+:CharArray2String-loop
+call set "_CharArray2String_OutputString=!_CharArray2String_OutputString!%%!_CharArray2String_InputArray![!_CharArray2String_InputArray.index!]%%"
+echo !_CharArray2String_OutputString!
+set /a "_CharArray2String_InputArray.index+=1"
+if !_CharArray2String_InputArray.index! leq %_CharArray2String_InputArray.ubound% GoTo :CharArray2String-loop
+endlocal & set "%2=%_CharArray2String_OutputString%"
+Call :ClearVariablesByPrefix _CharArray2String
 GoTo :EOF
 
 ::Usage Call :GetTempFile OutputFilename optional ext optional prefix optional suffix 
@@ -4956,9 +5906,54 @@ if !%~1!==^" ( set errorlevel=0 ) else ( set errorlevel=1 )
 endlocal & exit /b %errorlevel%
 
 
+::Usage Call :AddEscapeCharacters byref InputString optional OutputString
+:AddEscapeCharacters
+Call :ClearVariablesByPrefix _AddEscapeCharacters
+Call :SetIfNotDefined "%~1" _AddEscapeCharacters_input "%~2" _AddEscapeCharacters_output
+Call :SetIfNotDefined "%_AddEscapeCharacters_input%" _AddEscapeCharacters_output
+setlocal enabledelayedexpansion
+set /a "_AddEscapeCharacters_input.index=0"
+set "_AddEscapeCharacters_input.quoted=false"
 
+:AddEscapeCharacters-loop
+set "_AddEscapeCharacters_input_char=!%_AddEscapeCharacters_input%:~%_AddEscapeCharacters_input.index%,1!"
+if !_AddEscapeCharacters_input_char!==^" if "[%_AddEscapeCharacters_input.quoted%]"=="[false]" ( set "_AddEscapeCharacters_input.quoted=true" ) else ( set "_AddEscapeCharacters_input.quoted=false" ) 
+REM set _AddEscapeCharacters
+if "[!_AddEscapeCharacters_input.quoted!]"=="[false]" (
+	if !_AddEscapeCharacters_input_char!==%% set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!%%%%" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^" set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^"" & GoTo :AddEscapeCharacters-loop-next
+	if !_AddEscapeCharacters_input_char!==^& set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^&" & GoTo :AddEscapeCharacters-loop-next
+	if !_AddEscapeCharacters_input_char!==^< set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^<" & GoTo :AddEscapeCharacters-loop-next
+	if !_AddEscapeCharacters_input_char!==^> set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^>" & GoTo :AddEscapeCharacters-loop-next
+	if !_AddEscapeCharacters_input_char!==^^ set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^^" & GoTo :AddEscapeCharacters-loop-next
+	if !_AddEscapeCharacters_input_char!==^| set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^|" & GoTo :AddEscapeCharacters-loop-next
+) else (
+	if !_AddEscapeCharacters_input_char!==%% set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!%%%%" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^" set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^"" & GoTo :AddEscapeCharacters-loop-next
+	if !_AddEscapeCharacters_input_char!==^& set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^&" & GoTo :AddEscapeCharacters-loop-next
+	if !_AddEscapeCharacters_input_char!==^< set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^<" & GoTo :AddEscapeCharacters-loop-next
+	if !_AddEscapeCharacters_input_char!==^> set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^>" & GoTo :AddEscapeCharacters-loop-next
+	if !_AddEscapeCharacters_input_char!==^^ set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^^" & GoTo :AddEscapeCharacters-loop-next
+	if !_AddEscapeCharacters_input_char!==^| set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^|" & GoTo :AddEscapeCharacters-loop-next
+)
+set _AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!!_AddEscapeCharacters_input_char!
+:AddEscapeCharacters-loop-next
+REM echo !_AddEscapeCharacters_intermediate!
+set /a "_AddEscapeCharacters_input.index+=1"
+REM set _AddEscapeCharacters
+if "!%_AddEscapeCharacters_input%:~%_AddEscapeCharacters_input.index%,1!" NEQ "" GoTo :AddEscapeCharacters-loop
 
+REM for each char in %_AddEscapeCharacters_input%
+REM if char is percent sign, output double percent sign to intermediate
+REM if char is doublequote, toggle quoted status
+REM if special char and unquoted, add escape character
+REM add all remaining chars to intermediate
+REM write  intermediate to output
+REM echo !_AddEscapeCharacters_intermediate!
+endlocal & set "%_AddEscapeCharacters_output%=%_AddEscapeCharacters_intermediate%"
 
+Call :ClearVariablesByPrefix _AddEscapeCharacters
+GoTo :EOF
 
 REM set pos=0
 REM :NextChar
