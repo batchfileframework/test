@@ -27,7 +27,8 @@ if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
 REM call :trim-DEMO
 
-call :AddEscapeCharacters-DEMO
+call :AddEscapeCharacters-AND-GetRandomString-DEMO
+REM call :AddEscapeCharacters-DEMO
 REM call :runps-DEMO
 REM call :CharArray2String-DEMO
 REM call :ArrayToFile-DEMO
@@ -45,7 +46,24 @@ REM Call :EchoArray-DEMO
 GoTo :END
 
 
+:AddEscapeCharacters-AND-GetRandomString-DEMO
+
+set "myteststring="
+call :GetRandomString 20 myteststring USESPECIALCHARS
+set myteststring
+Call :AddEscapeCharacters myteststring 
+set myteststring
+echo final string=%myteststring%
+goto :AddEscapeCharacters-AND-GetRandomString-DEMO
+
+GoTo :EOF
+
+
 :AddEscapeCharacters-DEMO
+
+REM goto :AddEscapeCharacters-DEMO-skip1
+REM goto :AddEscapeCharacters-DEMO-skip2
+REM goto :AddEscapeCharacters-DEMO-skip3
 
 echo.
 set "_mystring=abcdef"
@@ -125,6 +143,7 @@ Call :AddEscapeCharacters _mystring _outstring
 set _outstring
 echo %_outstring%
 
+:AddEscapeCharacters-DEMO-skip1
 
 echo cleaner output
 
@@ -190,6 +209,59 @@ echo _mystring=%_outstring%
 
 set " _mystring=" & set "_outstring=" & echo.
 set "_mystring=ab"c^^d"ef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+:AddEscapeCharacters-DEMO-skip2
+
+
+echo.
+set "_mystring=abcdefabcdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+echo.
+set "_mystring=abc<>def"abc^<^>def"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+echo.
+set "_mystring=abc||de"fa""bc^|^|def"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+echo.
+set "_mystring=ab^&cde"fab^^^&cdef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+echo.
+set "_mystring=abc|^de"fa"bc|^def"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+echo.
+set "_mystring=abc%%de"f"a"bc%%def"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+echo.
+set "_mystring=%%a%%bcde"fa"b%%cd%%ef"
+set _mystring
+Call :AddEscapeCharacters _mystring _outstring
+echo _mystring=%_outstring%
+
+goto:eof
+
+echo.
+set "_mystring=abcdefabcdef"
 set _mystring
 Call :AddEscapeCharacters _mystring _outstring
 echo _mystring=%_outstring%
@@ -5905,7 +5977,6 @@ setlocal enabledelayedexpansion
 if !%~1!==^" ( set errorlevel=0 ) else ( set errorlevel=1 )
 endlocal & exit /b %errorlevel%
 
-
 ::Usage Call :AddEscapeCharacters byref InputString optional OutputString
 :AddEscapeCharacters
 Call :ClearVariablesByPrefix _AddEscapeCharacters
@@ -5914,46 +5985,61 @@ Call :SetIfNotDefined "%_AddEscapeCharacters_input%" _AddEscapeCharacters_output
 setlocal enabledelayedexpansion
 set /a "_AddEscapeCharacters_input.index=0"
 set "_AddEscapeCharacters_input.quoted=false"
-
 :AddEscapeCharacters-loop
 set "_AddEscapeCharacters_input_char=!%_AddEscapeCharacters_input%:~%_AddEscapeCharacters_input.index%,1!"
 if !_AddEscapeCharacters_input_char!==^" if "[%_AddEscapeCharacters_input.quoted%]"=="[false]" ( set "_AddEscapeCharacters_input.quoted=true" ) else ( set "_AddEscapeCharacters_input.quoted=false" ) 
 REM set _AddEscapeCharacters
-if "[!_AddEscapeCharacters_input.quoted!]"=="[false]" (
-	if !_AddEscapeCharacters_input_char!==%% set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!%%%%" & GoTo :AddEscapeCharacters-loop-next
-	REM if !_AddEscapeCharacters_input_char!==^" set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^"" & GoTo :AddEscapeCharacters-loop-next
-	if !_AddEscapeCharacters_input_char!==^& set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^&" & GoTo :AddEscapeCharacters-loop-next
-	if !_AddEscapeCharacters_input_char!==^< set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^<" & GoTo :AddEscapeCharacters-loop-next
-	if !_AddEscapeCharacters_input_char!==^> set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^>" & GoTo :AddEscapeCharacters-loop-next
-	if !_AddEscapeCharacters_input_char!==^^ set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^^" & GoTo :AddEscapeCharacters-loop-next
-	if !_AddEscapeCharacters_input_char!==^| set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^|" & GoTo :AddEscapeCharacters-loop-next
+if !_AddEscapeCharacters_input_char!==%% set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!%%" & GoTo :AddEscapeCharacters-loop-next
+if "[!_AddEscapeCharacters_input.quoted!]"=="[true]" (
+	for %%a in (^& ^< ^> ^^ ^|) do ( if "[!_AddEscapeCharacters_input_char!]"=="[%%a]" ( set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^^" ) )
 ) else (
-	if !_AddEscapeCharacters_input_char!==%% set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!%%%%" & GoTo :AddEscapeCharacters-loop-next
-	REM if !_AddEscapeCharacters_input_char!==^" set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^"" & GoTo :AddEscapeCharacters-loop-next
-	if !_AddEscapeCharacters_input_char!==^& set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^&" & GoTo :AddEscapeCharacters-loop-next
-	if !_AddEscapeCharacters_input_char!==^< set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^<" & GoTo :AddEscapeCharacters-loop-next
-	if !_AddEscapeCharacters_input_char!==^> set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^>" & GoTo :AddEscapeCharacters-loop-next
-	if !_AddEscapeCharacters_input_char!==^^ set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^^" & GoTo :AddEscapeCharacters-loop-next
-	if !_AddEscapeCharacters_input_char!==^| set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^|" & GoTo :AddEscapeCharacters-loop-next
+	for %%a in (^& ^< ^> ^^ ^|) do ( if "[!_AddEscapeCharacters_input_char!]"=="[%%a]" ( set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^" ) )
 )
 set _AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!!_AddEscapeCharacters_input_char!
 :AddEscapeCharacters-loop-next
 REM echo !_AddEscapeCharacters_intermediate!
 set /a "_AddEscapeCharacters_input.index+=1"
-REM set _AddEscapeCharacters
 if "!%_AddEscapeCharacters_input%:~%_AddEscapeCharacters_input.index%,1!" NEQ "" GoTo :AddEscapeCharacters-loop
-
-REM for each char in %_AddEscapeCharacters_input%
-REM if char is percent sign, output double percent sign to intermediate
-REM if char is doublequote, toggle quoted status
-REM if special char and unquoted, add escape character
-REM add all remaining chars to intermediate
-REM write  intermediate to output
-REM echo !_AddEscapeCharacters_intermediate!
 endlocal & set "%_AddEscapeCharacters_output%=%_AddEscapeCharacters_intermediate%"
-
 Call :ClearVariablesByPrefix _AddEscapeCharacters
 GoTo :EOF
+
+
+REM ::Usage Call :AddEscapeCharacters byref InputString optional OutputString
+REM :AddEscapeCharacters
+REM Call :ClearVariablesByPrefix _AddEscapeCharacters
+REM Call :SetIfNotDefined "%~1" _AddEscapeCharacters_input "%~2" _AddEscapeCharacters_output
+REM Call :SetIfNotDefined "%_AddEscapeCharacters_input%" _AddEscapeCharacters_output
+REM setlocal enabledelayedexpansion
+REM set /a "_AddEscapeCharacters_input.index=0"
+REM set "_AddEscapeCharacters_input.quoted=false"
+REM :AddEscapeCharacters-loop
+REM set "_AddEscapeCharacters_input_char=!%_AddEscapeCharacters_input%:~%_AddEscapeCharacters_input.index%,1!"
+REM if !_AddEscapeCharacters_input_char!==^" if "[%_AddEscapeCharacters_input.quoted%]"=="[false]" ( set "_AddEscapeCharacters_input.quoted=true" ) else ( set "_AddEscapeCharacters_input.quoted=false" ) 
+REM REM set _AddEscapeCharacters
+REM if "[!_AddEscapeCharacters_input.quoted!]"=="[false]" (
+	REM if !_AddEscapeCharacters_input_char!==%% set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!%%" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^& set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^&" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^< set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^<" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^> set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^>" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^^ set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^^" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^| set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^|" & GoTo :AddEscapeCharacters-loop-next
+REM ) else (
+	REM if !_AddEscapeCharacters_input_char!==%% set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!%%" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^& set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^&" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^< set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^<" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^> set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^>" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^^ set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^^" & GoTo :AddEscapeCharacters-loop-next
+	REM if !_AddEscapeCharacters_input_char!==^| set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^|" & GoTo :AddEscapeCharacters-loop-next
+REM )
+REM set _AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!!_AddEscapeCharacters_input_char!
+REM :AddEscapeCharacters-loop-next
+REM REM echo !_AddEscapeCharacters_intermediate!
+REM set /a "_AddEscapeCharacters_input.index+=1"
+REM if "!%_AddEscapeCharacters_input%:~%_AddEscapeCharacters_input.index%,1!" NEQ "" GoTo :AddEscapeCharacters-loop
+REM endlocal & set "%_AddEscapeCharacters_output%=%_AddEscapeCharacters_intermediate%"
+REM Call :ClearVariablesByPrefix _AddEscapeCharacters
+REM GoTo :EOF
 
 REM set pos=0
 REM :NextChar
@@ -6195,33 +6281,29 @@ if "[%~3]" EQU "[DONTESCAPE]" set "_GetRandomString_dontescape=true"
 if "[%~3]" EQU "[FULLRANGE]" set "_GetRandomString_fullrange=true"
 if "[%~4]" NEQ "[]" ( shift & GoTo :GetRandomString-arguments )
 set /a "_GetRandomString_index=0"
+set /a "_GetRandomString_quoted=true"
+setlocal enabledelayedexpansion
 :GetRandomString-loop
 set "_GetRandomString_escapechar="
-set /a _GetRandomString_next_ascii=%RANDOM% * (126 - 32 + 1) / 32768 + 32
-if "[%_GetRandomString_fullrange%]" EQU "[true]" set /a _GetRandomString_next_ascii=%RANDOM% * (255 - 0 + 1) / 32768 + 0
-if "[%_GetRandomString_usespecialchar%]" NEQ "[true]" ( 
-	for %%a in (34 37 38 60 62 94 124) do ( if "[%_GetRandomString_next_ascii%]"=="[%%a]" GoTo :GetRandomString-loop )
-	)
-if "[%_GetRandomString_usespecialchar%]" EQU "[true]" if %_GetRandomString_next_ascii% EQU 37 set "_GetRandomString_escapechar=%%"
-if "[%_GetRandomString_usespecialchar%]" EQU "[true]" ( 
-	for %%a in (38 60 62 94 124) do ( if "[%_GetRandomString_next_ascii%]"=="[%%a]" set "_GetRandomString_escapechar=^" ) 
-	)
-if "[%_GetRandomString_dontescape%]" EQU "[true]" set "_GetRandomString_escapechar="
-cmd /c exit %_GetRandomString_next_ascii%
-setlocal enabledelayedexpansion
-REM echo 2 !=exitcodeascii!
-REM set "_GetRandomString_string=!_GetRandomString_string!%_GetRandomString_escapechar%!=exitcodeascii!"	
+set "_GetRandomString_isspecialchar="
+if "[%_GetRandomString_fullrange%]" EQU "[true]" ( set /a "_GetRandomString_next_ascii=%RANDOM% * (255 - 0 + 1) / 32768 + 0" ) else ( set /a "_GetRandomString_next_ascii=%RANDOM% * (126 - 32 + 1) / 32768 + 32" ) 
+if "[%_GetRandomString_usespecialchar%]" NEQ "[true]" for !!a in (34 37 38 60 62 94 124) do ( if "[!_GetRandomString_next_ascii!]"=="[!!a]" GoTo :GetRandomString-loop )
+for !!a in (34 37 38 60 62 94 124) do ( if "[!_GetRandomString_next_ascii!]"=="[!!a]" echo found special char !!a & set "_GetRandomString_isspecialchar=true" )
+if "[!_GetRandomString_isspecialchar!]"=="[true]" echo is special char
+if "[!_GetRandomString_isspecialchar!]"=="[true]" if "[!_GetRandomString_quoted!]"=="[true]" ( set "_GetRandomString_escapechar=^^" ) else ( set "_GetRandomString_escapechar=^^^^" )
+if "[!_GetRandomString_isspecialchar!]"=="[true]" echo is special char, escaped with  !_GetRandomString_escapechar!
+if "[!_GetRandomString_next_ascii!]"=="[34]" ( set "_GetRandomString_escapechar=" & if "[!_GetRandomString_previouschar!]" NEQ "[34]" ( if "[!_GetRandomString_quoted!]"=="[true]" ( set "_GetRandomString_quoted=false" ) else ( set "_GetRandomString_quoted=true" ) ) )
+REM if "[!_GetRandomString_next_ascii!]"=="[34]" if "[!_GetRandomString_quoted!]"=="[true]" ( set "_GetRandomString_quoted=false" ) else ( set "_GetRandomString_quoted=true" ) 
+if "[!_GetRandomString_next_ascii!]"=="[37]" set "_GetRandomString_escapechar=%"
+set "_GetRandomString_previouschar=!_GetRandomString_next_ascii!"
+cmd /c exit !_GetRandomString_next_ascii!
+echo S!_GetRandomString_string! E!_GetRandomString_escapechar! X!=exitcodeascii! SC!_GetRandomString_isspecialchar!
 set _GetRandomString_string=!_GetRandomString_string!!_GetRandomString_escapechar!!=exitcodeascii!
-echo 3 !=exitcodeascii! !_GetRandomString_string!
-REM endlocal & set "_GetRandomString_string=!_GetRandomString_string!"
-endlocal & set "_GetRandomString_string=%_GetRandomString_string%"
-REM set "_GetRandomString_string=!_GetRandomString_string!" & endlocal
-REM set "_GetRandomString_string=%_GetRandomString_string%" & endlocal
-if "[%_GetRandomString_usespecialchar%]" EQU "[true]" echo 4 "%_GetRandomString_string%"
-REM echo 4 %_GetRandomString_string%
 set /a "_GetRandomString_index+=1"
-if %_GetRandomString_index% LSS %_GetRandomString_count% GoTo :GetRandomString-loop
-set "%_GetRandomString_output%=%_GetRandomString_string%"
+if !_GetRandomString_index! LSS !_GetRandomString_count! GoTo :GetRandomString-loop
+echo randomstring=!_GetRandomString_string!
+endlocal & set %_GetRandomString_output%=%_GetRandomString_string%
+Call :ClearVariablesByPrefix _GetRandomString
 goto :eof
 
 
