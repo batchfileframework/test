@@ -48,12 +48,25 @@ GoTo :END
 
 :AddEscapeCharacters-AND-GetRandomString-DEMO
 
-set "myteststring="
+echo new attempt>>randomstring.txt
+
+set "myteststring=" & set "myescapedstring="
 call :GetRandomString 20 myteststring USESPECIALCHARS
-set myteststring
-Call :AddEscapeCharacters myteststring 
-set myteststring
-echo final string=%myteststring%
+
+Call :AddEscapeCharacters myteststring  myescapedstring
+
+setlocal enabledelayedexpansion
+echo E !myescapedstring!
+echo E !myescapedstring!>>randomstring.txt
+endlocal
+
+setlocal enabledelayedexpansion
+echo I !myteststring!
+echo I !myteststring!>>randomstring.txt
+endlocal
+echo O %myescapedstring%
+echo O %myescapedstring%>>randomstring.txt
+
 goto :AddEscapeCharacters-AND-GetRandomString-DEMO
 
 GoTo :EOF
@@ -5205,6 +5218,7 @@ GoTo :EOF
 :: Usage Call :ClearVariablesByPrefix myPrefix
 :ClearVariablesByPrefix
 for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
+if "[%~1]" NEQ "[]" shift & GoTo :ClearVariablesByPrefix
 GoTo :EOF
 
 :GoToFolderOfBatchFile
@@ -5988,19 +6002,16 @@ set "_AddEscapeCharacters_input.quoted=false"
 :AddEscapeCharacters-loop
 set "_AddEscapeCharacters_input_char=!%_AddEscapeCharacters_input%:~%_AddEscapeCharacters_input.index%,1!"
 if !_AddEscapeCharacters_input_char!==^" if "[%_AddEscapeCharacters_input.quoted%]"=="[false]" ( set "_AddEscapeCharacters_input.quoted=true" ) else ( set "_AddEscapeCharacters_input.quoted=false" ) 
-REM set _AddEscapeCharacters
 if !_AddEscapeCharacters_input_char!==%% set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!%%" & GoTo :AddEscapeCharacters-loop-next
-if "[!_AddEscapeCharacters_input.quoted!]"=="[true]" (
-	for %%a in (^& ^< ^> ^^ ^|) do ( if "[!_AddEscapeCharacters_input_char!]"=="[%%a]" ( set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^^" ) )
-) else (
-	for %%a in (^& ^< ^> ^^ ^|) do ( if "[!_AddEscapeCharacters_input_char!]"=="[%%a]" ( set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^" ) )
-)
+for %%a in (^& ^< ^> ^^ ^| ^" ) do ( if ^!_AddEscapeCharacters_input_char!==%%a ( set "_AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!^^^^^^" ) )
 set _AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate!!_AddEscapeCharacters_input_char!
 :AddEscapeCharacters-loop-next
 REM echo !_AddEscapeCharacters_intermediate!
 set /a "_AddEscapeCharacters_input.index+=1"
 if "!%_AddEscapeCharacters_input%:~%_AddEscapeCharacters_input.index%,1!" NEQ "" GoTo :AddEscapeCharacters-loop
-endlocal & set "%_AddEscapeCharacters_output%=%_AddEscapeCharacters_intermediate%"
+set "_AddEscapeCharacters_last_char=!_AddEscapeCharacters_intermediate:~-1!"
+for %%a in (0 1 2 3 4 5 6 7 8 9) do ( if "[!_AddEscapeCharacters_last_char!]"=="[%%a]" set _AddEscapeCharacters_intermediate=!_AddEscapeCharacters_intermediate:~,-1!^%%a )
+endlocal & set %_AddEscapeCharacters_output%=%_AddEscapeCharacters_intermediate%
 Call :ClearVariablesByPrefix _AddEscapeCharacters
 GoTo :EOF
 
@@ -6287,21 +6298,23 @@ setlocal enabledelayedexpansion
 set "_GetRandomString_escapechar="
 set "_GetRandomString_isspecialchar="
 if "[%_GetRandomString_fullrange%]" EQU "[true]" ( set /a "_GetRandomString_next_ascii=%RANDOM% * (255 - 0 + 1) / 32768 + 0" ) else ( set /a "_GetRandomString_next_ascii=%RANDOM% * (126 - 32 + 1) / 32768 + 32" ) 
-if "[%_GetRandomString_usespecialchar%]" NEQ "[true]" for !!a in (34 37 38 60 62 94 124) do ( if "[!_GetRandomString_next_ascii!]"=="[!!a]" GoTo :GetRandomString-loop )
-for !!a in (34 37 38 60 62 94 124) do ( if "[!_GetRandomString_next_ascii!]"=="[!!a]" echo found special char !!a & set "_GetRandomString_isspecialchar=true" )
-if "[!_GetRandomString_isspecialchar!]"=="[true]" echo is special char
-if "[!_GetRandomString_isspecialchar!]"=="[true]" if "[!_GetRandomString_quoted!]"=="[true]" ( set "_GetRandomString_escapechar=^^" ) else ( set "_GetRandomString_escapechar=^^^^" )
-if "[!_GetRandomString_isspecialchar!]"=="[true]" echo is special char, escaped with  !_GetRandomString_escapechar!
-if "[!_GetRandomString_next_ascii!]"=="[34]" ( set "_GetRandomString_escapechar=" & if "[!_GetRandomString_previouschar!]" NEQ "[34]" ( if "[!_GetRandomString_quoted!]"=="[true]" ( set "_GetRandomString_quoted=false" ) else ( set "_GetRandomString_quoted=true" ) ) )
-REM if "[!_GetRandomString_next_ascii!]"=="[34]" if "[!_GetRandomString_quoted!]"=="[true]" ( set "_GetRandomString_quoted=false" ) else ( set "_GetRandomString_quoted=true" ) 
+if "[%_GetRandomString_usespecialchar%]" NEQ "[true]" for %%a in (34 37 38 60 62 94 124) do ( if "[!_GetRandomString_next_ascii!]"=="[%%a]" GoTo :GetRandomString-loop )
+for %%a in (34 37 38 60 62 94 124) do ( if "[!_GetRandomString_next_ascii!]"=="[%%a]" set "_GetRandomString_isspecialchar=true" )
+if "[!_GetRandomString_isspecialchar!]"=="[true]" if "[!_GetRandomString_quoted!]"=="[true]" ( set "_GetRandomString_escapechar=^" ) else ( set "_GetRandomString_escapechar=^" )
+REM if "[!_GetRandomString_next_ascii!]"=="[34]" ( set "_GetRandomString_escapechar=^" & set "_GetRandomString_lastquote=!_GetRandomString_index!" & if "[!_GetRandomString_previouschar!]" NEQ "[34]" ( if "[!_GetRandomString_quoted!]"=="[true]" ( set "_GetRandomString_quoted=false" ) else ( set "_GetRandomString_quoted=true" ) ) )
+if "[!_GetRandomString_next_ascii!]"=="[34]" set "_GetRandomString_lastquote=!_GetRandomString_index!" & if "[!_GetRandomString_quoted!]"=="[true]" ( set "_GetRandomString_quoted=false" ) else ( set "_GetRandomString_quoted=true" ) 
 if "[!_GetRandomString_next_ascii!]"=="[37]" set "_GetRandomString_escapechar=%"
 set "_GetRandomString_previouschar=!_GetRandomString_next_ascii!"
 cmd /c exit !_GetRandomString_next_ascii!
-echo S!_GetRandomString_string! E!_GetRandomString_escapechar! X!=exitcodeascii! SC!_GetRandomString_isspecialchar!
+REM echo S!_GetRandomString_string! E!_GetRandomString_escapechar! X!=exitcodeascii! SC!_GetRandomString_isspecialchar!
 set _GetRandomString_string=!_GetRandomString_string!!_GetRandomString_escapechar!!=exitcodeascii!
 set /a "_GetRandomString_index+=1"
 if !_GetRandomString_index! LSS !_GetRandomString_count! GoTo :GetRandomString-loop
-echo randomstring=!_GetRandomString_string!
+REM echo randomstring=!_GetRandomString_string!
+set "_GetRandomString_last_char=!_GetRandomString_string:~-1!"
+REM echo lastchar !_GetRandomString_last_char!
+for %%a in (0 1 2 3 4 5 6 7 8 9) do ( if "[!_GetRandomString_last_char!]"=="[%%a]" set _GetRandomString_string=!_GetRandomString_string:~,-1!^%%a )
+echo R !_GetRandomString_string!>>randomstring.txt
 endlocal & set %_GetRandomString_output%=%_GetRandomString_string%
 Call :ClearVariablesByPrefix _GetRandomString
 goto :eof
