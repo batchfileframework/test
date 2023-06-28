@@ -26,7 +26,8 @@ REM if "[%silent%]"=="[true]" echo Silent mode is enabled
 REM if not "[%verbose%]"=="[]" echo Verbose level : %verbose%
 REM if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
-call :Performance-timer-DEMO
+call :AddEscapeCharacters-AND-GetRandomString-DEMOv2
+REM call :Performance-timer-DEMO
 REM call :EchoArguments-DEMO
 REM call :AddEscapeCharacters-AND-GetRandomString-DEMO
 REM call :AddEscapeCharacters-DEMO
@@ -60,6 +61,155 @@ GoTo :EOF
 REM Exit /b %returnvalue%
 
 REM Internal Functions 
+
+
+:AddEscapeCharacters-AND-GetRandomString-DEMOv2
+
+REM set debug=true
+
+REM Call :PrintCharMap 
+REM goto :eof
+
+Call :ClearVariablesByPrefix _AEC _GRD my
+echo new attempt>>randomstring.txt
+
+echo.
+echo calling GetRandomString five times
+echo without arguments the strings will have, no space, no quotes, no exclamation, no percent, no delimiters
+echo if the last character is a number, it will be escaped with a carret (this reduce the output string length by 1 (TODO FIX))
+echo.
+
+call :GetRandomString 30 myoutput[0]
+echo R %myoutput[0].len% %myoutput[0]%
+call :GetRandomString 30 myoutput[1]
+echo R %myoutput[1].len% %myoutput[1]%
+call :GetRandomString 30 myoutput[2]
+echo R %myoutput[2].len% %myoutput[2]%
+call :GetRandomString 30 myoutput[3]
+echo R %myoutput[3].len% %myoutput[3]%
+call :GetRandomString 30 myoutput[4]
+echo R %myoutput[4].len% %myoutput[4]%
+call :GetRandomString 30 myoutput[5]
+echo R %myoutput[5].len% %myoutput[5]%
+
+Call :ClearVariablesByPrefix myout
+
+
+echo.
+echo calling GetRandomString five times, using :RunMultipleTimes
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+echo.
+echo save as previous, but using USESPECIALCHARS, random string will now include these characters ^& ^< ^> ^^ ^|
+echo these characters are all properly escaped by default so they will appear with a simple echo and no delayed expansion
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USESPECIALCHARS" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+echo.
+echo save as previous, but using USESPACE instead, random string will now include spaces
+echo the space are all escaped by default 
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USESPACE" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+echo.
+echo save as previous, but using USEEXCLAMATION instead, random string will now include exclamations
+echo the exclamation are all escaped by default 
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEEXCLAMATION" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+echo.
+echo save as previous, but using USEPERCENT instead, random string will now include percent signs
+echo these percent signs are all properly escaped by default
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEPERCENT" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+echo.
+echo save as previous, but using USEQUOTES instead, random string will now include doublequotes
+echo these double quotes are all properly escaped by default
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEQUOTES" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+
+REM Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] DONTESCAPE" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+
+
+GoTo :EOF
+
+
+
+REM call :GetRandomString 29 myteststring USESPECIALCHARS DONTESCAPE
+REM call :GetRandomString 29 myteststring DONTESCAPE USEALLCHARS
+REM call :GetRandomString 29 myteststring DONTESCAPE USESPECIALCHARS USEPERCENT USEEXCLAMATION USEDELIMITERS
+REM call :GetRandomString 1000 myteststring DONTESCAPE USESPECIALCHARS USEPERCENT USEEXCLAMATION USEDELIMITERS
+REM call :GetRandomString 30 myteststring DONTESCAPE 
+Call :GetRandomString 3000 myteststring DONTESCAPE 
+Call :len myteststring.len2 myteststring
+Call :AddEscapeCharacters myteststring  myescapedstring
+Call :len myescapedstring.len2 myescapedstring
+
+:AddEscapeCharacters-AND-GetRandomString-DEMOv2
+:AddEscapeCharacters-AND-GetRandomString-DEMOv2-output
+echo I %myteststring.len% %myteststring.len2% "%myteststring%"
+echo O %myescapedstring.len% %myescapedstring.len2%  %myescapedstring%
+echo I %myteststring.len% %myteststring.len2% "%myteststring%">>randomstring.txt
+echo O %myescapedstring.len% %myescapedstring.len2%  %myescapedstring%>>randomstring.txt
+setlocal enabledelayedexpansion
+echo II !myteststring.len! !myteststring.len2!  !myteststring!
+echo OO !myescapedstring.len! !myescapedstring.len2!  !myescapedstring!
+echo II !myteststring.len! !myteststring.len2!  !myteststring!>>randomstring.txt
+echo OO !myescapedstring.len! !myescapedstring.len2!  !myescapedstring!>>randomstring.txt
+endlocal
+REM set my
+GoTo :EOF
+
+
+
+
+:AddEscapeCharacters-AND-GetRandomString-DEMOv1
+
+REM set debug=true
+
+REM Call :PrintCharMap 
+REM goto :eof
+Call :ClearVariablesByPrefix _GetRandomString
+Call :ClearVariablesByPrefix _AddEscapeCharacters
+echo new attempt>>randomstring.txt
+
+set "myteststring=" & set "myescapedstring=" & set "myteststring.len=" & set "myescapedstring.len="
+REM call :GetRandomString 29 myteststring USESPECIALCHARS DONTESCAPE
+REM call :GetRandomString 29 myteststring DONTESCAPE USEALLCHARS
+REM call :GetRandomString 29 myteststring DONTESCAPE USESPECIALCHARS USEPERCENT USEEXCLAMATION USEDELIMITERS
+REM call :GetRandomString 1000 myteststring DONTESCAPE USESPECIALCHARS USEPERCENT USEEXCLAMATION USEDELIMITERS
+REM call :GetRandomString 30 myteststring DONTESCAPE 
+call :GetRandomString 3000 myteststring DONTESCAPE 
+Call :len myteststring.len2 myteststring
+
+Call :AddEscapeCharacters myteststring  myescapedstring
+Call :len myescapedstring.len2 myescapedstring
+
+
+
+echo I1 %myteststring.len% %myteststring.len2% "%myteststring%"
+echo I1 %myteststring.len% %myteststring.len2% "%myteststring%">>randomstring.txt
+setlocal enabledelayedexpansion
+Call :len myteststring.len myteststring
+echo I2 !myteststring.len! !myteststring.len2!  !myteststring!
+echo I2 !myteststring.len! !myteststring.len2!  !myteststring!>>randomstring.txt
+endlocal
+echo O1 %myescapedstring.len% %myescapedstring.len2%  %myescapedstring%
+echo O1 %myescapedstring.len% %myescapedstring.len2%  %myescapedstring%>>randomstring.txt
+setlocal enabledelayedexpansion
+echo O2 !myescapedstring.len! !myescapedstring.len2!  !myescapedstring!
+echo O2 !myescapedstring.len! !myescapedstring.len2!  !myescapedstring!>>randomstring.txt
+endlocal
+REM set my
+goto :AddEscapeCharacters-AND-GetRandomString-DEMO
+
+GoTo :EOF
+
+
 
 :Performance-timer-DEMO
 
@@ -289,47 +439,7 @@ echo Elapsed:  %hh:~1%%time:~2,1%%mm:~1%%time:~2,1%%ss:~1%%time:~8,1%%cc:~1%
 Call :SetIfNotDefined "%~1" _GetTimer_Output "%~2" _GetTimer_TimerComment "%~3" _GetTimer_TimerComment
 Call :SetIfNotDefined default _GetTimer_TimerName
 
-:AddEscapeCharacters-AND-GetRandomString-DEMO
 
-set debug=true
-
-REM Call :PrintCharMap 
-REM goto :eof
-Call :ClearVariablesByPrefix _GetRandomString
-Call :ClearVariablesByPrefix _AddEscapeCharacters
-echo new attempt>>randomstring.txt
-
-set "myteststring=" & set "myescapedstring=" & set "myteststring.len=" & set "myescapedstring.len="
-REM call :GetRandomString 29 myteststring USESPECIALCHARS DONTESCAPE
-REM call :GetRandomString 29 myteststring DONTESCAPE USEALLCHARS
-REM call :GetRandomString 29 myteststring DONTESCAPE USESPECIALCHARS USEPERCENT USEEXCLAMATION USEDELIMITERS
-REM call :GetRandomString 1000 myteststring DONTESCAPE USESPECIALCHARS USEPERCENT USEEXCLAMATION USEDELIMITERS
-REM call :GetRandomString 30 myteststring DONTESCAPE 
-call :GetRandomString 3000 myteststring DONTESCAPE 
-Call :len myteststring.len2 myteststring
-
-Call :AddEscapeCharacters myteststring  myescapedstring
-Call :len myescapedstring.len2 myescapedstring
-
-
-
-echo I1 %myteststring.len% %myteststring.len2% "%myteststring%"
-echo I1 %myteststring.len% %myteststring.len2% "%myteststring%">>randomstring.txt
-setlocal enabledelayedexpansion
-Call :len myteststring.len myteststring
-echo I2 !myteststring.len! !myteststring.len2!  !myteststring!
-echo I2 !myteststring.len! !myteststring.len2!  !myteststring!>>randomstring.txt
-endlocal
-echo O1 %myescapedstring.len% %myescapedstring.len2%  %myescapedstring%
-echo O1 %myescapedstring.len% %myescapedstring.len2%  %myescapedstring%>>randomstring.txt
-setlocal enabledelayedexpansion
-echo O2 !myescapedstring.len! !myescapedstring.len2!  !myescapedstring!
-echo O2 !myescapedstring.len! !myescapedstring.len2!  !myescapedstring!>>randomstring.txt
-endlocal
-REM set my
-goto :AddEscapeCharacters-AND-GetRandomString-DEMO
-
-GoTo :EOF
 
 REM Function Library
 
@@ -338,6 +448,25 @@ REM Function Library
 setlocal enabledelayedexpansion
 endlocal & if "[%~3]" NEQ "[]"
 
+
+::Usage Call :RunMultipleTimes RunCount "Your Command here"
+:RunMultipleTimes
+set /a "_RunMultipleTimes_index=0"
+set /a "_RunMultipleTimes_ubound=%~1"
+shift
+:RunMultipleTimes-loop
+%~1
+%~2
+%~3
+%~4
+%~5
+%~6
+%~7
+%~8
+%~9
+set /a "_RunMultipleTimes_index+=1"
+if %_RunMultipleTimes_index% LSS %_RunMultipleTimes_ubound% GoTo :RunMultipleTimes-loop
+GoTo :EOF
 
 :: Usage Call :ClearVariablesByPrefix myPrefix
 :ClearVariablesByPrefix
@@ -557,10 +686,12 @@ Call :SetIfNotDefined "%_AEC_input%" _AEC_output
 set "_AEC_special_esclist=^& ^< ^> ^^ ^|"
 set "_AEC_delimiter_esclist1=^= ^; ^,"
 set "_AEC_regular_escape_char=^^^"
+set "_AEC_space_escape_char=^^^"
 set "_AEC_quotes_escape_char=^^^"
 set "_AEC_percent_escape_char=%%"
-set "_AEC_exclamation_escape_char=^^"
+set "_AEC_exclamation_escape_char=^^^"
 :AddEscapeCharacters-arguments
+if "[%~3]" EQU "[NOTSPACE]" set "_AEC_space_escape_char=^"
 if "[%~3]" EQU "[NOTQUOTES]" set "_AEC_quotes_escape_char=^"
 if "[%~3]" EQU "[NOTEXCLAMATION]" set "_AEC_exclamation_escape_char=^^"
 if "[%~3]" EQU "[NOTPERCENT]" set "_AEC_percent_escape_char=%"
