@@ -65,6 +65,8 @@ REM Internal Functions
 
 :AddEscapeCharacters-AND-GetRandomString-DEMOv2
 
+goto :AddEscapeCharacters-AND-GetRandomString-DEMOv2-skip1
+
 REM set debug=true
 
 REM Call :PrintCharMap 
@@ -80,17 +82,23 @@ echo if the last character is a number, it will be escaped with a carret (this r
 echo.
 
 call :GetRandomString 30 myoutput[0]
-echo R %myoutput[0].len% %myoutput[0]%
+call :len myoutput[0].len2 myoutput[0]
+echo R %myoutput[0].len% %myoutput[0].len2% %myoutput[0]%
 call :GetRandomString 30 myoutput[1]
-echo R %myoutput[1].len% %myoutput[1]%
+call :len myoutput[1].len2 myoutput[1]
+echo R %myoutput[1].len% %myoutput[1].len2% %myoutput[1]%
 call :GetRandomString 30 myoutput[2]
-echo R %myoutput[2].len% %myoutput[2]%
+call :len myoutput[2].len2 myoutput[2]
+echo R %myoutput[2].len% %myoutput[2].len2% %myoutput[2]%
 call :GetRandomString 30 myoutput[3]
-echo R %myoutput[3].len% %myoutput[3]%
+call :len myoutput[3].len2 myoutput[3]
+echo R %myoutput[3].len% %myoutput[3].len2% %myoutput[3]%
 call :GetRandomString 30 myoutput[4]
-echo R %myoutput[4].len% %myoutput[4]%
+call :len myoutput[4].len2 myoutput[4]
+echo R %myoutput[4].len% %myoutput[4].len2% %myoutput[4]%
 call :GetRandomString 30 myoutput[5]
-echo R %myoutput[5].len% %myoutput[5]%
+call :len myoutput[5].len2 myoutput[5]
+echo R %myoutput[5].len% %myoutput[5].len2% %myoutput[5]%
 
 Call :ClearVariablesByPrefix myout
 
@@ -98,37 +106,96 @@ Call :ClearVariablesByPrefix myout
 echo.
 echo calling GetRandomString five times, using :RunMultipleTimes
 echo.
-Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%]" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
 
 echo.
 echo save as previous, but using USESPECIALCHARS, random string will now include these characters ^& ^< ^> ^^ ^|
 echo these characters are all properly escaped by default so they will appear with a simple echo and no delayed expansion
 echo.
-Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USESPECIALCHARS" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USESPECIALCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
 
 echo.
 echo save as previous, but using USESPACE instead, random string will now include spaces
 echo the space are all escaped by default 
 echo.
-Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USESPACE" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USESPACE" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
 
 echo.
 echo save as previous, but using USEEXCLAMATION instead, random string will now include exclamations
 echo the exclamation are all escaped by default 
 echo.
-Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEEXCLAMATION" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEEXCLAMATION" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
 
 echo.
 echo save as previous, but using USEPERCENT instead, random string will now include percent signs
 echo these percent signs are all properly escaped by default
 echo.
-Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEPERCENT" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEPERCENT" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
 
 echo.
 echo save as previous, but using USEQUOTES instead, random string will now include doublequotes
 echo these double quotes are all properly escaped by default
 echo.
-Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEQUOTES" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEQUOTES" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+echo.
+echo save as previous, but using USEDELIMITERS instead, random string will now include delimiter characters ^= ^; ^,
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEDELIMITERS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+echo.
+echo save as previous, but using all the previous option together
+echo USESPECIALCHARS USESPACE USEEXCLAMATION USEPERCENT USEQUOTES USEDELIMITERS
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USESPECIALCHARS USESPACE USEEXCLAMATION USEPERCENT USEQUOTES USEDELIMITERS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+echo.
+echo save as previous, but with option USEALLCHARS, which should be same as all options enabled
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+
+echo.
+echo with options USESPACE USEEXCLAMATION USEQUOTES USEPERCENT USEDELIMITERS
+echo but also DONTESCAPE (everything but special characters)
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] DONTESCAPE USESPACE USEEXCLAMATION USEQUOTES USEPERCENT USEDELIMITERS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+:AddEscapeCharacters-AND-GetRandomString-DEMOv2-skip1
+
+del AddEscapeCharacters-AND-GetRandomString-DEMO.txt
+
+echo.
+echo with options USESPACE USEEXCLAMATION USEQUOTES USEPERCENT USEDELIMITERS
+echo but also DONTESCAPE (everything but special characters)
+echo and output to file AddEscapeCharacters-AND-GetRandomString-DEMO.txt
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] DONTESCAPE USESPACE USEEXCLAMATION USEQUOTES USEPERCENT USEDELIMITERS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>AddEscapeCharacters-AND-GetRandomString-DEMO.txt"
+
+echo. 
+echo Reading back from previous file, one line at a file 
+echo Using readline
+echo.
+Call :Readline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 1 myreadline
+echo %myreadline%
+Call :Readline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 2 myreadline
+echo %myreadline%
+Call :Readline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 3 myreadline
+echo %myreadline%
+Call :Readline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 4 myreadline
+echo %myreadline%
+Call :Readline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 5 myreadline
+echo %myreadline%
+
+echo. 
+echo Reading back from previous file, one line at a file 
+echo Using printline
+echo.
+Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 1 
+Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 2 
+Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 3 
+Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 4 
+Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 5 
 
 
 REM Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] DONTESCAPE" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
@@ -136,6 +203,8 @@ REM Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultiple
 
 
 GoTo :EOF
+
+
 
 
 
@@ -482,6 +551,53 @@ if not "[%~4]"=="[]" shift & shift & GoTo :SetIfNotDefined
 set "_SetIfNotDefined_Output="
 GoTo :EOF
 
+::Usage Call :Readline Filename LineNumber OutputVariable
+:Readline
+Call :SetIfNotDefined "%~1" _Readline_Filename "%~2" _Readline_LineNumber "%~3" _Readline_Output 0 _Readline_Index
+setlocal enabledelayedexpansion
+for /f "delims=" %%a in (%_Readline_Filename%) do (
+    set /a "_Readline_Index+=1"
+    if !_Readline_Index! equ %_Readline_LineNumber% set _Readline_Intermediate=%%a
+	if !_Readline_Index! equ %_Readline_LineNumber% GoTo :Readline-end
+)
+:Readline-end
+endlocal & set %_Readline_Output%=%_Readline_Intermediate%
+Call :ClearVariablesByPrefix _Readline
+GoTo :EOF
+
+REM ::Usage Call :Printline Filename LineNumber 
+REM :Printline
+REM Call :SetIfNotDefined "%~1" _Printline_Filename "%~2" _Printline_LineNumber 0 _Printline_Index
+REM setlocal enabledelayedexpansion
+REM for /f "delims=" %%a in (%_Printline_Filename%) do (
+    REM set /a "_Printline_Index+=1"
+    REM if !_Printline_Index! equ %_Printline_LineNumber% echo %%a
+	REM if !_Printline_Index! equ %_Printline_LineNumber% GoTo :Printline-end
+REM )
+REM :Printline-end
+REM endlocal 
+REM Call :ClearVariablesByPrefix _Printline
+REM GoTo :EOF
+
+REM ::Usage Call :Printline Filename LineNumber 
+:Printline
+Call :SetIfNotDefined "%~1" _Printline_Filename "%~2" _Printline_LineNumber 0 _Printline_Index
+setlocal enabledelayedexpansion
+for /f "delims=" %%a in (%_Printline_Filename%) do (
+    set /a "_Printline_Index+=1"
+    REM if !_Printline_Index! equ %_Printline_LineNumber% echo %%a
+	if !_Printline_Index! equ %_Printline_LineNumber% (
+		endlocal
+		echo %%a
+		setlocal enabledelayedexpansion
+	)
+	if !_Printline_Index! equ %_Printline_LineNumber% GoTo :Printline-end
+)
+:Printline-end
+endlocal 
+Call :ClearVariablesByPrefix _Printline
+GoTo :EOF
+
 ::Usage Call :PrintCharMap FULLRANGE
 :PrintCharMap
 set /a "_PrintCharMap_index=32" & set /a "_PrintCharMap_count=126"
@@ -588,19 +704,17 @@ REM separate count for escaped and included characters
 ::Usage Call :GetRandomString CharacterCount OutputString USESPECIALCHARS DONTESCAPE FULLRANGE
 :GetRandomString
 set "_GetRandomString_prefix=_GSR"
-set /a "_GSR_count=%~1"
-set "_GSR_output=%~2"
-
+Call :SetIfNotDefined "%~1" _GSR_count "%~2" _GSR_output
+REM set /a "_GSR_count=%~1"
+REM set "_GSR_output=%~2"
 set "_GSR_space_genlist=32 "
 set "_GSR_exclamation_genlist=33 "
 set "_GSR_quotes_genlist=34 "
 set "_GSR_percent_genlist=37 "
 set "_GSR_special_genlist=38 60 62 94 124 "
 set "_GSR_delimiter_genlist=44 59 61 "
-
 set "_GSR_special_esclist=38 60 62 94 124 "
 set "_GSR_delimiter_esclist=44 59 61 "
-
 set "_GSR_special_escape_char=^^^"
 set "_GSR_quotes_escape_char=^^^"
 set "_GSR_percent_escape_char=%%%%"
@@ -608,7 +722,6 @@ set "_GSR_exclamation_escape_char=^^^"
 set "_GSR_bracket_escape_char=^^^"
 set "_GSR_delimiter_escape_char=^^^"
 set "_GSR_extdelimiter_escape_char=^^^"
-
 set "_GSR_special_esccharcount=3"
 set "_GSR_space_esccharcount=3"
 set "_GSR_quote_esccharcount=3"
@@ -617,8 +730,6 @@ set "_GSR_percent_esccharcount=3"
 set "_GSR_bracket_esccharcount=0"
 set "_GSR_delimiter_esccharcount=3"
 set "_GSR_extdelimiter_esccharcount=0"
-
-set "_AEC_escape_list=%_GSR_special_charlist% %_GSR_bracket_charlist% %_GSR_delimiter_charlist1% %_GSR_delimiter_charlist2%"
 :GetRandomString-arguments
 if "[%~3]" EQU "[USEALLCHARS]" set "_GSR_useallchar=true"
 if "[%~3]" EQU "[DONTESCAPE]" set "_GSR_dontescape=true"
@@ -639,6 +750,7 @@ if "[%~3]" EQU "[ESCNOTQUOTES]" ( set "_GSR_quotes_escape_char=^" & set "_GSR_qu
 if "[%~3]" EQU "[ESCBRACKETS]" ( set "_GSR_bracket_esclist=40 41 91 93 123 125 " & set "_GSR_bracket_esccharcount=3" )
 if "[%~3]" EQU "[ESCNOTDELIMITERS]" ( set "_GSR_delimiter_esclist=" & set "_GSR_delimiter_esccharcount=0" )
 if "[%~3]" EQU "[ESCEXTDELIMITERS]" ( set "_GSR_extdelimiter_esclist=39 43 64 96 126 " & set "_GSR_extdelimiter_esccharcount=3" )
+if "[%~3]" EQU "[ESCNOTLASTDIGIT]" ( set "_GSR_escnot_lastdigit=true" )
 if "[%~4]" NEQ "[]" ( shift & GoTo :GetRandomString-arguments )
 if "[%_GSR_useallchar%]" NEQ "[true]" set "_GSR_genlist=%_GSR_special_genlist%%_GSR_exclamation_genlist%%_GSR_space_genlist%%_GSR_quotes_genlist%%_GSR_percent_genlist%%_GSR_delimiter_genlist%%_GSR_bracket_genlist%%_GSR_extdelimiter_esclist%"
 if "[%_GSR_dontescape%]"=="[true]" ( set "_GSR_special_esccharcount=0" & set "_GSR_quote_esccharcount=0" & set "_GSR_exclamation_esccharcount=0" & set "_GSR_percent_esccharcount=0" & set "_GSR_delimiter_esccharcount=0" & set "_GSR_special_escape_char=^" & set "_GSR_quotes_escape_char=^" & set "_GSR_percent_escape_char=%%" & set "_GSR_exclamation_escape_char=" & set "_GSR_delimiter_esclist=" & set "_GSR_delimiter_escape_char=^" )
@@ -667,7 +779,7 @@ if "!_GSR_escape_char!" NEQ "" set /a "_GSR_escapecount+=!_GSR_escape_charcount!
 set /a "_GSR_total_char=!_GSR_index!+!_GSR_escapecount!"
 REM if "!_GSR_escape_char!" NEQ "" set /a "_GSR_index+=1"
 if !_GSR_total_char! LSS 8030 if !_GSR_index! LSS !_GSR_count! GoTo :GetRandomString-loop
-if "[%_GSR_dontescape%]" NEQ "[true]" for %%a in (0 1 2 3 4 5 6 7 8 9) do (if "[!_GSR_intermediate:~-1!]"=="[%%a]" ( set _GSR_intermediate=!_GSR_intermediate:~,-2!^^%%a ) )
+if "[%_GSR_dontescape%]" NEQ "[true]" if "[%_GSR_escnot_lastdigit%]" NEQ "[true]" for %%a in (0 1 2 3 4 5 6 7 8 9) do (if "[!_GSR_intermediate:~-1!]"=="[%%a]" ( set /a "_GSR_escapecount+=1" & set _GSR_intermediate=!_GSR_intermediate:~,-1!^^%%a) )
 if "[%debug%]"=="[true]" echo R  !_GSR_index!     !_GSR_intermediate!
 if "[%debug%]"=="[true]" echo R  !_GSR_index!     !_GSR_intermediate!>>randomstring.txt
 endlocal & set /a "%_GSR_output%.len=%_GSR_index%" & set /a "%_GSR_output%.lentotal=%_GSR_total_char%" & set %_GSR_output%=%_GSR_intermediate%
@@ -699,6 +811,7 @@ if "[%~3]" EQU "[NOTSPECIAL]" set "_AEC_special_esclist="
 if "[%~3]" EQU "[BRACKETS]" set "_AEC_bracket_esclist=^( ^) ^[ ^] ^{ ^}"
 if "[%~3]" EQU "[NOTDELIMITERS]" set "_AEC_delimiter_esclist="
 if "[%~3]" EQU "[EXTDELIMITERS]" set "_AEC_extdelimiter_esclist=^' ^+ ^` ^~ ^@"
+if "[%~3]" EQU "[NOTLASTDIGIT]" set "_AEC_notlastdigit=true"
 if "[%~4]" NEQ "[]" ( shift & GoTo :GetRandomString-arguments )
 set "_AEC_escape_list=%_AEC_special_esclist% %_AEC_bracket_esclist% %_AEC_delimiter_esclist% %_AEC_extdelimiter_esclist%"
 set /a "_AEC_input.index=0" & set /a "_AEC_output.escapechars=0" & set /a "_AEC_output.totalchars=0"
@@ -715,7 +828,7 @@ if "[!_AEC_escapechar!]" NEQ "[]" set /a "_AEC_output.escapechars+=1"
 set /a "_AEC_output.totalchars=!_AEC_input.index!+!_AEC_output.escapechars!"
 if !_AEC_output.totalchars! LSS 8030 if "!%_AEC_input%:~%_AEC_input.index%,1!" NEQ "" GoTo :AddEscapeCharacters-loop
 set "_AEC_last_char=!_AEC_intermediate:~-1!"
-for %%a in (0 1 2 3 4 5 6 7 8 9) do ( if "[!_AEC_last_char!]"=="[%%a]" ( set /a "_AEC_input.escapechars+=1" & set /a "_AEC_output.totalchars+=1" & set _AEC_intermediate=!_AEC_intermediate:~,-1!^%%a ) )
+if "[%_AEC_notlastdigit%]" NEQ ["true"] for %%a in (0 1 2 3 4 5 6 7 8 9) do ( if "[!_AEC_last_char!]"=="[%%a]" ( set /a "_AEC_input.escapechars+=1" & set /a "_AEC_output.totalchars+=1" & set _AEC_intermediate=!_AEC_intermediate:~,-1!^%%a) )
 endlocal & set /a "%_AEC_output%.len=%_AEC_input.index%" & set /a "%_AEC_output%.totallen=%_AEC_output.totalchars%" & set /a "%_AEC_output%.lenesc=%_AEC_output.escapechars%" & set %_AEC_output%=%_AEC_intermediate%
 Call :ClearVariablesByPrefix %_AddEscapeCharacters% _AddEscapeCharacters
 GoTo :EOF
@@ -787,55 +900,55 @@ REM endlocal & set "_len=" & set /a "%~1=%_len.count%" & exit /b %_len.count%
 echo How argument with ampersand in them work
 echo result : no argument with ampersand allowed byval
 
-REM echo argument with ^& ( )
-REM Call :EchoSingleArgumentTest A1rgum&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^& ( )
-REM Call :EchoSingleArgumentTest A2rgum^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^& ( )
-REM Call :EchoSingleArgumentTest A3rgum^^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^^^& ( )
-REM Call :EchoSingleArgumentTest A4rgum^^^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^^^^^& ( )
-REM Call :EchoSingleArgumentTest A5rgum^^^^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^^^^^^^& ( )
-REM Call :EchoSingleArgumentTest A6rgum^^^^^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^^^^^^^^^& ( )
-REM Call :EchoSingleArgumentTest A7rgum^^^^^^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^^^^^^^^^^^& ( )
-REM Call :EchoSingleArgumentTest A8rgum^^^^^^^&ent1 Argument2 ArgumentN
-REM echo.
+echo argument with ^& ( )
+Call :EchoSingleArgumentTest A1rgum&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^& ( )
+Call :EchoSingleArgumentTest A2rgum^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^& ( )
+Call :EchoSingleArgumentTest A3rgum^^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^^^& ( )
+Call :EchoSingleArgumentTest A4rgum^^^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^^^^^& ( )
+Call :EchoSingleArgumentTest A5rgum^^^^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^^^^^^^& ( )
+Call :EchoSingleArgumentTest A6rgum^^^^^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^^^^^^^^^& ( )
+Call :EchoSingleArgumentTest A7rgum^^^^^^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^^^^^^^^^^^& ( )
+Call :EchoSingleArgumentTest A8rgum^^^^^^^&ent1 Argument2 ArgumentN
+echo.
 
-REM echo argument with ^& ( )
-REM Call :EchoSingleArgumentTest "A1rgum&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^& ( )
-REM Call :EchoSingleArgumentTest "A2rgum^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^& ( )
-REM Call :EchoSingleArgumentTest "A3rgum^^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^^^& ( )
-REM Call :EchoSingleArgumentTest "A4rgum^^^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^^^^^& ( )
-REM Call :EchoSingleArgumentTest "A5rgum^^^^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^^^^^^^& ( )
-REM Call :EchoSingleArgumentTest "A6rgum^^^^^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^^^^^^^^^& ( )
-REM Call :EchoSingleArgumentTest "A7rgum^^^^^^&ent1 Argument2 ArgumentN
-REM echo.
-REM echo argument with ^^^^^^^^^^^^^^^& ( )
-REM Call :EchoSingleArgumentTest "A8rgum^^^^^^^&ent1 Argument2 ArgumentN
-REM echo.
+echo argument with ^& ( )
+Call :EchoSingleArgumentTest "A1rgum&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^& ( )
+Call :EchoSingleArgumentTest "A2rgum^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^& ( )
+Call :EchoSingleArgumentTest "A3rgum^^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^^^& ( )
+Call :EchoSingleArgumentTest "A4rgum^^^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^^^^^& ( )
+Call :EchoSingleArgumentTest "A5rgum^^^^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^^^^^^^& ( )
+Call :EchoSingleArgumentTest "A6rgum^^^^^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^^^^^^^^^& ( )
+Call :EchoSingleArgumentTest "A7rgum^^^^^^&ent1 Argument2 ArgumentN
+echo.
+echo argument with ^^^^^^^^^^^^^^^& ( )
+Call :EchoSingleArgumentTest "A8rgum^^^^^^^&ent1 Argument2 ArgumentN
+echo.
 
 echo argument with ^& ( )
 Call :EchoSingleArgumentTest "A1rgum&ent1 Argument2 ArgumentN"
