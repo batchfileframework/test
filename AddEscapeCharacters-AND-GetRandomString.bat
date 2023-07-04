@@ -26,6 +26,9 @@ REM if "[%silent%]"=="[true]" echo Silent mode is enabled
 REM if not "[%verbose%]"=="[]" echo Verbose level : %verbose%
 REM if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
+REM Call :PrintCharMap 
+REM call :NumberStringToArray-DEMO
+REM call :IsDelayedExpansionEnabled-DEMO
 call :AddEscapeCharacters-AND-GetRandomString-DEMOv2
 REM call :Performance-timer-DEMO
 REM call :EchoArguments-DEMO
@@ -63,16 +66,131 @@ REM Exit /b %returnvalue%
 REM Internal Functions 
 
 
+:IsDelayedExpansionEnabled-DEMO
+
+set testvalue=testtesttest
+
+echo Is delayed expansion enabled ? It should not be
+call :IsDelayedExpansionEnabled && echo It is enabled || echo It is not enabled
+
+setlocal enabledelayedexpansion
+echo.
+echo Is delayed expansion enabled ? It should be
+call :IsDelayedExpansionEnabled && echo It is enabled || echo It is not enabled
+endlocal
+
+GoTo :EOF
+
+:NumberStringToArray-DEMO
+Call :ClearVariablesByPrefix _SNA _ATS _RLZ _CopyArray
+Call :ClearVariablesByPrefix MyNumber
+
+REM goto :NumberStringToArray-DEMO-skip
+
+Call :NumberStringToArray "64 12 44 883 100 2 48 377" MyNumberArray
+set MyNumberArray
+
+echo.
+Call :ClearVariablesByPrefix MyNumberArray
+Call :NumberStringToArray "" MyNumberArray
+echo this should cause an error
+set MyNumberArray
+
+echo.
+echo single number array
+Call :ClearVariablesByPrefix MyNumberArray
+Call :NumberStringToArray "24" MyNumberArray
+set MyNumberArray
+
+echo.
+echo creating array, and sorting it
+Call :ClearVariablesByPrefix MyNumberArray
+Call :NumberStringToArray "64 12 44 883 100 2 48 377" MyNumberArray
+set MyNumberArray
+Call :SortNumberArray MyNumberArray
+echo.
+echo after sorting
+set MyNumberArray 
+
+echo.
+echo creating array, and sorting it, in reverse order
+Call :ClearVariablesByPrefix MyNumberArray
+Call :NumberStringToArray "64 12 44 883 100 2 48 377" MyNumberArray
+set MyNumberArray
+Call :SortNumberArray MyNumberArray DESCENDING
+echo.
+echo after sorting
+set MyNumberArray
+
+echo.
+echo Generating 10 random 3 digit number and sorting them
+Call :ClearVariablesByPrefix MyNumberArray
+set /a "NumberStringToArray_DEMO_loop=0"
+:NumberStringToArray-DEMO-loop
+call :GetRandomString 3 MyNumberArray[%NumberStringToArray_DEMO_loop%] NUMERICONLY ESCNOTLASTDIGIT NOLEN
+Call :RemoveLeadingZeros MyNumberArray[%NumberStringToArray_DEMO_loop%]
+set /a "NumberStringToArray_DEMO_loop+=1"
+if %NumberStringToArray_DEMO_loop% LSS 10 GoTo :NumberStringToArray-DEMO-loop
+set /a "MyNumberArray.ubound=%NumberStringToArray_DEMO_loop%-1"
+echo.
+echo original
+set MyNumberArray
+Call :SortNumberArray MyNumberArray 
+echo sorted ascending order
+set MyNumberArray
+Call :SortNumberArray MyNumberArray DESCENDING
+echo sorted descending order
+set MyNumberArray
+
+:NumberStringToArray-DEMO-skip
+
+echo.
+echo Generating 10 random 3 digit number and sorting them
+echo but this time as a string
+echo then this string gets sorted both direction
+Call :ClearVariablesByPrefix MyNumberArray
+set /a "NumberStringToArray_DEMO_loop=0"
+:NumberStringToArray-DEMO-loop2
+call :GetRandomString 3 MyNumberArray[%NumberStringToArray_DEMO_loop%] NUMERICONLY ESCNOTLASTDIGIT NOLEN
+Call :RemoveLeadingZeros MyNumberArray[%NumberStringToArray_DEMO_loop%]
+call set "MyNumberNew=%%MyNumberArray[%NumberStringToArray_DEMO_loop%]%% "
+set "MyNumberString=%MyNumberString%%MyNumberNew%"
+set /a "NumberStringToArray_DEMO_loop+=1"
+if %NumberStringToArray_DEMO_loop% LSS 10 GoTo :NumberStringToArray-DEMO-loop2
+set /a "MyNumberArray.ubound=%NumberStringToArray_DEMO_loop%-1"
+
+echo.
+echo Number string from GetRandom
+echo %MyNumberString%
+Call :NumberStringToArray "%MyNumberString%" MyNumberArrayAscending
+Call :SortNumberArray MyNumberArrayAscending
+Call :ArrayToString MyNumberArrayAscending MyNumberStringAscending " "
+echo Number string sorted ascending
+echo %MyNumberStringAscending%
+
+Call :NumberStringToArray "%MyNumberString%" MyNumberArrayDescending
+Call :SortNumberArray MyNumberArrayDescending DESCENDING
+Call :ArrayToString MyNumberArrayDescending MyNumberStringDescending " "
+echo Number string sorted descending
+echo %MyNumberStringDescending%
+
+GoTo :EOF
+
+
+
 :AddEscapeCharacters-AND-GetRandomString-DEMOv2
 
-goto :AddEscapeCharacters-AND-GetRandomString-DEMOv2-skip1
+
 
 REM set debug=true
 
 REM Call :PrintCharMap 
 REM goto :eof
 
-Call :ClearVariablesByPrefix _AEC _GRD my
+Call :ClearVariablesByPrefix _AEC _GRD _RML my
+
+goto :AddEscapeCharacters-AND-GetRandomString-DEMOv2-skip1
+
 echo new attempt>>randomstring.txt
 
 echo.
@@ -161,7 +279,7 @@ echo but also DONTESCAPE (everything but special characters)
 echo.
 Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] DONTESCAPE USESPACE USEEXCLAMATION USEQUOTES USEPERCENT USEDELIMITERS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
 
-:AddEscapeCharacters-AND-GetRandomString-DEMOv2-skip1
+
 
 del AddEscapeCharacters-AND-GetRandomString-DEMO.txt
 
@@ -197,11 +315,252 @@ Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 3
 Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 4 
 Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 5 
 
+:AddEscapeCharacters-AND-GetRandomString-DEMOv2-skip1
 
-REM Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] DONTESCAPE" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+del AddEscapeCharacters-AND-GetRandomString-DEMO.txt
+
+echo.
+echo generate with USEALLCHARS
+echo and output to file AddEscapeCharacters-AND-GetRandomString-DEMO.txt
+echo.
+Call :RunMultipleTimes 5 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>AddEscapeCharacters-AND-GetRandomString-DEMO.txt"
 
 
 
+echo. 
+echo Reading back from previous file, one line at a file 
+echo Using printline
+echo.
+Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 1 
+Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 2 
+Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 3 
+Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 4 
+Call :Printline AddEscapeCharacters-AND-GetRandomString-DEMO.txt 5 
+
+echo.
+echo read line 1 3 and 5 from AddEscapeCharacters-AND-GetRandomString-DEMO.txt
+
+set myLineNumbers[0]=1
+set myLineNumbers[1]=3
+set myLineNumbers[2]=5
+set myLineNumbers.ubound=2
+
+Call :ReadMultiLine "AddEscapeCharacters-AND-GetRandomString-DEMO.txt" myLineNumbers myOutputArray
+
+echo.
+echo direct echo of the array
+setlocal enabledelayedexpansion
+echo !myOutputArray[0]!
+echo !myOutputArray[1]!
+echo !myOutputArray[2]!
+endlocal 
+
+echo.
+echo echo using :RunMultipleTimes
+echo test0
+setlocal enabledelayedexpansion
+Call :RunMultipleTimes 3 "call call echo %%%%%%%%myOutputArray[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+endlocal
+echo test1
+Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo %%%%%%%%myOutputArray[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "endlocal"
+echo test2
+Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo %%%%%%%%%%%%%%%%myOutputArray[%%%%%%%%_RunMultipleTimes_index%%%%%%%%]%%%%%%%%%%%%%%%%" "endlocal"
+
+echo.
+echo actual values from set myOutputArray
+set myOutputArray
+
+
+echo.
+echo more tests
+setlocal enabledelayedexpansion
+Call :ReadMultiLine "AddEscapeCharacters-AND-GetRandomString-DEMO.txt" myLineNumbers myOutputArray
+echo -1
+Call :RunMultipleTimes 3 "echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!"
+echo 0
+Call :RunMultipleTimes 3 "call echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!"
+echo 1
+Call :RunMultipleTimes 3 "call echo !!myOutputArray[!_RunMultipleTimes_index!]!!"
+echo 2
+Call :RunMultipleTimes 3 "echo !!myOutputArray[!_RunMultipleTimes_index!]!!"
+echo -1
+Call :RunMultipleTimes 3 "call echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!"
+echo 0
+Call :RunMultipleTimes 3 "call call echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!"
+echo 1
+Call :RunMultipleTimes 3 "call call echo !!myOutputArray[!_RunMultipleTimes_index!]!!"
+echo 2
+Call :RunMultipleTimes 3 "call echo !!myOutputArray[!_RunMultipleTimes_index!]!!"
+echo -1
+Call :RunMultipleTimes 3 "call echo !!!!!!!!myOutputArray[!!!!_RunMultipleTimes_index!!!!]!!!!!!!!"
+echo 0
+Call :RunMultipleTimes 3 "call call echo !!!!!!!!myOutputArray[!!!!_RunMultipleTimes_index!!!!]!!!!!!!!"
+echo 1
+Call :RunMultipleTimes 3 "call call echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!"
+echo 2
+Call :RunMultipleTimes 3 "call echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!"
+endlocal
+
+
+
+
+
+
+
+
+
+
+
+
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo %%myOutputArray[%_RunMultipleTimes_index%]%%" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo %%%%myOutputArray[%%_RunMultipleTimes_index%%]%%%%" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo %%%%%%%%myOutputArray[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo %%%%%%%%%%%%%%%%myOutputArray[%%%%%%%%_RunMultipleTimes_index%%%%%%%%]%%%%%%%%%%%%%%%%" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%myOutputArray[%%%%%%%%%%%%%%%%_RunMultipleTimes_index%%%%%%%%%%%%%%%%]%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" "endlocal"
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo %%myOutputArray[%_RunMultipleTimes_index%]%%" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo %%%%myOutputArray[%%_RunMultipleTimes_index%%]%%%%" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo %%%%%%%%myOutputArray[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo %%%%%%%%%%%%%%%%myOutputArray[%%%%%%%%_RunMultipleTimes_index%%%%%%%%]%%%%%%%%%%%%%%%%" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%myOutputArray[%%%%%%%%%%%%%%%%_RunMultipleTimes_index%%%%%%%%%%%%%%%%]%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" "endlocal"
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo %%myOutputArray[%_RunMultipleTimes_index%]%%" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo %%%%myOutputArray[%%_RunMultipleTimes_index%%]%%%%" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo %%%%%%%%myOutputArray[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo %%%%%%%%%%%%%%%%myOutputArray[%%%%%%%%_RunMultipleTimes_index%%%%%%%%]%%%%%%%%%%%%%%%%" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%myOutputArray[%%%%%%%%%%%%%%%%_RunMultipleTimes_index%%%%%%%%%%%%%%%%]%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" "endlocal"
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo %%myOutputArray[%_RunMultipleTimes_index%]%%" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo %%%%myOutputArray[%%_RunMultipleTimes_index%%]%%%%" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo %%%%%%%%myOutputArray[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo %%%%%%%%%%%%%%%%myOutputArray[%%%%%%%%_RunMultipleTimes_index%%%%%%%%]%%%%%%%%%%%%%%%%" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%myOutputArray[%%%%%%%%%%%%%%%%_RunMultipleTimes_index%%%%%%%%%%%%%%%%]%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" "endlocal"
+REM echo now exclam
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo !!myOutputArray[!_RunMultipleTimes_index!]!!" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo !!!!!!!!myOutputArray[!!!!_RunMultipleTimes_index!!!!]!!!!!!!!" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo !!!!!!!!!!!!!!!!myOutputArray[!!!!!!!!_RunMultipleTimes_index!!!!!!!!]!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!myOutputArray[!!!!!!!!!!!!!!!!_RunMultipleTimes_index!!!!!!!!!!!!!!!!]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo !!myOutputArray[!_RunMultipleTimes_index!]!!" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo !!!!!!!!myOutputArray[!!!!_RunMultipleTimes_index!!!!]!!!!!!!!" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo !!!!!!!!!!!!!!!!myOutputArray[!!!!!!!!_RunMultipleTimes_index!!!!!!!!]!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!myOutputArray[!!!!!!!!!!!!!!!!_RunMultipleTimes_index!!!!!!!!!!!!!!!!]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo !!myOutputArray[!_RunMultipleTimes_index!]!!" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo !!!!!!!!myOutputArray[!!!!_RunMultipleTimes_index!!!!]!!!!!!!!" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo !!!!!!!!!!!!!!!!myOutputArray[!!!!!!!!_RunMultipleTimes_index!!!!!!!!]!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!myOutputArray[!!!!!!!!!!!!!!!!_RunMultipleTimes_index!!!!!!!!!!!!!!!!]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo !!myOutputArray[!_RunMultipleTimes_index!]!!" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo !!!!!!!!myOutputArray[!!!!_RunMultipleTimes_index!!!!]!!!!!!!!" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo !!!!!!!!!!!!!!!!myOutputArray[!!!!!!!!_RunMultipleTimes_index!!!!!!!!]!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!myOutputArray[!!!!!!!!!!!!!!!!_RunMultipleTimes_index!!!!!!!!!!!!!!!!]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "endlocal"
+REM echo inner variable with percent
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo !!myOutputArray[%_RunMultipleTimes_index%]!!" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo !!!!myOutputArray[%%_RunMultipleTimes_index%%]!!!!" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo !!!!!!!!myOutputArray[%%%%_RunMultipleTimes_index%%%%]!!!!!!!!" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo !!!!!!!!!!!!!!!!myOutputArray[%%%%%%%%_RunMultipleTimes_index%%%%%%%%]!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!myOutputArray[%%%%%%%%%%%%%%%%_RunMultipleTimes_index%%%%%%%%%%%%%%%%]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo !!myOutputArray[%_RunMultipleTimes_index%]!!" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo !!!!myOutputArray[%%_RunMultipleTimes_index%%]!!!!" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo !!!!!!!!myOutputArray[%%%%_RunMultipleTimes_index%%%%]!!!!!!!!" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo !!!!!!!!!!!!!!!!myOutputArray[%%%%%%%%_RunMultipleTimes_index%%%%%%%%]!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!myOutputArray[%%%%%%%%%%%%%%%%_RunMultipleTimes_index%%%%%%%%%%%%%%%%]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo !!myOutputArray[%_RunMultipleTimes_index%]!!" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo !!!!myOutputArray[%%_RunMultipleTimes_index%%]!!!!" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo !!!!!!!!myOutputArray[%%%%_RunMultipleTimes_index%%%%]!!!!!!!!" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo !!!!!!!!!!!!!!!!myOutputArray[%%%%%%%%_RunMultipleTimes_index%%%%%%%%]!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!myOutputArray[%%%%%%%%%%%%%%%%_RunMultipleTimes_index%%%%%%%%%%%%%%%%]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -0
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo !!myOutputArray[%_RunMultipleTimes_index%]!!" "endlocal"
+REM echo -1
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo !!!!myOutputArray[%%_RunMultipleTimes_index%%]!!!!" "endlocal"
+REM echo -2
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo !!!!!!!!myOutputArray[%%%%_RunMultipleTimes_index%%%%]!!!!!!!!" "endlocal"
+REM echo -3
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo !!!!!!!!!!!!!!!!myOutputArray[%%%%%%%%_RunMultipleTimes_index%%%%%%%%]!!!!!!!!!!!!!!!!" "endlocal"
+REM echo -4
+REM Call :RunMultipleTimes 3 "setlocal enabledelayedexpansion" "call call call echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!myOutputArray[%%%%%%%%%%%%%%%%_RunMultipleTimes_index%%%%%%%%%%%%%%%%]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "endlocal"
+REM echo.
+
+REM Call :ReadMultiLine "AddEscapeCharacters-AND-GetRandomString-DEMO.txt" myLineNumbers myOutputArray
+REM echo -1
+REM Call :RunMultipleTimes 3 "echo %%%%myOutputArray[%%_RunMultipleTimes_index%%]%%%%"
+REM echo 0
+REM Call :RunMultipleTimes 3 "call echo %%%%myOutputArray[%%_RunMultipleTimes_index%%]%%%%"
+REM echo 1
+REM Call :RunMultipleTimes 3 "call echo %%myOutputArray[%_RunMultipleTimes_index%]%%"
+REM echo 2
+REM Call :RunMultipleTimes 3 "echo %%myOutputArray[%_RunMultipleTimes_index%]%%"
+REM echo -1
+REM Call :RunMultipleTimes 3 "call echo %%%%myOutputArray[%%_RunMultipleTimes_index%%]%%%%"
+REM echo 0
+REM Call :RunMultipleTimes 3 "call call echo %%%%myOutputArray[%%_RunMultipleTimes_index%%]%%%%"
+REM echo 1
+REM Call :RunMultipleTimes 3 "call call echo %%myOutputArray[%_RunMultipleTimes_index%]%%"
+REM echo 2
+REM Call :RunMultipleTimes 3 "call echo %%myOutputArray[%_RunMultipleTimes_index%]%%"
+REM echo -1
+REM Call :RunMultipleTimes 3 "call echo %%%%%%%%myOutputArray[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+REM echo 0
+REM Call :RunMultipleTimes 3 "call call echo %%%%%%%%myOutputArray[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+REM echo 1
+REM Call :RunMultipleTimes 3 "call call echo %%%%myOutputArray[%%_RunMultipleTimes_index%%]%%%%"
+REM echo 2
+REM Call :RunMultipleTimes 3 "call echo %%%%myOutputArray[%%_RunMultipleTimes_index%%]%%%%"
 GoTo :EOF
 
 
@@ -218,7 +577,6 @@ Call :len myteststring.len2 myteststring
 Call :AddEscapeCharacters myteststring  myescapedstring
 Call :len myescapedstring.len2 myescapedstring
 
-:AddEscapeCharacters-AND-GetRandomString-DEMOv2
 :AddEscapeCharacters-AND-GetRandomString-DEMOv2-output
 echo I %myteststring.len% %myteststring.len2% "%myteststring%"
 echo O %myescapedstring.len% %myescapedstring.len2%  %myescapedstring%
@@ -551,52 +909,135 @@ if not "[%~4]"=="[]" shift & shift & GoTo :SetIfNotDefined
 set "_SetIfNotDefined_Output="
 GoTo :EOF
 
+::Usage Call :ReadMultiLine Filename ArrayOfLineNumbers OutputArray 
+:ReadMultiLine
+set "_ReadMultiLine_prefix=_RML"
+Call :SetIfNotDefined "%~1" _RML_Filename "%~2" _RML_LineNumberArray "%%%~2.lbound%%" _RML_LineNumberArray_index "%%%~2.ubound%%" _RML_LineNumberArray.ubound "%~3" _RML_OutputArray "%%%~3.ubound%%" _RML_OutputArray.ubound
+Call :SetIfNotDefined 0 _RML_LineNumberArray_index -1 _RML_OutputArray.ubound
+:ReadMultiLine-loop
+set /a "_RML_OutputArray.ubound+=1"
+Call :Readline "%_RML_Filename%" %%%_RML_LineNumberArray%[%_RML_LineNumberArray_index%]%% %_RML_OutputArray%[%_RML_OutputArray.ubound%]
+set /a "_RML_LineNumberArray_index+=1"
+if %_RML_LineNumberArray_index% LEQ %_RML_LineNumberArray.ubound% GoTo :ReadMultiLine-loop
+set /a "%~2.ubound=%_RML_LineNumberArray.ubound%"
+Call :ClearVariablesByPrefix %_ReadMultiLine_prefix% _ReadMultiLine
+GoTo :EOF
+
+::Usage Call :WriteLine Filename InputVariable
+:WriteLine
+
+
+GoTo :EOF
+
 ::Usage Call :Readline Filename LineNumber OutputVariable
 :Readline
 Call :SetIfNotDefined "%~1" _Readline_Filename "%~2" _Readline_LineNumber "%~3" _Readline_Output 0 _Readline_Index
-setlocal enabledelayedexpansion
-for /f "delims=" %%a in (%_Readline_Filename%) do (
-    set /a "_Readline_Index+=1"
-    if !_Readline_Index! equ %_Readline_LineNumber% set _Readline_Intermediate=%%a
-	if !_Readline_Index! equ %_Readline_LineNumber% GoTo :Readline-end
+set /a "_Readline_LineNumber-=1"
+if %_Readline_LineNumber% GTR 0 set "_ReadLine_skip=skip=%_Readline_LineNumber%" 
+for /f "%_ReadLine_skip% delims=" %%a in (%_Readline_Filename%) do (
+		set %_Readline_Output%=%%a
+		GoTo :Readline-end
 )
 :Readline-end
-endlocal & set %_Readline_Output%=%_Readline_Intermediate%
 Call :ClearVariablesByPrefix _Readline
 GoTo :EOF
 
-REM ::Usage Call :Printline Filename LineNumber 
-REM :Printline
-REM Call :SetIfNotDefined "%~1" _Printline_Filename "%~2" _Printline_LineNumber 0 _Printline_Index
-REM setlocal enabledelayedexpansion
-REM for /f "delims=" %%a in (%_Printline_Filename%) do (
-    REM set /a "_Printline_Index+=1"
-    REM if !_Printline_Index! equ %_Printline_LineNumber% echo %%a
-	REM if !_Printline_Index! equ %_Printline_LineNumber% GoTo :Printline-end
-REM )
-REM :Printline-end
-REM endlocal 
-REM Call :ClearVariablesByPrefix _Printline
-REM GoTo :EOF
 
 REM ::Usage Call :Printline Filename LineNumber 
 :Printline
 Call :SetIfNotDefined "%~1" _Printline_Filename "%~2" _Printline_LineNumber 0 _Printline_Index
-setlocal enabledelayedexpansion
-for /f "delims=" %%a in (%_Printline_Filename%) do (
-    set /a "_Printline_Index+=1"
-    REM if !_Printline_Index! equ %_Printline_LineNumber% echo %%a
-	if !_Printline_Index! equ %_Printline_LineNumber% (
-		endlocal
-		echo %%a
-		setlocal enabledelayedexpansion
-	)
-	if !_Printline_Index! equ %_Printline_LineNumber% GoTo :Printline-end
+set /a "_Printline_LineNumber-=1"
+if %_Printline_LineNumber% GTR 0 set "_ReadLine_skip=skip=%_Printline_LineNumber%" 
+for /f "%_ReadLine_skip% delims=" %%a in (%_Printline_Filename%) do (
+    echo %%a
+	GoTo :Printline-end
 )
 :Printline-end
-endlocal 
 Call :ClearVariablesByPrefix _Printline
 GoTo :EOF
+
+
+::Usage Call :CopyArray InputArray OutputArray
+:CopyArray
+Call :SetIfNotDefined "%~1" _CopyArray_InputArray "%~2" _CopyArray_OutputArray
+Call :SetIfNotDefined "%%%~1.lbound%%" _CopyArray_InputArray.lbound "%%%~1.ubound%%" _CopyArray_InputArray.ubound "%%%~2.lbound%%" _CopyArray_OutputArray
+Call :SetIfNotDefined 0 _CopyArray_InputArray.lbound 0 _CopyArray_OutputArray.lbound
+set /a "_CopyArray_InputArray_index=%_CopyArray_InputArray.lbound%"
+set /a "_CopyArray_OutputArray_index=%_CopyArray_OutputArray.lbound%"
+setlocal enabledelayedexpansion
+set _CopyArray_localscope=true
+:CopyArray-loop
+set "%_CopyArray_OutputString%[%_CopyArray_OutputArray_index%]=!%_CopyArray_InputArray%[%_CopyArray_InputArray_index%]!
+set /a "_CopyArray_InputArray_index+=1" & set /a "_CopyArray_OutputArray_index+=1"
+if %_CopyArray_InputArray_index% LEQ %_CopyArray_InputArray.ubound% GoTo :CopyArray-loop
+for /F "delims=" %%a in ('set %_NSTA_ArrayOfNumber% 2^>nul') do ( 
+	endlocal & set %%a 
+	)
+if defined _CopyArray_localscope endlocal
+
+GoTo :EOF
+
+
+::Usage Call :ArrayToString InputArray OutputString optional DelimiterChar
+:ArrayToString
+set "_ArrayToString_prefix=_ATS"
+Call :SetIfNotDefined "%~1" _ATS_InputArray "%~2" _ATS_OutputString 0 _ATS_index "%%%~1.ubound%%" _ATS_ubound "%~3" _ATS_delimiter
+REM Call :SetIfNotDefined " " _ATS_delimiter
+setlocal enabledelayedexpansion
+:ArrayToString-loop
+set _ATS_intermediate=!_ATS_intermediate!!%_ATS_InputArray%[%_ATS_index%]!!_ATS_delimiter!
+set /a "_ATS_index+=1"
+if %_ATS_index% LEQ %_ATS_ubound% GoTo :ArrayToString-loop
+REM Call :AddEscapeCharacters _ATS_intermediate
+endlocal & set %_ATS_OutputString%=%_ATS_intermediate%
+Call :ClearVariablesByPrefix %_ArrayToString_prefix% _ArrayToString
+GoTo :EOF
+
+::Usage Call :RemoveLeadingZeros InputVariable optional OutputVariable
+:RemoveLeadingZeros
+set "_RemoveLeadingZeros_prefix=_RLZ"
+Call :SetIfNotDefined "%~1" _RLZ_InputVariable "%~2" _RLZ_OutputVariable
+Call :SetIfNotDefined "%_RLZ_InputVariable%" _RLZ_OutputVariable
+setlocal enabledelayedexpansion
+set "_RLZ_string=%_RLZ_InputVariable%"
+set /a "_RLZ_number=!_RLZ_string!"
+endlocal & set "%_RLZ_OutputVariable%=%_RLZ_number%"
+Call :ClearVariablesByPrefix %_RemoveLeadingZeros_prefix% _RemoveLeadingZeros
+GoTo :EOF
+
+::Usage Call :NumberStringToArray StringOfNumbers OutputArray SortOrder
+:NumberStringToArray
+set "_NumberStringToArray_prefix=_NSTA"
+Call :SetIfNotDefined "%~1" _NSTA_StringOfNumbers "%~2" _NSTA_ArrayOfNumber "%~3" _NSTA_SortOrder 0 _NSTA_Index
+setlocal enabledelayedexpansion
+set _NSTA_localscope=true & set _NSTA_Index=%_NSTA_Index%
+for %%n in (%_NSTA_StringOfNumbers%) do ( set "%_NSTA_ArrayOfNumber%[!_NSTA_Index!]=%%n" & set /a _NSTA_Index+=1 )
+set /a "%_NSTA_ArrayOfNumber%.lbound=0" & set /a "%_NSTA_ArrayOfNumber%.ubound=!_NSTA_Index!-1"
+for /F "delims=" %%a in ('set %_NSTA_ArrayOfNumber% 2^>nul') do ( endlocal & set "%%a" )
+if defined _NSTA_localscope endlocal
+Call :ClearVariablesByPrefix "%_NumberStringToArray_prefix%" _NumberStringToArray
+GoTo :EOF
+
+::Usage Call :SortNumberArray InputArray SortOrder
+:SortNumberArray
+set "_SortNumberArray_prefix=_SNA"
+Call :SetIfNotDefined "%~1" _SNA_InputArray "%~2" _SNA_SortOrder 0 _SNA_InputArray.index 1 _SNA_nextindex 0 _SNA_InputArray.index2
+if "[%_SNA_SortOrder%]"=="[DESCENDING]" ( set "_SNA_SortOrder=lss" ) else ( set "_SNA_SortOrder=gtr" )
+call set "_SNA_InputArray.ubound=%%%_SNA_InputArray%.ubound%%
+:SortNumberArray-loop
+call set _SNA_current=%%%_SNA_InputArray%[%_SNA_InputArray.index%]%%
+call set _SNA_next=%%%_SNA_InputArray%[%_SNA_nextindex%]%%
+if %_SNA_current% %_SNA_SortOrder% %_SNA_next% ( set "%_SNA_InputArray%[%_SNA_InputArray.index%]=%_SNA_next%" & set "%_SNA_InputArray%[%_SNA_nextindex%]=%_SNA_current%" )
+set /a "_SNA_InputArray.index+=1" & set /a "_SNA_nextindex+=1"
+if %_SNA_InputArray.index% LSS %_SNA_InputArray.ubound% GoTo :SortNumberArray-loop
+set /a "_SNA_InputArray.index=0" & set /a "_SNA_nextindex=1" & set /a "_SNA_InputArray.index2+=1"
+if %_SNA_InputArray.index2% LEQ %_SNA_InputArray.ubound% GoTo :SortNumberArray-loop
+Call :ClearVariablesByPrefix "%_SortNumberArray_prefix%" _SNA
+GoTo :EOF
+
+:IsDelayedExpansionEnabled
+if "[!DelayedExpansion!]"=="[]" ( exit /b 0 ) else ( exit /b 1 )
+
 
 ::Usage Call :PrintCharMap FULLRANGE
 :PrintCharMap
@@ -606,49 +1047,10 @@ if "[%~1]"=="[FULLRANGE]" set /a "_PrintCharMap_index=0" & set /a "_PrintCharMap
 cmd /c exit %_PrintCharMap_index%
 setlocal enabledelayedexpansion
 echo %_PrintCharMap_index% !=exitcodeascii!
-
 endlocal
 set /a "_PrintCharMap_index+=1"
 if %_PrintCharMap_index% LEQ %_PrintCharMap_count% GoTo :PrintCharMap-loop
 GoTo :EOF
-
-rem <space> ()[]{}=;'+,`~    ! @"
-rem ^& ^< ^> ^^ ^| ^" ^! %
-rem escape function for regex
-rem escape function for  powershell
-rem escape function for web url style%20%
-
-
-REM if "!=exitcodeascii!"==""^" echo it is "
-
-REM if "!=exitcodeascii!"==" " echo it is space
-REM if "!=exitcodeascii!"=="(" echo it is (
-REM if "!=exitcodeascii!"==")" echo it is )
-REM if "!=exitcodeascii!"=="[" echo it is [
-REM if "!=exitcodeascii!"=="]" echo it is ]
-REM if "!=exitcodeascii!"=="{" echo it is {
-REM if "!=exitcodeascii!"=="}" echo it is }
-REM if "!=exitcodeascii!"=="=" echo it is =
-REM if "!=exitcodeascii!"==";" echo it is ;
-REM if "!=exitcodeascii!"=="'" echo it is '
-REM if "!=exitcodeascii!"=="+" echo it is +
-REM if "!=exitcodeascii!"=="," echo it is ,
-REM if "!=exitcodeascii!"=="`" echo it is `
-REM if "!=exitcodeascii!"=="~" echo it is ~
-REM if "!=exitcodeascii!"=="@" echo it is @
-
-REM if "!=exitcodeascii!"=="^!" echo it is exclamation
-
-REM if "!=exitcodeascii!"=="%%" echo it is %%
-REM if "!=exitcodeascii!"=="^" echo it is ^^
-REM if "!=exitcodeascii!"=="&" echo it is ^&
-REM if "!=exitcodeascii!"=="<" echo it is ^<
-REM if "!=exitcodeascii!"==">" echo it is ^>
-REM if "!=exitcodeascii!"=="|" echo it is ^|
-
-
-
-
 
 ::Usage Call :EchoArguments Argument1 Argument2 ArgumentN
 :EchoArguments
@@ -669,7 +1071,7 @@ Call :ClearVariablesByPrefix _EchoArguments
 GoTo :EOF
 
 ::Usage Call :lenByRef OutputResult %VariableName%
-:: 8172 max lenght, breaks batch file if len=8173 WRONG
+rem doesn't work ?
 :lenByVal
 setlocal enabledelayedexpansion
 set _len=%~2
@@ -697,7 +1099,9 @@ GoTo :len
     set "%~1=%len%"
     exit /b
 )
-
+rem find stackoverflow link for this
+rem return value should equal len
+rem lenbyval should work
 
 REM escape delimiters , reject delimiters
 REM separate count for escaped and included characters
@@ -705,8 +1109,6 @@ REM separate count for escaped and included characters
 :GetRandomString
 set "_GetRandomString_prefix=_GSR"
 Call :SetIfNotDefined "%~1" _GSR_count "%~2" _GSR_output
-REM set /a "_GSR_count=%~1"
-REM set "_GSR_output=%~2"
 set "_GSR_space_genlist=32 "
 set "_GSR_exclamation_genlist=33 "
 set "_GSR_quotes_genlist=34 "
@@ -731,7 +1133,9 @@ set "_GSR_bracket_esccharcount=0"
 set "_GSR_delimiter_esccharcount=3"
 set "_GSR_extdelimiter_esccharcount=0"
 :GetRandomString-arguments
+if "[%~3]" EQU "[NOLEN]" set "_GSR_nolen=true"
 if "[%~3]" EQU "[USEALLCHARS]" set "_GSR_useallchar=true"
+if "[%~3]" EQU "[NUMERICONLY]" set "_GSR_numeric=true"
 if "[%~3]" EQU "[DONTESCAPE]" set "_GSR_dontescape=true"
 if "[%~3]" EQU "[FULLRANGE]" set "_GSR_fullrange=true"
 if "[%~3]" EQU "[USESPECIALCHARS]" set "_GSR_special_genlist="
@@ -753,11 +1157,11 @@ if "[%~3]" EQU "[ESCEXTDELIMITERS]" ( set "_GSR_extdelimiter_esclist=39 43 64 96
 if "[%~3]" EQU "[ESCNOTLASTDIGIT]" ( set "_GSR_escnot_lastdigit=true" )
 if "[%~4]" NEQ "[]" ( shift & GoTo :GetRandomString-arguments )
 if "[%_GSR_useallchar%]" NEQ "[true]" set "_GSR_genlist=%_GSR_special_genlist%%_GSR_exclamation_genlist%%_GSR_space_genlist%%_GSR_quotes_genlist%%_GSR_percent_genlist%%_GSR_delimiter_genlist%%_GSR_bracket_genlist%%_GSR_extdelimiter_esclist%"
+if "[%_GSR_numeric%]" EQU "[true]" set "_GSR_genlist=32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126" 
 if "[%_GSR_dontescape%]"=="[true]" ( set "_GSR_special_esccharcount=0" & set "_GSR_quote_esccharcount=0" & set "_GSR_exclamation_esccharcount=0" & set "_GSR_percent_esccharcount=0" & set "_GSR_delimiter_esccharcount=0" & set "_GSR_special_escape_char=^" & set "_GSR_quotes_escape_char=^" & set "_GSR_percent_escape_char=%%" & set "_GSR_exclamation_escape_char=" & set "_GSR_delimiter_esclist=" & set "_GSR_delimiter_escape_char=^" )
 if "[%_GSR_fullrange%]"=="[true]" ( set "_GSR_random_min=0" & set "_GSR_random_max=255" ) else ( set "_GSR_random_min=32" & set "_GSR_random_max=126" )
 set /a "_GSR_index=0" & set /a "_GSR_regular_charcount=0" & set /a "_GSR_escapecount=0"
 setlocal enabledelayedexpansion
-REM set _GSR
 :GetRandomString-loop
 set "_GSR_escape_char=" & set "_GSR_escape_charcount=0" & set "_GSR_fillerchar="
 set /a "_GSR_next_ascii=%RANDOM% * (%_GSR_random_max% - %_GSR_random_min% + 1) / 32768 + %_GSR_random_min%"
@@ -772,17 +1176,17 @@ if "[!_GSR_next_ascii!]"=="[34]" ( set "_GSR_escape_char=%_GSR_quotes_escape_cha
 if "[!_GSR_next_ascii!]"=="[37]" ( set "_GSR_escape_char=%_GSR_percent_escape%" & set "_GSR_escape_charcount=!_GSR_percent_esccharcount!" )
 cmd /c exit !_GSR_next_ascii!
 if "[!=exitcodeascii!]" EQU "[]" set "_GSR_fillerchar= "
-REM echo S!_GSR_intermediate! E!_GSR_escape_char! X!=exitcodeascii! SC!_GSR_isspecialchar!
 set _GSR_intermediate=!_GSR_intermediate!!_GSR_escape_char!!=exitcodeascii!!_GSR_fillerchar!
 set /a "_GSR_index+=1"
 if "!_GSR_escape_char!" NEQ "" set /a "_GSR_escapecount+=!_GSR_escape_charcount!"
 set /a "_GSR_total_char=!_GSR_index!+!_GSR_escapecount!"
-REM if "!_GSR_escape_char!" NEQ "" set /a "_GSR_index+=1"
 if !_GSR_total_char! LSS 8030 if !_GSR_index! LSS !_GSR_count! GoTo :GetRandomString-loop
-if "[%_GSR_dontescape%]" NEQ "[true]" if "[%_GSR_escnot_lastdigit%]" NEQ "[true]" for %%a in (0 1 2 3 4 5 6 7 8 9) do (if "[!_GSR_intermediate:~-1!]"=="[%%a]" ( set /a "_GSR_escapecount+=1" & set _GSR_intermediate=!_GSR_intermediate:~,-1!^^%%a) )
+if "[%_GSR_dontescape%]" NEQ "[true]" if "[%_GSR_escnot_lastdigit%]" NEQ "[true]" for %%a in (0 1 2 3 4 5 6 7 8 9) do (if "[!_GSR_intermediate:~-1!]"=="[%%a]" ( set /a "_GSR_escapecount+=1" & set /a "_GSR_total_char+=1" & set _GSR_intermediate=!_GSR_intermediate:~,-1!^^%%a) )
 if "[%debug%]"=="[true]" echo R  !_GSR_index!     !_GSR_intermediate!
 if "[%debug%]"=="[true]" echo R  !_GSR_index!     !_GSR_intermediate!>>randomstring.txt
-endlocal & set /a "%_GSR_output%.len=%_GSR_index%" & set /a "%_GSR_output%.lentotal=%_GSR_total_char%" & set %_GSR_output%=%_GSR_intermediate%
+endlocal & set /a "%_GSR_output%.len=%_GSR_index%" & set /a "%_GSR_output%.lentotal=%_GSR_total_char%" & set /a "%_GSR_output%.lenesc=%_GSR_escapecount%/3" & set %_GSR_output%=%_GSR_intermediate%
+REM endlocal & if "[%_GSR_nolen%]" NEQ "[true]" ( set /a "%_GSR_output%.len=%_GSR_index%" & set /a "%_GSR_output%.lentotal=%_GSR_total_char%" & set /a "%_GSR_output%.lenesc=%_GSR_escapecount%" ) & set %_GSR_output%=%_GSR_intermediate%
+if "[%_GSR_nolen%]" EQU "[true]" set "%_GSR_output%.len=" & set "%_GSR_output%.lentotal=" & set "%_GSR_output%.lenesc="
 Call :ClearVariablesByPrefix %_GetRandomString_prefix% _GetRandomString
 goto :eof
 
@@ -790,7 +1194,7 @@ goto :eof
 :: Default configuration 
 :: Will escape space, quotes, exclamation, percent, special characters (& < > ^ |) and delimiters ()
 :: but not backets (( ) [ ] { }) or extra delimiters (' + ` ~ @)
-::Usage Call :AddEscapeCharacters optional  byref InputString optional OutputString
+::Usage Call :AddEscapeCharacters byref InputString optional OutputString
 :AddEscapeCharacters
 set "_AddEscapeCharacters_prefix=_AEC"
 Call :SetIfNotDefined "%~1" _AEC_input "%~2" _AEC_output
@@ -803,6 +1207,7 @@ set "_AEC_quotes_escape_char=^^^"
 set "_AEC_percent_escape_char=%%"
 set "_AEC_exclamation_escape_char=^^^"
 :AddEscapeCharacters-arguments
+if "[%~3]" EQU "[NOLEN]" set "_AEC_nolen=true"
 if "[%~3]" EQU "[NOTSPACE]" set "_AEC_space_escape_char=^"
 if "[%~3]" EQU "[NOTQUOTES]" set "_AEC_quotes_escape_char=^"
 if "[%~3]" EQU "[NOTEXCLAMATION]" set "_AEC_exclamation_escape_char=^^"
@@ -830,6 +1235,7 @@ if !_AEC_output.totalchars! LSS 8030 if "!%_AEC_input%:~%_AEC_input.index%,1!" N
 set "_AEC_last_char=!_AEC_intermediate:~-1!"
 if "[%_AEC_notlastdigit%]" NEQ ["true"] for %%a in (0 1 2 3 4 5 6 7 8 9) do ( if "[!_AEC_last_char!]"=="[%%a]" ( set /a "_AEC_input.escapechars+=1" & set /a "_AEC_output.totalchars+=1" & set _AEC_intermediate=!_AEC_intermediate:~,-1!^%%a) )
 endlocal & set /a "%_AEC_output%.len=%_AEC_input.index%" & set /a "%_AEC_output%.totallen=%_AEC_output.totalchars%" & set /a "%_AEC_output%.lenesc=%_AEC_output.escapechars%" & set %_AEC_output%=%_AEC_intermediate%
+if "[%_GSR_nolen%]" EQU "[true]" set /a "%_AEC_output%.len=" & set /a "%_AEC_output%.totallen=" & set /a "%_AEC_output%.lenesc="
 Call :ClearVariablesByPrefix %_AddEscapeCharacters% _AddEscapeCharacters
 GoTo :EOF
 
