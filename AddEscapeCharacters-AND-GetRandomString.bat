@@ -26,10 +26,13 @@ REM if "[%silent%]"=="[true]" echo Silent mode is enabled
 REM if not "[%verbose%]"=="[]" echo Verbose level : %verbose%
 REM if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
+Call :GetLineLenght-DEMO
+REM Call :CoinFlip-DEMO
+REM Call :ReadLineRange-DEMO
 REM Call :PrintCharMap 
 REM call :NumberStringToArray-DEMO
 REM call :IsDelayedExpansionEnabled-DEMO
-call :AddEscapeCharacters-AND-GetRandomString-DEMOv2
+REM call :AddEscapeCharacters-AND-GetRandomString-DEMOv2
 REM call :Performance-timer-DEMO
 REM call :EchoArguments-DEMO
 REM call :AddEscapeCharacters-AND-GetRandomString-DEMO
@@ -65,6 +68,107 @@ REM Exit /b %returnvalue%
 
 REM Internal Functions 
 
+
+:CoinFlip-DEMO
+
+Call :ClearVariablesByPrefix my
+
+echo.
+echo 9 coin flips using :rnd
+
+call :rnd "" 0 1 && echo flip 1 was heads || echo flip 1 was tails
+call :rnd "" 0 1 && echo flip 2 was heads || echo flip 2 was tails
+call :rnd "" 0 1 && echo flip 3 was heads || echo flip 3 was tails
+call :rnd "" 0 1 && echo flip 4 was heads || echo flip 4 was tails
+call :rnd "" 0 1 && echo flip 5 was heads || echo flip 5 was tails
+call :rnd "" 0 1 && echo flip 6 was heads || echo flip 6 was tails
+call :rnd "" 0 1 && echo flip 7 was heads || echo flip 7 was tails
+call :rnd "" 0 1 && echo flip 8 was heads || echo flip 8 was tails
+call :rnd "" 0 1 && echo flip 9 was heads || echo flip 9 was tails
+
+echo.
+echo 9 coin flips using :CoinFlip
+
+call :CoinFlip && echo flip 1 was heads || echo flip 1 was tails
+call :CoinFlip && echo flip 2 was heads || echo flip 2 was tails
+call :CoinFlip && echo flip 3 was heads || echo flip 3 was tails
+call :CoinFlip && echo flip 4 was heads || echo flip 4 was tails
+call :CoinFlip && echo flip 5 was heads || echo flip 5 was tails
+call :CoinFlip && echo flip 6 was heads || echo flip 6 was tails
+call :CoinFlip && echo flip 7 was heads || echo flip 7 was tails
+call :CoinFlip && echo flip 8 was heads || echo flip 8 was tails
+call :CoinFlip && echo flip 9 was heads || echo flip 9 was tails
+
+echo.
+echo 9 coin flips using :rnd with :RunMultipleTimes 
+Call :RunMultipleTimes 9 "call :CoinFlip && call echo flip %%%%_RunMultipleTimes_index%%%% was heads || call echo flip %%%%_RunMultipleTimes_index%%%% was tails"
+
+echo.
+echo 500 coin flips using :rnd, with only totals at the end
+set "_myheads=0"
+set "_mytails=0"
+set _mycounter=0
+:CoinFlip-DEMO-loop
+call :rnd "" 0 1 && set /a "_myheads+=1" || set /a "_mytails+=1"
+set /a "_mycounter+=1"
+if %_mycounter% LEQ 500 GoTo :CoinFlip-DEMO-loop
+echo 500 coin flips, final count : %_myheads% heads %_mytails% tails
+
+echo.
+echo 500 coin flips using :CoinFlip, with only totals at the end
+set "_myheads=0"
+set "_mytails=0"
+set _mycounter=0
+:CoinFlip-DEMO-loop2
+call :CoinFlip && set /a "_myheads+=1" || set /a "_mytails+=1"
+set /a "_mycounter+=1"
+if %_mycounter% LEQ 500 GoTo :CoinFlip-DEMO-loop2
+echo 500 coin flips, final count : %_myheads% heads %_mytails% tails
+
+GoTo :EOF
+
+
+:GetLineLenght-DEMO
+
+Call :ClearVariablesByPrefix my
+
+del GetLineLenght-DEMO.txt 2>nul
+echo.
+echo Creating 15 line file GetLineLenght-DEMO.txt, each line has more random characters than the previous
+set /a "_my_string_lenght=5"
+Call :RunMultipleTimes 15 "call :GetRandomString %%%%_my_string_lenght%%%% myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>GetLineLenght-DEMO.txt" "set /a _my_string_lenght+=5"
+
+set myLineNumber=3
+Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
+echo line number %myLineNumber%, length %myLength%
+
+set myLineNumber=5
+Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
+echo line number %myLineNumber%, length %myLength%
+
+set myLineNumber=11
+Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
+echo line number %myLineNumber%, length %myLength%
+
+set myLineNumber=15
+Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
+echo line number %myLineNumber%, length %myLength%
+
+GoTo :EOF
+
+
+:ReadLineRange-DEMO
+Call :ClearVariablesByPrefix _RLR my
+
+del ReadLineRange-DEMO.txt 2>nul
+Call :RunMultipleTimes 15 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>ReadLineRange-DEMO.txt"
+
+Call :ReadLineRange "ReadLineRange-DEMO.txt" 7 11 myLineArray
+
+echo.
+set myLineArray
+
+GoTo :EOF
 
 :IsDelayedExpansionEnabled-DEMO
 
@@ -897,7 +1001,7 @@ GoTo :EOF
 
 :: Usage Call :ClearVariablesByPrefix myPrefix
 :ClearVariablesByPrefix
-for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
+if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
 if "[%~2]" NEQ "[]" shift & GoTo :ClearVariablesByPrefix
 GoTo :EOF
 
@@ -908,6 +1012,132 @@ if not defined %_SetIfNotDefined_Output% set "%_SetIfNotDefined_Output%=%~1"
 if not "[%~4]"=="[]" shift & shift & GoTo :SetIfNotDefined
 set "_SetIfNotDefined_Output="
 GoTo :EOF
+
+
+
+::Usage Call :WriteLine Filename InputVariable
+:WriteLine
+
+
+GoTo :EOF
+
+::Usage Call :SortNumberString InputNumberString optional OutputBool
+:IsNumberStringSequential
+set "_IsNumberStringSequential_prefix=_INSS"
+
+Call :ClearVariablesByPrefix %_IsNumberStringSequential_prefix% _INSS
+GoTo :EOF NO it' s exit /b the result
+
+::Usage Call :SortNumberString InputNumberString optional OutputNumberString
+:SortNumberString
+
+
+for %%n in (%_NSTA_StringOfNumbers%) do ( set 
+
+REM for %%n in (%_NSTA_StringOfNumbers%) do ( set "%_NSTA_ArrayOfNumber%[!_NSTA_Index!]=%%n" & set /a _NSTA_Index+=1 )
+
+REM ::Usage Call :NumberStringToArray StringOfNumbers OutputArray SortOrder
+REM :NumberStringToArray
+REM set "_NumberStringToArray_prefix=_NSTA"
+REM Call :SetIfNotDefined "%~1" _NSTA_StringOfNumbers "%~2" _NSTA_ArrayOfNumber "%~3" _NSTA_SortOrder 0 _NSTA_Index
+REM setlocal enabledelayedexpansion
+REM set _NSTA_localscope=true & set _NSTA_Index=%_NSTA_Index%
+REM for %%n in (%_NSTA_StringOfNumbers%) do ( set "%_NSTA_ArrayOfNumber%[!_NSTA_Index!]=%%n" & set /a _NSTA_Index+=1 )
+REM set /a "%_NSTA_ArrayOfNumber%.lbound=0" & set /a "%_NSTA_ArrayOfNumber%.ubound=!_NSTA_Index!-1"
+REM for /F "delims=" %%a in ('set %_NSTA_ArrayOfNumber% 2^>nul') do ( endlocal & set "%%a" )
+REM if defined _NSTA_localscope endlocal
+REM Call :ClearVariablesByPrefix "%_NumberStringToArray_prefix%" _NumberStringToArray
+REM GoTo :EOF
+
+::Usage Call :WordWrap InputString LinesArray
+:WordWrap
+
+::Usage Call :WriteArray InputLineArray OutputFile
+:WriteArray
+::Usage Call :WriteLineAtLine InputVariable LineNumber OutputFile
+:WriteLineAtLine
+::Usage Call :WriteArrayAtLine InputLineArray LineNumber OutputFile
+:WriteArrayAtLine
+
+
+
+::Usage Call :FindAllEmptyLines Filename EmptyLinesArray
+:FindAllEmptyLines
+
+::Usage Call :FindAllLabels Filename LabelsArray
+:FindAllLabels
+
+::Usage Call :FindBatchFunctions Filename FunctionArray
+:FindBatchFunctions
+
+::Usage Call :FindBatchFunctionDependency Filename DependencyString
+:FindBatchFunctionDependency
+
+::Usage Call :GetLineCount Filename LineCount
+:GetLineCount
+
+REM returns erroneous values ?!?!
+::Usage Call :GetLineLenght Filename RowNumber Lenght
+:GetLineLenght
+set "_GetLineLenght_prefix=_GLL"
+Call :SetIfNotDefined "%~1" _GLL_Filename "%~2" _GLL_LineNumber  "%~3" _GLL_OutputLineLenght
+set /a "_GLL_LineNumber-=1"
+if %_GLL_LineNumber% GTR 0 set "_GLL_skip=skip=%_GLL_LineNumber%" 
+for /f "%_GLL_skip% delims=" %%a in (%_GLL_Filename%) do (
+		set _GLL_buffer=%%a
+		GoTo :GetLineLenght-end
+)
+:GetLineLenght-end
+Call :len _GLL_buffer_len _GLL_buffer
+set %_GLL_OutputLineLenght%=%_GLL_buffer_len%
+exit /b %_GLL_buffer_len%
+
+::Usage Call :ReadLineRange Filename StartLine StopLine LineArray
+:ReadLineRange
+set "_ReadLineRange_prefix=_RLR"
+Call :SetIfNotDefined "%~1" _RLR_Filename "%~2" _RLR_StartLine "%~3" _RLR_StopLine "%~4" _RLR_OutputLineArray "%%%~4.ubound%%" _RLR_OutputLineArray.ubound
+Call :SetIfNotDefined -1 _RLR_OutputLineArray.ubound
+set /a "_RLR_endbound=%_RLR_OutputLineArray.ubound%+%_RLR_StopLine%-%_RLR_StartLine%"
+set /a "_RLR_StartLine-=1"
+:ReadLineRange-loop
+set /a "_RLR_OutputLineArray.ubound+=1"
+if %_RLR_StartLine% GTR 0 set "_RLR_skip=skip=%_RLR_StartLine%" 
+for /f "%_RLR_skip% delims=" %%a in (%_RLR_Filename%) do (
+		set %_RLR_OutputLineArray%[%_RLR_OutputLineArray.ubound%]=%%a
+		GoTo :ReadLineRange-end
+)
+:ReadLineRange-end
+set /a "_RLR_StartLine+=1"
+if %_RLR_OutputLineArray.ubound% LEQ %_RLR_endbound% GoTo :ReadLineRange-loop
+set /a "%_RLR_OutputLineArray%.ubound=%_RLR_OutputLineArray.ubound%"
+GoTo :EOF
+
+REM ::Usage Call :ReadLineRange Filename StartLine StopLine LineArray
+REM :ReadLineRange
+REM set "_ReadLineRange_prefix=_RLR"
+REM Call :SetIfNotDefined "%~1" _RLR_Filename "%~2" _RLR_StartLine "%~3" _RLR_StopLine "%~4" _RLR_OutputLineArray "%%%~4.ubound%%" _RLR_OutputLineArray.ubound
+REM Call :SetIfNotDefined -1 _RLR_OutputLineArray.ubound
+REM set /a "_RLR_count=%_RLR_StopLine%-%_RLR_StartLine%"
+REM set /a "_RLR_endbound=%_RLR_OutputLineArray.ubound%+%_RLR_count%"
+REM set _RLR
+REM set _RLR_NextOutputValue=%_RLR_OutputLineArray%[-999]
+REM if %_RLR_StartLine% GTR 0 set "_RLR_skip=skip=%_RLR_StartLine%" 
+REM for /f "%_RLR_skip% delims=" %%a in (%_RLR_Filename%) do (
+REM		echo found row test %%a
+REM		REM set /a "_RLR_OutputLineArray.ubound+=1"
+REM		call set /a "_RLR_OutputLineArray.ubound+=1"
+REM		echo set _RLR_NextOutputValue=%_RLR_OutputLineArray%[%_RLR_OutputLineArray.ubound%]
+REM		REM set _RLR_NextOutputValue=%_RLR_OutputLineArray%[%_RLR_OutputLineArray.ubound%]
+REM		call set _RLR_NextOutputValue=%_RLR_OutputLineArray%[%_RLR_OutputLineArray.ubound%]
+REM		echo _RLR_NextOutputValue %_RLR_NextOutputValue%
+REM		call echo _RLR_NextOutputValue %_RLR_NextOutputValue%
+REM		REM set %_RLR_OutputLineArray%[%_RLR_OutputLineArray.ubound%]=%%a
+REM		set %_RLR_NextOutputValue%=%%a
+REM )
+REM		if %_RLR_OutputLineArray.ubound% GEQ %_RLR_endbound% GoTo :ReadLineRange-end
+REM :ReadLineRange-end
+REM REM set /a "%_RLR_OutputLineArray%.ubound=%_RLR_OutputLineArray.ubound%"
+REM GoTo :EOF
 
 ::Usage Call :ReadMultiLine Filename ArrayOfLineNumbers OutputArray 
 :ReadMultiLine
@@ -921,12 +1151,6 @@ set /a "_RML_LineNumberArray_index+=1"
 if %_RML_LineNumberArray_index% LEQ %_RML_LineNumberArray.ubound% GoTo :ReadMultiLine-loop
 set /a "%~2.ubound=%_RML_LineNumberArray.ubound%"
 Call :ClearVariablesByPrefix %_ReadMultiLine_prefix% _ReadMultiLine
-GoTo :EOF
-
-::Usage Call :WriteLine Filename InputVariable
-:WriteLine
-
-
 GoTo :EOF
 
 ::Usage Call :Readline Filename LineNumber OutputVariable
@@ -1051,6 +1275,46 @@ endlocal
 set /a "_PrintCharMap_index+=1"
 if %_PrintCharMap_index% LEQ %_PrintCharMap_count% GoTo :PrintCharMap-loop
 GoTo :EOF
+
+::Usage Call :rnd Output optional Min optional Max
+:: returns 0-100, based on tenth of a second of %time%
+:: Unless optional min / max are specified
+:rnd
+if "[%~2]"=="[]" ( set /a "_rnd_min=0" ) else ( set /a "_rnd_min=%~2" )
+if "[%~3]"=="[]" ( set /a "_rnd_max=100" ) else ( set /a "_rnd_max=%~3" )
+set /a _rnd=%RANDOM% * (%_rnd_max% - %_rnd_min% + 1) / 32768 + %_rnd_min%
+if "[%~1]" NEQ "[]" set %~1=%_rnd%
+exit /b %_rnd% & Call :ClearVariablesByPrefix _rnd
+
+:CoinFlip
+set /a _CoinFlip=%RANDOM% * (1 - 0 + 1) / 32768 + 0
+if "[%~1]" NEQ "[]" if "[%_CoinFlip%]" EQU 0 ( set "%~1=heads" ) else ( set "%~1=tails" )
+exit /b %_CoinFlip% & set "_CoinFlip="
+
+:: Set EchoArrayPrefix EchoArraySuffix to insert text before or after
+:: Example set EchoArrayPrefix=InputArray[%%index%%]=
+:: EchoArray InputArray optional start optional end
+:EchoArray
+set /a index=0 
+set /a limit=2147483647
+if not ["%~2"]==[""] set /a index=%~2
+if not ["%~3"]==[""] set /a limit=%~3
+call set "lbound=%%%~1.lbound%%" 
+call set "ubound=%%%~1.ubound%%"
+call set "len=%%%~1.len%%"
+call set "next=%%%~1.next%%"
+call set "previous=%%%~1.previous%%"
+if not ["%lbound%"]==[""] call echo %~1.lbound %%%~1.lbound%%
+if not ["%ubound%"]==[""] call echo %~1.ubound %%%~1.ubound%%
+if not ["%len%"]==[""] call echo %~1.len %%%~1.len%%
+if not ["%next%"]==[""] call echo %~1.next %%%~1.next%%
+if not ["%previous%"]==[""] call echo %~1.previous %%%~1.previous%%
+:EchoArray-internal-loop
+if not defined %1[%index%] GoTo :EOF
+call echo %EchoArrayPrefix%%%%1[%index%]%%%EchoArraySuffix%
+set /a index+=1
+if %index% GTR %limit% goto :EOF
+GoTo :EchoArray-internal-loop
 
 ::Usage Call :EchoArguments Argument1 Argument2 ArgumentN
 :EchoArguments
