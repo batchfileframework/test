@@ -130,29 +130,36 @@ GoTo :EOF
 
 :GetLineLenght-DEMO
 
-Call :ClearVariablesByPrefix my
+Call :ClearVariablesByPrefix my _GLL
 
 del GetLineLenght-DEMO.txt 2>nul
 echo.
-echo Creating 15 line file GetLineLenght-DEMO.txt, each line has more random characters than the previous
+echo Creating 15 line file GetLineLenght-DEMO.txt, each line has 5 more random characters than the previous
 set /a "_my_string_lenght=5"
 Call :RunMultipleTimes 15 "call :GetRandomString %%%%_my_string_lenght%%%% myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>GetLineLenght-DEMO.txt" "set /a _my_string_lenght+=5"
 
 set myLineNumber=3
 Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
-echo line number %myLineNumber%, length %myLength%
+echo line number %myLineNumber%, length %myLength% (EL) %errorlevel%
 
 set myLineNumber=5
 Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
-echo line number %myLineNumber%, length %myLength%
+echo line number %myLineNumber%, length %myLength% (EL) %errorlevel%
 
 set myLineNumber=11
 Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
-echo line number %myLineNumber%, length %myLength%
+echo line number %myLineNumber%, length %myLength% (EL) %errorlevel%
 
 set myLineNumber=15
 Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
-echo line number %myLineNumber%, length %myLength%
+echo line number %myLineNumber%, length %myLength% (EL) %errorlevel%
+
+echo.
+echo How many line does GetLineLenght-DEMO.txt have ?
+Call :GetLineCount GetLineLenght-DEMO.txt
+echo answer from errorlevel : %errorlevel%
+Call :GetLineCount GetLineLenght-DEMO.txt myoutput
+echo answer from myoutput : %myoutput%
 
 GoTo :EOF
 
@@ -1066,6 +1073,11 @@ REM GoTo :EOF
 
 ::Usage Call :FindAllLabels Filename LabelsArray
 :FindAllLabels
+REM for each line of text
+REM loop through each char 
+REM if it's not space tab or semicolon, this is not a label
+REM maybe use delim=: ?
+REM once semicolon, continue until space or tab or end of line is found, this is the label
 
 ::Usage Call :FindBatchFunctions Filename FunctionArray
 :FindBatchFunctions
@@ -1073,8 +1085,17 @@ REM GoTo :EOF
 ::Usage Call :FindBatchFunctionDependency Filename DependencyString
 :FindBatchFunctionDependency
 
-::Usage Call :GetLineCount Filename LineCount
+:GetLongestLine
+
+::Usage Call :GetLineCount Filename optional LineCount
 :GetLineCount
+set "_GetLineCount_prefix=_GLC"
+Call :SetIfNotDefined "%~1" _GLC_Filename "%~2" _GLC_OutputLineCount
+set /a "_GLC_LineCount=0"
+for /f "delims=" %%a in (%_GLC_Filename%) do ( set /a "_GLC_LineCount+=1" )
+if "[%_GLC_OutputLineCount%]" NEQ "[]" set /a "%_GLC_OutputLineCount%=%_GLC_LineCount%"
+Call :ClearVariablesByPrefix %_GetLineCount_prefix% _GetLineCount & exit /b %_GLC_LineCount% 
+
 
 REM returns erroneous values ?!?!
 ::Usage Call :GetLineLenght Filename RowNumber Lenght
@@ -1090,7 +1111,7 @@ for /f "%_GLL_skip% delims=" %%a in (%_GLL_Filename%) do (
 :GetLineLenght-end
 Call :len _GLL_buffer_len _GLL_buffer
 set %_GLL_OutputLineLenght%=%_GLL_buffer_len%
-exit /b %_GLL_buffer_len%
+Call :ClearVariablesByPrefix %_GetLineLenght_prefix% _GetLineLenght & exit /b %_GLL_buffer_len% 
 
 ::Usage Call :ReadLineRange Filename StartLine StopLine LineArray
 :ReadLineRange
