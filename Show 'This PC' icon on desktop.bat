@@ -25,9 +25,11 @@ if "[%silent%]"=="[true]" echo Silent mode is enabled
 if not "[%verbose%]"=="[]" echo Verbose level : %verbose%
 if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
+call :Text-File-Manipulation-DEMO
 REM call :trim-DEMO
-
-call :AddEscapeCharacters-AND-GetRandomString-DEMO
+REM Call :LTrim-RTrim-DEMO
+REM call :Join-DEMO
+REM call :AddEscapeCharacters-AND-GetRandomString-DEMO
 REM call :AddEscapeCharacters-DEMO
 REM call :runps-DEMO
 REM call :CharArray2String-DEMO
@@ -45,6 +47,163 @@ REM Call :SetNonEmptyValueOnlyIfNotDefined-DEMO
 REM Call :EchoArray-DEMO
 GoTo :END
 
+:Text-File-Manipulation-DEMO
+
+choose 5 static phrases
+write 5 more static phrase and put them in an array
+put in an array 5 more lines with poison characters
+Put 10 random lines in a new files
+Put 10 more random lines in an array
+make 3 variables with random text
+
+write array to a file
+
+write 1 static phrase to that file at a line
+write 3 static phrases to 3 places in one go
+
+write content of a file, to the end of a file, to the begining of a file and in the middle of a file
+
+search a file for a text
+
+insert new text before the search text
+insert new text after the search text
+replace the line with search text, with new text
+replace the search text only with the new text
+
+search a file for a text that occurs multiple times
+insert text before each search text occurance
+insert text after each search text occurance
+replace each occurance line that includes search text, with the new text
+replace the search text only, with the new text
+
+repeat but only the first occurence, only the last occurance, only the nth occurance, only the nth through mth occurance
+
+
+write 
+
+
+GoTo :EOF
+
+
+
+:LTrim-RTrim-DEMO
+
+set myvalue=
+
+echo.
+echo ltrim with various amounts of spaces and tabs before the word Hello.
+Call :ltrim myvalue " Hello."
+echo output:%myvalue%^|
+Call :ltrim myvalue "  Hello."
+echo output:%myvalue%^|
+Call :ltrim myvalue "   Hello."
+echo output:%myvalue%^|
+Call :ltrim myvalue "      Hello."
+echo output:%myvalue%^|
+Call :ltrim myvalue "	Hello."
+echo output:%myvalue%^|
+Call :ltrim myvalue "				Hello."
+echo output:%myvalue%^|
+Call :ltrim myvalue "	 	 	 	 	  	 	 	 	 Hello."
+echo output:%myvalue%^|
+
+echo.
+echo The same thing but ByRef instead of ByVal
+
+set myinput= Hello.
+Call :ltrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=  Hello.
+Call :ltrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=   Hello.
+Call :ltrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=      Hello.
+Call :ltrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=	Hello.
+Call :ltrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=				Hello.
+Call :ltrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=	 	 	 	 	  	 	 	 	 Hello.
+Call :ltrim myvalue myinput
+echo output:%myvalue%^|
+
+echo.
+echo rtrim with various amounts of spaces and tabs after the word Hello.
+Call :rtrim myvalue "Hello. "
+echo output:%myvalue%^|
+Call :rtrim myvalue "Hello.  "
+echo output:%myvalue%^|
+Call :rtrim myvalue "Hello.   "
+echo output:%myvalue%^|
+Call :rtrim myvalue "Hello.      "
+echo output:%myvalue%^|
+Call :rtrim myvalue "Hello.	"
+echo output:%myvalue%^|
+Call :rtrim myvalue "Hello.				"
+echo output:%myvalue%^|
+Call :rtrim myvalue "Hello.	 	 	 	 	  	 	 	 	 "
+echo output:%myvalue%^|
+
+echo.
+echo The same thing but ByRef instead of ByVal
+
+set myinput=Hello. 
+Call :rtrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=Hello.  
+Call :rtrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=Hello.   
+Call :rtrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=Hello.      
+Call :rtrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=Hello.
+Call :rtrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=Hello.				
+Call :rtrim myvalue myinput
+echo output:%myvalue%^|
+set myinput=Hello.	 	 	 	 	  	 	 	 	 
+Call :rtrim myvalue myinput
+echo output:%myvalue%^|
+
+
+
+GoTo :EOF
+
+:Join-DEMO
+
+set myvalue=
+
+call :join myvalue "This " "is " "a " "sentence"
+echo output %myvalue% & set myvalue=
+echo.
+
+call :join myvalue joindelimiter " " "This" "is" "a" "sentence"
+echo output %myvalue% & set myvalue=
+echo.
+
+call :join myvalue joindelimiter " " "This" "is" "a" "sentence. " joincleardelimiter "This " "is " "a " "sentence"
+echo output %myvalue% & set myvalue=
+echo.
+
+call :join myvalue joindelimiter "W" "This" "is" "a" "sentence. " joincleardelimiter "This " "is " "a " "sentence"
+echo output %myvalue% & set myvalue=
+echo.
+
+set myextravalue=THISISTHEEXTRAVALUE
+call :join myvalue joindelimiter " " "This" "is" "myextravalue" "sentence. " joincleardelimiter "This " "is " "a " "sentence"
+echo output %myvalue% & set myvalue=
+echo.
+
+GoTo :EOF
 
 :AddEscapeCharacters-AND-GetRandomString-DEMO
 
@@ -4249,7 +4408,6 @@ call set "%~2=%%_Mid_input:~%_Mid_start%,%~3%%"
 set "_Mid_input="
 GoTo :EOF
 
-
 ::Usage Call :LeftCut "%InputVariable%" OutputVariable lenght
 :LeftCut
 set "LeftCut_input=%~1"
@@ -4303,11 +4461,70 @@ GoTo :EOF
 :ucase
 :lcase
 REM :split
+
+::Usage Call :join OutputString InputString1 InputString2 InputString3 InputStringN
 :join
+setlocal enabledelayedexpansion
+set _join_output=%~1
+set _join_intermediate=!%~1!
+:join-setup
+if "[%~2]"=="[joindelimiter]" ( set "_join_delimiter=%~3" & shift & shift & GoTo :join-setup )
+if "[%~2]"=="[joincleardelimiter]" ( set "_join_delimiter=" & shift & GoTo :join-setup )
+if defined %~2 ( 
+		set _join_string=!%~2!
+	) else ( 
+		set _join_string=%~2
+	)
+if "[!_join_intermediate!]"=="[]" (
+	set _join_intermediate=!_join_string!
+) else (
+	set _join_intermediate=!_join_intermediate!!_join_delimiter!!_join_string!
+)
+if "[%~3]" NEQ "[]" shift & GoTo :join-setup
+endlocal & set %_join_output%=%_join_intermediate%
+GoTo :EOF
+
+::Usage Call :joinarray OutputArray InputArray1 InputArray2 InputArrayN
+:joinarray
+
 :startwith
 :endwith
+
+
+::Usage Call :ltrim OutputVariable Input
 :ltrim
+setlocal enabledelayedexpansion
+set "TAB=	"
+set "_ltrim_output=%~1"
+set "_ltrim_input=%~2"
+if defined %~2 ( set "_ltrim_input=!%~2!" ) 
+set /a "_ltrim_index=0"
+:ltrim-loop
+set "_ltrim_char=!_ltrim_input:~%_ltrim_index%,1!
+if "[!_ltrim_char!]" EQU "[%TAB%]" ( set /a "_ltrim_index+=1" & GoTo :ltrim-loop )
+if "[!_ltrim_char!]" EQU "[ ]" ( set /a "_ltrim_index+=1" & GoTo :ltrim-loop )
+set _ltrim_intermediate=!_ltrim_input:~%_ltrim_index%!
+endlocal & set %_ltrim_output%=%_ltrim_intermediate%
+GoTo :EOF
+
+
+
 :rtrim
+setlocal enabledelayedexpansion
+set "TAB=	"
+set "_rtrim_output=%~1"
+set "_rtrim_input=%~2"
+if defined %~2 ( set "_rtrim_input=!%~2!" ) 
+set /a "_rtrim_index=1"
+:rtrim-loop
+set "_rtrim_mid=!_rtrim_input:~-%_rtrim_index%!"
+set "_rtrim_char=!_rtrim_mid:~0,1!"
+if "[!_rtrim_char!]" EQU "[%TAB%]" ( set /a "_rtrim_index+=1" & GoTo :rtrim-loop )
+if "[!_rtrim_char!]" EQU "[ ]" ( set /a "_rtrim_index+=1" & GoTo :rtrim-loop )
+set _rtrim_intermediate=!_rtrim_input:~,-%_rtrim_index%!
+endlocal & set %_rtrim_output%=%_rtrim_intermediate%
+GoTo :EOF
+
 :format
 :isalpha
 :isdigit
@@ -4446,8 +4663,6 @@ set /a FindArrayBounds.index=0
 REM call echo 11 call set /a "FindArrayBounds.current=%%FindArrayBounds[%FindArrayBounds.index%]%%"
 call set /a "FindArrayBounds.current=%%FindArrayBounds[%FindArrayBounds.index%]%%" 2>nul
 if %FindArrayBounds.current% EQU 0 if "[%FindArrayBounds.IsZeroDefined%]"=="[false]" GoTo :FindArrayBounds-loop-next-iteration
-echo if %FindArrayBounds.current% lss %FindArrayBounds.lowestvalue% set /a "FindArrayBounds.lowestvalue=%FindArrayBounds.current%"
-echo if %FindArrayBounds.current% gtr %FindArrayBounds.highestvalue% set /a "FindArrayBounds.highestvalue=%FindArrayBounds.current%"
 if %FindArrayBounds.current% lss %FindArrayBounds.lowestvalue% set /a "FindArrayBounds.lowestvalue=%FindArrayBounds.current%"
 if %FindArrayBounds.current% gtr %FindArrayBounds.highestvalue% set /a "FindArrayBounds.highestvalue=%FindArrayBounds.current%"
 REM echo lowest %FindArrayBounds.lowestvalue% highest %FindArrayBounds.highestvalue%

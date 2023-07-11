@@ -26,7 +26,8 @@ REM if "[%silent%]"=="[true]" echo Silent mode is enabled
 REM if not "[%verbose%]"=="[]" echo Verbose level : %verbose%
 REM if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
-Call :GetLineLenght-DEMO
+Call :InsertTextAtLineNumber-DEMO 
+REM Call :GetLineLenght-DEMO
 REM Call :CoinFlip-DEMO
 REM Call :ReadLineRange-DEMO
 REM Call :PrintCharMap 
@@ -67,6 +68,159 @@ GoTo :EOF
 REM Exit /b %returnvalue%
 
 REM Internal Functions 
+
+:InsertTextAtLineNumber-DEMO 
+
+Call :ClearVariablesByPrefix my _ILALN
+GoTo :InsertTextAtLineNumber-DEMO-skip
+
+del GetLineLenght-DEMO.txt 2>nul
+
+echo.
+echo Creating 15 line file GetLineLenght-DEMO.txt, each line has 5 more random characters than the previous
+set /a "_my_string_lenght=5"
+Call :RunMultipleTimes 15 "call :GetRandomString %%%%_my_string_lenght%%%% myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>GetLineLenght-DEMO.txt" "set /a _my_string_lenght+=5"
+
+:InsertTextAtLineNumber-DEMO-skip
+
+del GetLineLenght-DEMO.2.txt 2>nul
+del GetLineLenght-DEMO.3.txt 2>nul
+
+echo.
+REM echo Inserting "MY TEST TEST" on line 9
+
+:Argument-type-finder
+set myvariable=This is the content of a variable
+
+set myarray[0]=This is the content of element 0
+set myarray[1]=This is the content of element 1
+set myarray[2]=This is the content of element 2
+set myarray.ubound=2
+
+echo.
+echo argument is text without spaces      MYTESTTEST
+Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 MYTESTTEST
+echo.
+echo argument is text with spaces         "MY TEST TEST"
+Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 "MY TEST TEST"
+REM echo.
+REM echo argument is text poison char         "MY TEST ^& TEST"
+REM Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 "MY TEST ^& TEST"
+REM echo.
+REM echo argument is text poison char         "MY TEST & TEST"
+REM Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 "MY TEST & TEST"
+REM echo.
+REM echo argument is text poison char         "MY TEST ^"^& TEST"
+REM Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 "MY TEST ^"& TEST"
+REM echo.
+REM echo argument is text poison char         MY^^ TEST^^ TEST
+REM Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 MY^ TEST^ TEST
+REM echo.
+REM echo argument is text poison char         MY^^ TEST^^ ^^^&^^ TEST
+REM Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 MY^ TEST^ ^&^ TEST
+REM echo.
+REM echo argument is text poison char         MY^^^^ TEST^^^^ ^^^^^&^^^^ TEST
+REM Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 MY^^ TEST^^ ^^&^^ TEST
+REM echo.
+REM echo argument is text poison char         MY^^^^^^ TEST^^^^^^ ^^^^^^^&^^^^^^ TEST
+REM Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 MY^^^ TEST^^^ ^^^&^^^ TEST
+echo.
+echo argument is a variable
+Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 myvariable
+echo.
+echo argument is an array with ubound set
+Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 myarray
+echo.
+echo argument is an array without ubound set
+set "myarray.ubound="
+Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 myarray
+echo.
+REM echo argument is an array without ubound set
+echo argument is a valid existing relative file path
+Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 GetLineLenght-DEMO.2.txt
+echo.
+echo argument is a valid existing absolute folder path
+Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 c:\windows\
+echo.
+echo argument is a valid existing absolute file
+Call :InsertTextAtLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.2.txt 9 C:\Windows\System32\calc.exe
+
+set myarray2[0]=This is the content of element 0 from myarray2
+set myarray2[1]=This is the content of element 1 from myarray2
+set myarray2[2]=This is the content of element 2 from myarray2
+
+echo. 
+echo repeat all previous command, using :InsertMultipleTextAtMultipleLineNumber
+Call :InsertMultipleTextAtMultipleLineNumber GetLineLenght-DEMO.txt GetLineLenght-DEMO.3.txt 9 MYTESTTEST 9 "MY TEST TEST" 9 myvariable 9 myarray 9 myarray2 9 GetLineLenght-DEMO.3.txt 9 c:\windows\ 9 C:\Windows\System32\calc.exe 
+
+
+
+
+
+
+
+REM if not true==true (
+
+REM echo.
+REM echo ECHO ARGUMENTS
+REM set _ITALN_temp=%4
+
+REM set "_ITALN_temp2=%4"
+
+REM set _ITALN_temp
+
+REM echo %4
+REM setlocal enabledelayedexpansion
+REM echo %4
+REM endlocal
+
+REM echo %~4
+REM echo %~a4
+REM setlocal enabledelayedexpansion
+REM echo %~4
+REM endlocal
+
+REM echo "%~4"
+REM echo "%~a4"
+REM setlocal enabledelayedexpansion
+REM echo "%~4"
+REM endlocal
+REM echo ECHO ARGUMENTS  
+REM )
+REM check if it' s a variable, if yes, it's byref
+REM check if %~3[ is defined, if yes it's an arround, find the ubound
+REM still no ? check if it' s a file that exists
+REM then it's just text
+
+REM if defined "MYTESTTEST" ( echo #4 is defined as single var ) else ( echo #4 is not defined as single var )
+REM if defined "%~4" ( echo #4 is defined as single var ) else ( echo #4 is not defined as single var )
+REM if defined "%~4[" ( echo #4 is defined as array ) else ( echo #4 is not defined as array )
+
+REM if defined %~4[ ( echo #4 is defined as array ) else ( echo #4 is not defined as array )
+
+REM this might work better as a macro
+REM if defined %4 ( set "_ITALN_LineText_type=variable" & GoTo :InsertTextAtLineNumber-array-check-end )
+REM if defined %4.ubound ( set "_ITALN_LineText_type=array" & GoTo :InsertTextAtLineNumber-array-check-end )
+REM for /f "tokens=1* delims=l=" %%a in ('set %4[ 2^>^&1') do ( if "[%%a]" NEQ "[Environment variab]" ( set "_ITALN_LineText_type=array" ) & GoTo :InsertTextAtLineNumber-array-check-end )
+REM set _ITALN_LineText_attr=%~a4f
+REM if /I "[%_ITALN_LineText_attr:~0,1%]"=="[d]" ( set "_ITALN_LineText_type=folder" & GoTo :InsertTextAtLineNumber-array-check-end )
+REM if exist %4 ( set "_ITALN_LineText_type=file" & GoTo :InsertTextAtLineNumber-array-check-end )
+REM if "[%~4]" EQU "[]" ( set "_ITALN_LineText_type=empty" ) else ( set "_ITALN_LineText_type=text" )
+REM :InsertTextAtLineNumber-array-check-end
+
+
+goto :eof
+
+echo.
+echo Print out text file GetLineLenght-DEMO.2.txt 
+echo one line at a time using RunMultipleTimes, GetLineCount and ReadLineRange
+
+Call :GetLineCount GetLineLenght-DEMO.2.txt
+Call :ReadLineRange GetLineLenght-DEMO.2.txt 1 %errorlevel% myLineArray
+Call :RunMultipleTimes %myLineArray.ubound% "call call echo L%%%%_RunMultipleTimes_index%%%% %%%%%%%%myLineArray[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%"
+
+
+GoTo :EOF
 
 
 :CoinFlip-DEMO
@@ -300,7 +454,7 @@ REM goto :eof
 
 Call :ClearVariablesByPrefix _AEC _GRD _RML my
 
-goto :AddEscapeCharacters-AND-GetRandomString-DEMOv2-skip1
+REM goto :AddEscapeCharacters-AND-GetRandomString-DEMOv2-skip1
 
 echo new attempt>>randomstring.txt
 
@@ -1004,12 +1158,23 @@ shift
 %~9
 set /a "_RunMultipleTimes_index+=1"
 if %_RunMultipleTimes_index% LSS %_RunMultipleTimes_ubound% GoTo :RunMultipleTimes-loop
+Call :ClearVariablesByPrefix myPrefix _RunMultipleTimes
 GoTo :EOF
 
 :: Usage Call :ClearVariablesByPrefix myPrefix
 :ClearVariablesByPrefix
 if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
 if "[%~2]" NEQ "[]" shift & GoTo :ClearVariablesByPrefix
+GoTo :EOF
+
+:: Usage Call :IsArrayDefinedBySet Variable OutputValue
+:IsArrayDefinedBySet
+set /a _IsArrayDefinedBySet.index=0
+for /f "tokens=1* delims=" %%a in ('set %~1 2^>^&1') do ( call set _IsArrayDefinedBySet[%%_IsArrayDefinedBySet.index%%]=%%a & call set /a _IsArrayDefinedBySet.index+=1 )
+if not "[%_IsArrayDefinedBySet[0]%]"=="[%_IsArrayDefinedBySet[0]:Environment variable=%]" ( 
+	if not "[%_IsArrayDefinedBySet[0]%]"=="[%_IsArrayDefinedBySet[0]:not defined=%]" 	set "_IsArrayDefinedBySet.IsDefined=false" ) else ( set "_IsArrayDefinedBySet.IsDefined=true" )
+if not "[%~2]"=="[]" set "%~2=%_IsArrayDefinedBySet.IsDefined%"
+Call :ClearVariablesByPrefix _IsArrayDefinedBySet & if "[%_IsArrayDefinedBySet.IsDefined%]"=="[true]" ( exit /b 0 ) else ( exit /b 1 )
 GoTo :EOF
 
 ::Usage Call :SetIfNotDefined "%ValueIfUnset%" OutputVariable optional VariableName2 "%ValueIfUnset2%" optional optional VariableNameN "%ValueIfUnsetN%"
@@ -1020,13 +1185,44 @@ if not "[%~4]"=="[]" shift & shift & GoTo :SetIfNotDefined
 set "_SetIfNotDefined_Output="
 GoTo :EOF
 
-
-
-::Usage Call :WriteLine Filename InputVariable
-:WriteLine
-
-
+::Usage Call :FindArrayBounds InputArray OutputValue
+::Usage Call :lbound InputArray OutputValue
+::Usage Call :ubound InputArray OutputValue
+:FindArrayBounds
+:lbound
+:ubound
+set /a FindArrayBounds.index=0
+for /f "tokens=1,2 delims=[]=" %%a in ('set %~1[ 2^>nul') do ( call set "FindArrayBounds[%%FindArrayBounds.index%%]=%%b" & call set /a FindArrayBounds.index+=1 )
+Call :IsArrayDefinedBySet "%~1[0]" && set "FindArrayBounds.IsZeroDefined=true" || set "FindArrayBounds.IsZeroDefined=false"
+set /a "FindArrayBounds.ubound=%FindArrayBounds.index%-1"
+REM Actually going to have to split that becuase 3 is greater than -2147483644 and 2 is greater than -2147483645 and 0 is greater than -2147483647 are the limits
+REM change algorith to work beyond these values, maybe ?
+set /a "FindArrayBounds.lowestvalue=1147483647"
+set /a "FindArrayBounds.highestvalue=-1147483647"
+set /a FindArrayBounds.index=0
+:FindArrayBounds-loop
+REM call echo 11 call set /a "FindArrayBounds.current=%%FindArrayBounds[%FindArrayBounds.index%]%%"
+call set /a "FindArrayBounds.current=%%FindArrayBounds[%FindArrayBounds.index%]%%" 2>nul
+if %FindArrayBounds.current% EQU 0 if "[%FindArrayBounds.IsZeroDefined%]"=="[false]" GoTo :FindArrayBounds-loop-next-iteration
+if %FindArrayBounds.current% lss %FindArrayBounds.lowestvalue% set /a "FindArrayBounds.lowestvalue=%FindArrayBounds.current%"
+if %FindArrayBounds.current% gtr %FindArrayBounds.highestvalue% set /a "FindArrayBounds.highestvalue=%FindArrayBounds.current%"
+REM echo lowest %FindArrayBounds.lowestvalue% highest %FindArrayBounds.highestvalue%
+:FindArrayBounds-loop-next-iteration
+set /a FindArrayBounds.index+=1
+if %FindArrayBounds.index% leq %FindArrayBounds.ubound% GoTo :FindArrayBounds-loop
+if "[%~2]"=="[]" (
+	set /a "%~1.lbound=%FindArrayBounds.lowestvalue%"
+	set /a "%~1.ubound=%FindArrayBounds.highestvalue%"
+	set /a "%~1.count=%FindArrayBounds.highestvalue%-%FindArrayBounds.lowestvalue%+1"
+) else (
+	set /a "%~2.lbound=%FindArrayBounds.lowestvalue%"
+	set /a "%~2.ubound=%FindArrayBounds.highestvalue%"
+	set /a "%~2.count=%FindArrayBounds.highestvalue%-%FindArrayBounds.lowestvalue%+1"
+)
+Call :ClearVariablesByPrefix FindArrayBounds
 GoTo :EOF
+
+
 
 ::Usage Call :SortNumberString InputNumberString optional OutputBool
 :IsNumberStringSequential
@@ -1056,17 +1252,158 @@ REM if defined _NSTA_localscope endlocal
 REM Call :ClearVariablesByPrefix "%_NumberStringToArray_prefix%" _NumberStringToArray
 REM GoTo :EOF
 
-::Usage Call :WordWrap InputString LinesArray
+::Usage Call :WordWrap InputString MaxLenght OutputLinesArray
 :WordWrap
+
+Goto :EOF
 
 ::Usage Call :WriteArray InputLineArray OutputFile
 :WriteArray
-::Usage Call :WriteLineAtLine InputVariable LineNumber OutputFile
-:WriteLineAtLine
-::Usage Call :WriteArrayAtLine InputLineArray LineNumber OutputFile
-:WriteArrayAtLine
+
+::Usage Call :WriteLine Filename InputVariable
+:WriteLine
 
 
+GoTo :EOF
+
+::Usage Call :GetArgumentType OutputType Argument
+:GetArgumentType 
+
+GoTo :EOF
+
+::Usage Call :AppendTextToFile OutputFilename LineText
+:AppendTextToFile
+set "_AppendTextToFile_prefix=_ATTF"
+Call :SetIfNotDefined "%~1" _ATTF_OutputFilename "%~2" _ATTF_LineNumber  
+set _ATTF_LineText=%~3
+REM this might work better as a macro
+if defined %3 ( set "_ATTF_LineText_type=variable" & GoTo :AppendTextToFile-array-check-end )
+if defined %3.ubound ( set "_ATTF_LineText_type=array" & GoTo :AppendTextToFile-array-check-end )
+for /f "tokens=1* delims=l=" %%a in ('set %3[ 2^>^&1') do ( if "[%%a]" NEQ "[Environment variab]" ( set "_ATTF_LineText_type=array" ) & GoTo :AppendTextToFile-array-check-end )
+set _ATTF_LineText_attr=%~a3f
+if /I "[%_ATTF_LineText_attr:~0,1%]"=="[d]" ( set "_ATTF_LineText_type=folder" & GoTo :AppendTextToFile-array-check-end )
+if exist %3 ( set "_ATTF_LineText_type=file" & GoTo :AppendTextToFile-array-check-end )
+if "[%~3]" EQU "[]" ( set "_ATTF_LineText_type=empty" ) else ( set "_ATTF_LineText_type=text" )
+:AppendTextToFile-array-check-end
+IF %_ATTF_LineText_type% EQU array (
+	call set "_ATTF_LineText_lbound=%%%~3.lbound%%"
+	if "[%_ATTF_LineText_lbound%]" EQU "[]" set "_ATTF_LineText_lbound=0"
+	call set "_ATTF_LineText_ubound=%%%~3.ubound%%"
+	if "[%_ATTF_LineText_ubound%]" EQU "[]" Call :ubound %~3
+	if "[%_ATTF_LineText_ubound%]" EQU "[]" call set "_ATTF_LineText_ubound=%%%~3.ubound%%"
+	)
+if %_ATTF_LineText_type% EQU text (
+		setlocal enabledelayedexpansion
+		>>%_ATTF_OutputFilename% echo !_ATTF_LineText!
+		endlocal
+	) ELSE IF %_ATTF_LineText_type% EQU variable (
+		setlocal enabledelayedexpansion
+		>>%_ATTF_OutputFilename% echo !%~3!
+		endlocal
+	) ELSE IF %_ATTF_LineText_type% EQU array (
+		setlocal enabledelayedexpansion
+		FOR /L %%a IN (!_ATTF_LineText_lbound!,1,!_ATTF_LineText_ubound!) DO >>%_ATTF_OutputFilename% echo !%~3[%%a]!
+		endlocal
+	) ELSE IF %_ATTF_LineText_type% EQU file (
+		for /f "delims=" %%a in (%~3) do (
+			set _ATTF_buffer=%%a
+			setlocal enabledelayedexpansion
+			>>%_ATTF_OutputFilename% echo !_ATTF_buffer!
+			endlocal
+		)
+	) ELSE IF %_ATTF_LineText_type% EQU folder (
+	) ELSE IF %_ATTF_LineText_type% EQU empty (
+	)
+Call :ClearVariablesByPrefix %_AppendTextToFile_prefix% _AppendTextToFile
+GoTo :EOF
+
+::Usage Call :AppendTextToFileBeginning InputFilename OutputFilename LineNumber LineText
+:AppendTextToFileBeginning
+Call :InsertTextAtLineNumber %1 %2 0 %4
+GoTo :EOF
+
+
+:InsertMultipleTextAtMultipleLineNumber
+set "_InsertMultipleTextAtMultipleLineNumber_prefix=_IMTAMLN"
+set "_IMTAMLN_InputFilename=%~1" & set "_IMTAMLN_OutputFilename=%~2"
+:InsertMultipleTextAtMultipleLineNumber-endsetup
+Call :InsertTextAtLineNumber "%_IMTAMLN_InputFilename%" "%_IMTAMLN_OutputFilename%" %3 %4
+if not "[%~6]"=="[]" shift & shift & GoTo :InsertMultipleTextAtMultipleLineNumber-endsetup 
+Call :ClearVariablesByPrefix %_InsertMultipleTextAtMultipleLineNumber_prefix% _InsertMultipleTextAtMultipleLineNumber 
+GoTo :EOF
+
+::Usage Call :InsertTextAtLineNumber InputFilename OutputFilename LineNumber LineText
+:InsertTextAtLineNumber
+set "_InsertTextAtLineNumber_prefix=_ITALN"
+Call :SetIfNotDefined "%~1" _ITALN_InputFilename "%~2" _ITALN_OutputFilename "%~3" _ITALN_LineNumber  
+set _ITALN_LineText=%~4
+REM this might work better as a macro
+if defined %4 ( set "_ITALN_LineText_type=variable" & GoTo :InsertTextAtLineNumber-array-check-end )
+if defined %4.ubound ( set "_ITALN_LineText_type=array" & GoTo :InsertTextAtLineNumber-array-check-end )
+for /f "tokens=1* delims=l=" %%a in ('set %4[ 2^>^&1') do ( if "[%%a]" NEQ "[Environment variab]" ( set "_ITALN_LineText_type=array" ) & GoTo :InsertTextAtLineNumber-array-check-end )
+set _ITALN_LineText_attr=%~a4f
+if /I "[%_ITALN_LineText_attr:~0,1%]"=="[d]" ( set "_ITALN_LineText_type=folder" & GoTo :InsertTextAtLineNumber-array-check-end )
+if exist %4 ( set "_ITALN_LineText_type=file" & GoTo :InsertTextAtLineNumber-array-check-end )
+if "[%~4]" EQU "[]" ( set "_ITALN_LineText_type=empty" ) else ( set "_ITALN_LineText_type=text" )
+:InsertTextAtLineNumber-array-check-end
+IF %_ITALN_LineText_type% EQU array (
+	call set "_ITALN_LineText_lbound=%%%~4.lbound%%"
+	if "[%_ITALN_LineText_lbound%]" EQU "[]" set "_ITALN_LineText_lbound=0"
+	call set "_ITALN_LineText_ubound=%%%~4.ubound%%"
+	if "[%_ITALN_LineText_ubound%]" EQU "[]" Call :ubound %~4
+	if "[%_ITALN_LineText_ubound%]" EQU "[]" call set "_ITALN_LineText_ubound=%%%~4.ubound%%"
+	)
+set /a "_ITALN_LineCount=0"
+set /a "_ITALN_LineNumber-=1"
+setlocal enabledelayedexpansion
+for /f "delims=" %%a in (%_ITALN_InputFilename%) do (
+		if %_ITALN_LineNumber% EQU !_ITALN_LineCount! GoTo :InsertTextAtLineNumber-for-skip
+		set /a "_ITALN_LineCount+=1"
+		setlocal DisableDelayedExpansion
+		set _ITALN_buffer=%%a
+		setlocal enabledelayedexpansion
+		>>%_ITALN_OutputFilename% echo !_ITALN_buffer!
+		endlocal & endlocal
+)
+:InsertTextAtLineNumber-for-skip
+endlocal
+if %_ITALN_LineText_type% EQU text (
+	REM echo is text, append text to file
+		setlocal enabledelayedexpansion
+		>>%_ITALN_OutputFilename% echo !_ITALN_LineText!
+		endlocal
+	) ELSE IF %_ITALN_LineText_type% EQU variable (
+	REM echo is variable, append variable content to 
+		setlocal enabledelayedexpansion
+		>>%_ITALN_OutputFilename% echo !%~4!
+		endlocal
+	) ELSE IF %_ITALN_LineText_type% EQU array (
+	REM echo is array, append each array element to file from lbound or 0 to ubound
+		setlocal enabledelayedexpansion
+		FOR /L %%a IN (!_ITALN_LineText_lbound!,1,!_ITALN_LineText_ubound!) DO >>%_ITALN_OutputFilename% echo !%~4[%%a]!
+		endlocal
+	) ELSE IF %_ITALN_LineText_type% EQU file (
+	REM echo if file, append content of file 
+		for /f "delims=" %%a in (%~4) do (
+			set _ITALN_buffer=%%a
+			setlocal enabledelayedexpansion
+			>>%_ITALN_OutputFilename% echo !_ITALN_buffer!
+			endlocal
+		)
+	) ELSE IF %_ITALN_LineText_type% EQU folder (
+		REM echo is folder, do nothing
+	) ELSE IF %_ITALN_LineText_type% EQU empty (
+		REM echo is empty, do nothing
+	)
+if %_ITALN_LineNumber% GTR 0 set "_ITALN_skip=skip=%_ITALN_LineNumber%" 
+for /f "%_ITALN_skip% delims=" %%a in (%_ITALN_InputFilename%) do (
+		set _ITALN_buffer=%%a
+		setlocal enabledelayedexpansion
+		>>%_ITALN_OutputFilename% echo !_ITALN_buffer!
+		endlocal
+)
+Call :ClearVariablesByPrefix %_InsertTextAtLineNumber_prefix% _InsertTextAtLineNumber
+GoTo :EOF
 
 ::Usage Call :FindAllEmptyLines Filename EmptyLinesArray
 :FindAllEmptyLines
@@ -1117,6 +1454,7 @@ Call :ClearVariablesByPrefix %_GetLineLenght_prefix% _GetLineLenght & exit /b %_
 :ReadLineRange
 set "_ReadLineRange_prefix=_RLR"
 Call :SetIfNotDefined "%~1" _RLR_Filename "%~2" _RLR_StartLine "%~3" _RLR_StopLine "%~4" _RLR_OutputLineArray "%%%~4.ubound%%" _RLR_OutputLineArray.ubound
+if "[%_RLR_OutputLineArray.ubound%]" EQU "[]" set "_RLR_OutputArrayWasEmpty=true"
 Call :SetIfNotDefined -1 _RLR_OutputLineArray.ubound
 set /a "_RLR_endbound=%_RLR_OutputLineArray.ubound%+%_RLR_StopLine%-%_RLR_StartLine%"
 set /a "_RLR_StartLine-=1"
@@ -1127,10 +1465,13 @@ for /f "%_RLR_skip% delims=" %%a in (%_RLR_Filename%) do (
 		set %_RLR_OutputLineArray%[%_RLR_OutputLineArray.ubound%]=%%a
 		GoTo :ReadLineRange-end
 )
+set /a "_RLR_OutputLineArray.ubound-=1"
 :ReadLineRange-end
 set /a "_RLR_StartLine+=1"
 if %_RLR_OutputLineArray.ubound% LEQ %_RLR_endbound% GoTo :ReadLineRange-loop
 set /a "%_RLR_OutputLineArray%.ubound=%_RLR_OutputLineArray.ubound%"
+if "[%_RLR_OutputArrayWasEmpty%]" EQU "[true]" if "[%_RLR_OutputLineArray.ubound%]" EQU "[-1]" set "%_RLR_OutputLineArray%.ubound="
+Call :ClearVariablesByPrefix %_ReadLineRange_prefix% _ReadLineRange
 GoTo :EOF
 
 REM ::Usage Call :ReadLineRange Filename StartLine StopLine LineArray
@@ -1312,6 +1653,9 @@ set /a _CoinFlip=%RANDOM% * (1 - 0 + 1) / 32768 + 0
 if "[%~1]" NEQ "[]" if "[%_CoinFlip%]" EQU 0 ( set "%~1=heads" ) else ( set "%~1=tails" )
 exit /b %_CoinFlip% & set "_CoinFlip="
 
+::Usage Call :GetArrayPrefix InputArray OutputPrefixList
+:GetArrayPrefix
+
 :: Set EchoArrayPrefix EchoArraySuffix to insert text before or after
 :: Example set EchoArrayPrefix=InputArray[%%index%%]=
 :: EchoArray InputArray optional start optional end
@@ -1337,6 +1681,8 @@ set /a index+=1
 if %index% GTR %limit% goto :EOF
 GoTo :EchoArray-internal-loop
 
+
+rem for each argument, check if variable, check if array
 ::Usage Call :EchoArguments Argument1 Argument2 ArgumentN
 :EchoArguments
 if "[%_EchoArguments.index%]"=="[]" set /a "_EchoArguments.index=1"
@@ -1494,6 +1840,7 @@ set "_AEC_exclamation_escape_char=^^^"
 :AddEscapeCharacters-arguments
 if "[%~3]" EQU "[NOLEN]" set "_AEC_nolen=true"
 if "[%~3]" EQU "[NOTSPACE]" set "_AEC_space_escape_char=^"
+REM if "[%~3]" EQU "[NOTSPACE]" set "_AEC_space_escape_char="
 if "[%~3]" EQU "[NOTQUOTES]" set "_AEC_quotes_escape_char=^"
 if "[%~3]" EQU "[NOTEXCLAMATION]" set "_AEC_exclamation_escape_char=^^"
 if "[%~3]" EQU "[NOTPERCENT]" set "_AEC_percent_escape_char=%"
@@ -1502,14 +1849,15 @@ if "[%~3]" EQU "[BRACKETS]" set "_AEC_bracket_esclist=^( ^) ^[ ^] ^{ ^}"
 if "[%~3]" EQU "[NOTDELIMITERS]" set "_AEC_delimiter_esclist="
 if "[%~3]" EQU "[EXTDELIMITERS]" set "_AEC_extdelimiter_esclist=^' ^+ ^` ^~ ^@"
 if "[%~3]" EQU "[NOTLASTDIGIT]" set "_AEC_notlastdigit=true"
-if "[%~4]" NEQ "[]" ( shift & GoTo :GetRandomString-arguments )
+if "[%~4]" NEQ "[]" ( shift & GoTo :AddEscapeCharacters-arguments )
 set "_AEC_escape_list=%_AEC_special_esclist% %_AEC_bracket_esclist% %_AEC_delimiter_esclist% %_AEC_extdelimiter_esclist%"
 set /a "_AEC_input.index=0" & set /a "_AEC_output.escapechars=0" & set /a "_AEC_output.totalchars=0"
 setlocal enabledelayedexpansion
 :AddEscapeCharacters-loop
 set "_AEC_escapechar=" & set "_AEC_input_char=!%_AEC_input%:~%_AEC_input.index%,1!"
 for %%a in ( %_AEC_escape_list% ) do ( if ^!_AEC_input_char!==%%a ( set "_AEC_escapechar=!_AEC_regular_escape_char!" ) )
-if "!_AEC_input_char!"==" " set "_AEC_escapechar=!_AEC_quotes_escape_char!"
+if "!_AEC_input_char!"==" " set "_AEC_escapechar=!_AEC_space_escape_char!"
+if "!_AEC_input_char!"==^"^"^" set "_AEC_escapechar=!_AEC_quotes_escape_char!"
 if "!_AEC_input_char!"=="^!" set "_AEC_escapechar=!_AEC_exclamation_escape_char!"
 if "!_AEC_input_char!"=="%%" set "_AEC_escapechar=!_AEC_percent_escape_char!"
 set _AEC_intermediate=!_AEC_intermediate!!_AEC_escapechar!!_AEC_input_char!
@@ -1518,10 +1866,11 @@ if "[!_AEC_escapechar!]" NEQ "[]" set /a "_AEC_output.escapechars+=1"
 set /a "_AEC_output.totalchars=!_AEC_input.index!+!_AEC_output.escapechars!"
 if !_AEC_output.totalchars! LSS 8030 if "!%_AEC_input%:~%_AEC_input.index%,1!" NEQ "" GoTo :AddEscapeCharacters-loop
 set "_AEC_last_char=!_AEC_intermediate:~-1!"
-if "[%_AEC_notlastdigit%]" NEQ ["true"] for %%a in (0 1 2 3 4 5 6 7 8 9) do ( if "[!_AEC_last_char!]"=="[%%a]" ( set /a "_AEC_input.escapechars+=1" & set /a "_AEC_output.totalchars+=1" & set _AEC_intermediate=!_AEC_intermediate:~,-1!^%%a) )
+if "[%_AEC_notlastdigit%]" NEQ ["true"] for %%a in (0 1 2 3 4 5 6 7 8 9) do ( if "[!_AEC_last_char!]"=="[%%a]" ( set /a "_AEC_input.escapechars+=1" & set /a "_AEC_output.totalchars+=1" & set _AEC_intermediate=!_AEC_intermediate:~,-1!^^^%%a) )
+REM set _AEC_intermediate
 endlocal & set /a "%_AEC_output%.len=%_AEC_input.index%" & set /a "%_AEC_output%.totallen=%_AEC_output.totalchars%" & set /a "%_AEC_output%.lenesc=%_AEC_output.escapechars%" & set %_AEC_output%=%_AEC_intermediate%
-if "[%_GSR_nolen%]" EQU "[true]" set /a "%_AEC_output%.len=" & set /a "%_AEC_output%.totallen=" & set /a "%_AEC_output%.lenesc="
-Call :ClearVariablesByPrefix %_AddEscapeCharacters% _AddEscapeCharacters
+if "[%_AEC_nolen%]" EQU "[true]" set "%_AEC_output%.len=" & set "%_AEC_output%.totallen=" & set "%_AEC_output%.lenesc="
+Call :ClearVariablesByPrefix %_AddEscapeCharacters_prefix% _AddEscapeCharacters
 GoTo :EOF
 
 
