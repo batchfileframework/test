@@ -18,11 +18,11 @@ REM for /f "tokens=1,2,3,4,* skip=3 delims=: " %%a in ('powercfg /list') do (
 	REM )
 	
 
-Call :ClearVariablesByPrefix powercfg
-set powercfg
+REM Call :ClearVariablesByPrefix powercfg
+REM set powercfg
 cls
 
-
+Call :ClearVariablesByPrefix _powercfg_demo
 
 REM Call :GetPowercfgSchemes
 REM Call :GetPowerSchemeContents
@@ -35,6 +35,29 @@ echo.
 echo List all power schemes into an array, then display this array
 Call :ListPowerSchemes _powercfg_demo_array
 set _powercfg_demo_array
+Call :ClearVariablesByPrefix _powercfg_demo_array
+echo.
+
+echo List all power scheme subgroups in each power scheme
+Call :ListAllPowerSubgroups
+echo.
+
+echo List all power scheme subgroups into an array, then display this array
+Call :ListAllPowerSubgroups _powercfg_demo_array
+set _powercfg_demo_array
+Call :ClearVariablesByPrefix _powercfg_demo_array
+echo.
+
+echo List all the power scheme subgroups, of just power scheme [0], without the prefix
+Call :ListPowerSubgroups NOPREFIX 0
+echo.
+
+echo List all the power scheme subgroups, of just power scheme [0], without the prefix, into an array and then display it
+Call :ListPowerSubgroups NOPREFIX 0 _powercfg_demo_array
+set _powercfg_demo_array
+Call :ClearVariablesByPrefix _powercfg_demo_array
+echo.
+
 
 GoTO :EOF
 
@@ -109,6 +132,27 @@ set /a "_rtrim_index-=1"
 set _rtrim_intermediate=!_rtrim_input:~,-%_rtrim_index%!
 endlocal & set %_rtrim_output%=%_rtrim_intermediate%
 GoTo :EOF
+
+::Usage Call :IsNumeric "%Value%" optional Output
+:IsNumeric
+if "[%~1]"=="[]" exit /b 0
+set "IsNumericInternal=0123456789"
+echo.%~1| findstr /r "[^%IsNumericInternal%]" >nul && (
+    if not "[%2]"=="[]" set %2=false
+) || (
+    if not "[%2]"=="[]" set %2=true
+)
+GoTo :EOF
+REM Call :IsNumeric "%var%" && echo it is not numeric || echo it is numeric
+REM echo isnumeric with a number
+REM call :isnumeric "1" && echo is was not numeric || ( echo it was numeric & echo also you smell )
+REM echo isnumeric with a letter
+REM call :isnumeric "a" && echo is was not numeric || ( echo it was numeric & echo also you smell )
+REM echo isnumeric with a double quote empty
+REM call :isnumeric "" && echo is was not numeric || ( echo it was numeric & echo also you smell )
+REM echo isnumeric with no input 
+REM call :isnumeric && echo is was not numeric || ( echo it was numeric & echo also you smell )
+::IsNumeric-END
 
 :: Usage Call :ClearVariablesByPrefix myPrefix
 :ClearVariablesByPrefix
@@ -404,17 +448,79 @@ REM for each setting with units show percentage
 :: If no output array is specified, the list will be echoed to the console
 ::Usage Call :ListPowerSchemes optional OutputArray
 :ListPowerSchemes
-if not defined powercfg.schemes.ubound Call :GetPowerSchemeContents
+if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
 if "[%~1]" NEQ "[]" call set /a "_ListPowerSchemes_output_ubound=%%%~1.ubound%%" 2>nul
-if "[%~1]" NEQ "[]" if "[%_ListPowerSchemes_output_ubound%]" EQU "[]" set /a "_ListPowerSchemes_output_ubound=0"
+if "[%~1]" NEQ "[]" if "[%_ListPowerSchemes_output_ubound%]" EQU "[]" ( set /a "_ListPowerSchemes_output_ubound=0" ) else ( set /a "_ListPowerSchemes_output_ubound+=1" )
 set /a "_ListPowerSchemes_index=0"
 :ListPowerSchemes-loop
 if "[%~1]" EQU "[]" ( call echo %%powercfg.schemes[%_ListPowerSchemes_index%].name%% ) else ( call set "%~1[%_ListPowerSchemes_output_ubound%]=%%powercfg.schemes[%_ListPowerSchemes_index%].name%%" & set "%~1.ubound=%_ListPowerSchemes_output_ubound%" & set /a "_ListPowerSchemes_output_ubound+=1" )
 set /a "_ListPowerSchemes_index+=1"
 if %_ListPowerSchemes_index% LEQ %powercfg.schemes.ubound% GoTo :ListPowerSchemes-loop
+Call :ClearVariablesByPrefix _ListPowerSchemes
 GoTo :EOF
+
+:: If no output array is specified, the list will be echoed to the console
+::Usage Call :ListAllPowerSubgroups optional OutputArray
+:ListAllPowerSubgroups
+if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
+if "[%~1]" NEQ "[]" call set /a "_ListAllPowerSubgroups_output_ubound=%%%~1.ubound%%" 2>nul
+if "[%~1]" NEQ "[]" if "[%_ListAllPowerSubgroups_output_ubound%]" EQU "[]" ( set /a "_ListAllPowerSubgroups_output_ubound=0" ) else ( set /a "_ListAllPowerSubgroups_output_ubound+=1" )
+set /a "_ListAllPowerSubgroups_schemes_index=0"
+:ListAllPowerSubgroups-loop-schemes
+call set "_ListAllPowerSubgroups_scheme_name=%%powercfg.schemes[%_ListAllPowerSubgroups_schemes_index%].name%%"
+Call :ListPowerSubgroups "%_ListAllPowerSubgroups_scheme_name%" %~1
+set /a "_ListAllPowerSubgroups_schemes_index+=1"
+if %_ListAllPowerSubgroups_schemes_index% LEQ %powercfg.schemes.ubound% GoTo :ListAllPowerSubgroups-loop-schemes
+Call :ClearVariablesByPrefix _ListAllPowerSubgroups
+GoTo :EOF
+
 
 ::Usage Call :ListPowerSubgroups Powerscheme(name or guid) optional OutputArray
 :ListPowerSubgroups
-
+if "[%~1]" EQU "[NOPREFIX]" ( set "_ListPowerSubgroups_noprefix=true" & shift )
+if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
+if "[%~2]" NEQ "[]" call set /a "_ListPowerSubgroups_output_ubound=%%%~2.ubound%%" 2>nul
+if "[%~2]" NEQ "[]" if "[%_ListPowerSubgroups_output_ubound%]" EQU "[]" ( set /a "_ListPowerSubgroups_output_ubound=0" ) else ( set /a "_ListPowerSubgroups_output_ubound+=1" )
+Call :IsNumeric "%~1" _ListPowerSubgroups_wasnumeric
+if "[%_ListPowerSubgroups_wasnumeric%]" NEQ "[true]" Call :FindPowerScheme "%~1" _ListPowerSubgroups_schemes_index 
+if "[%_ListPowerSubgroups_wasnumeric%]" EQU "[true]" set /a "_ListPowerSubgroups_schemes_index=%~1"
+call set /a "_ListPowerSubgroups_ubound=%%powercfg.schemes[%_ListPowerSubgroups_schemes_index%].subgroup.ubound%%"
+call set "_ListPowerSubgroups_scheme_name=%%powercfg.schemes[%_ListPowerSubgroups_schemes_index%].name%%."
+if "[%_ListPowerSubgroups_noprefix%]" EQU "[true]" set "_ListPowerSubgroups_scheme_name="
+set /a "_ListPowerSubgroups_index=0"
+:ListPowerSubgroups-loop
+if "[%~2]" EQU "[]" ( call echo %_ListPowerSubgroups_scheme_name%%%powercfg.schemes[%_ListPowerSubgroups_schemes_index%].subgroup[%_ListPowerSubgroups_index%].name%% ) else ( call set "%~2[%_ListPowerSubgroups_output_ubound%]=%_ListPowerSubgroups_scheme_name%%%powercfg.schemes[%_ListPowerSubgroups_schemes_index%].subgroup[%_ListPowerSubgroups_index%].name%%" & set "%~2.ubound=%_ListPowerSubgroups_output_ubound%" & set /a "_ListPowerSubgroups_output_ubound+=1" )
+set /a "_ListPowerSubgroups_index+=1"
+if %_ListPowerSubgroups_index% LEQ %_ListPowerSubgroups_ubound% GoTo :ListPowerSubgroups-loop
+Call :ClearVariablesByPrefix _ListPowerSubgroups
 GoTo :EOF
+
+
+
+::Usage Call :FindPowerScheme Powerscheme(name or guid) optional OutputIndex
+::Returns powerscheme index
+:FindPowerScheme
+if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
+set "_FindPowerScheme_search=%~1"
+set /a "_FindPowerScheme_index=0"
+:FindPowerScheme-loop
+call set "_FindPowerScheme_current_guid=%%powercfg.schemes[%_FindPowerScheme_index%].guid%%"
+call set "_FindPowerScheme_current_name=%%powercfg.schemes[%_FindPowerScheme_index%].name%%"
+if "[%_FindPowerScheme_search%]" EQU "[%_FindPowerScheme_current_guid%]" set "_FindPowerScheme_match_found=true" & GoTo :FindPowerScheme-loop-end
+if "[%_FindPowerScheme_search%]" EQU "[%_FindPowerScheme_current_name%]" set "_FindPowerScheme_match_found=true" & GoTo :FindPowerScheme-loop-end
+set /a "_FindPowerScheme_index+=1"
+if %_FindPowerScheme_index% LEQ %powercfg.schemes.ubound% GoTo :FindPowerScheme-loop
+:FindPowerScheme-loop-end
+if "[%_FindPowerScheme_match_found%]" EQU "[true]" if "[%~2]" NEQ "[]" set "%~2=%_FindPowerScheme_index%"
+if "[%_FindPowerScheme_match_found%]" EQU "[true]" Call :ClearVariablesByPrefix _FindPowerScheme & exit /b %_FindPowerScheme_index%
+Call :ClearVariablesByPrefix _FindPowerScheme
+exit /b -1
+
+
+:ListPowerSettings
+:GetDefaultSchemeName
+
+:FindSubgroup
+
+:GetSettingACValue balanced.Hard disk.whatever output
+:GetSettingDCValue
