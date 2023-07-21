@@ -58,6 +58,156 @@ set _powercfg_demo_array
 Call :ClearVariablesByPrefix _powercfg_demo_array
 echo.
 
+REM Call :GetPowerSchemeIndex Powerscheme(name or guid) optional OutputIndex
+echo Testing GetPowerSchemeIndex
+echo Call GetPowerSchemeIndex with only powerscheme name and checking errorlevel after
+Call :GetPowerSchemeIndex Balanced
+echo Balanced errorlevel %errorlevel%
+Call :GetPowerSchemeIndex "High performance"
+echo High performance errorlevel %errorlevel%
+Call :GetPowerSchemeIndex "Power saver"
+echo Power saver errorlevel %errorlevel%
+echo.
+echo Call GetPowerSchemeIndex with only powerscheme guid and checking errorlevel after
+Call :GetPowerSchemeIndex 381b4222-f694-41f0-9685-ff5bb260df2e
+echo Balanced errorlevel %errorlevel%
+Call :GetPowerSchemeIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+echo High performance errorlevel %errorlevel%
+Call :GetPowerSchemeIndex a1841308-3541-4fab-bc81-f71556f20b4a
+echo Power saver errorlevel %errorlevel%
+echo.
+echo Call GetPowerSchemeIndex with only powerscheme index and checking errorlevel after
+Call :GetPowerSchemeIndex 0
+echo Balanced errorlevel %errorlevel%
+Call :GetPowerSchemeIndex 1
+echo High performance errorlevel %errorlevel%
+Call :GetPowerSchemeIndex 2
+echo Power saver errorlevel %errorlevel%
+echo.
+echo Call GetPowerSchemeIndex with powerscheme name and outputvariable and checking errorlevel after
+Call :GetPowerSchemeIndex Balanced myoutputvariable
+echo Balanced errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSchemeIndex "High performance" myoutputvariable
+echo High performance errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSchemeIndex "Power saver" myoutputvariable
+echo Power saver errorlevel %errorlevel% %myoutputvariable%
+echo.
+echo Call GetPowerSchemeIndex with powerscheme guid and checking errorlevel after
+Call :GetPowerSchemeIndex 381b4222-f694-41f0-9685-ff5bb260df2e myoutputvariable
+echo Balanced errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSchemeIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c myoutputvariable
+echo High performance errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSchemeIndex a1841308-3541-4fab-bc81-f71556f20b4a myoutputvariable
+echo Power saver errorlevel %errorlevel% %myoutputvariable%
+echo.
+echo Call GetPowerSchemeIndex with powerscheme index and checking errorlevel after
+Call :GetPowerSchemeIndex 0 myoutputvariable
+echo Balanced errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSchemeIndex 1 myoutputvariable
+echo High performance errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSchemeIndex 2 myoutputvariable
+echo Power saver errorlevel %errorlevel% %myoutputvariable%
+echo.
+
+echo Testing GetPowerSubgroupIndex
+echo Call GetPowerSubgroupIndex with only powerscheme name, subgroup name and checking errorlevel after
+Call :GetPowerSubgroupIndex Balanced "Hard disk"
+echo Balanced errorlevel %errorlevel%
+Call :GetPowerSubgroupIndex "High performance" "Internet Explorer"
+echo High performance errorlevel %errorlevel%
+Call :GetPowerSubgroupIndex "Power saver" "Desktop background settings"
+echo Power saver errorlevel %errorlevel%
+echo.
+echo Call GetPowerSubgroupIndex with only powerscheme guid, subgroup guid and checking errorlevel after
+Call :GetPowerSubgroupIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442
+echo Balanced errorlevel %errorlevel%
+Call :GetPowerSubgroupIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 02f815b5-a5cf-4c84-bf20-649d1f75d3d8
+echo High performance errorlevel %errorlevel%
+Call :GetPowerSubgroupIndex a1841308-3541-4fab-bc81-f71556f20b4a 0d7dbae2-4294-402a-ba8e-26777e8488cd
+echo Power saver errorlevel %errorlevel%
+echo.
+echo Call GetPowerSubgroupIndex with only powerscheme index, subgroup index and checking errorlevel after
+Call :GetPowerSubgroupIndex 0 0
+echo Balanced errorlevel %errorlevel%
+Call :GetPowerSubgroupIndex 1 1
+echo High performance errorlevel %errorlevel%
+Call :GetPowerSubgroupIndex 2 2
+echo Power saver errorlevel %errorlevel%
+echo.
+echo Call GetPowerSubgroupIndex with powerscheme name, subgroup name and outputvariable and checking errorlevel after
+Call :GetPowerSubgroupIndex Balanced "Hard disk" myoutputvariable
+echo Balanced errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSubgroupIndex "High performance" "Internet Explorer" myoutputvariable
+echo High performance errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSubgroupIndex "Power saver" "Desktop background settings" myoutputvariable
+echo Power saver errorlevel %errorlevel% %myoutputvariable%
+echo.
+echo Call GetPowerSubgroupIndex with powerscheme guid, subgroup guid and checking errorlevel after
+Call :GetPowerSubgroupIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 myoutputvariable
+echo Balanced errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSubgroupIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 02f815b5-a5cf-4c84-bf20-649d1f75d3d8 myoutputvariable
+echo High performance errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSubgroupIndex a1841308-3541-4fab-bc81-f71556f20b4a 0d7dbae2-4294-402a-ba8e-26777e8488cd myoutputvariable
+echo Power saver errorlevel %errorlevel% %myoutputvariable%
+echo.
+echo Call GetPowerSubgroupIndex with powerscheme index, subgroup index and checking errorlevel after
+Call :GetPowerSubgroupIndex 0 0 myoutputvariable
+echo Balanced errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSubgroupIndex 1 1 myoutputvariable
+echo High performance errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSubgroupIndex 2 2 myoutputvariable
+echo Power saver errorlevel %errorlevel% %myoutputvariable%
+echo.
+
+echo Testing GetPowerSettingIndex
+echo Call GetPowerSettingIndex with only powerscheme name, subgroup name, setting name and checking errorlevel after
+Call :GetPowerSettingIndex Balanced "Hard disk" "Turn off hard disk after"
+echo Balanced errorlevel %errorlevel%
+Call :GetPowerSettingIndex "High performance" "Sleep" "Allow hybrid sleep"
+echo High performance errorlevel %errorlevel%
+Call :GetPowerSettingIndex "Power saver" "Processor power management" "Maximum processor state"
+echo Power saver errorlevel %errorlevel%
+echo.
+echo Call GetPowerSettingIndex with only powerscheme guid, subgroup guid, setting guid and checking errorlevel after
+Call :GetPowerSettingIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e
+echo Balanced errorlevel %errorlevel%
+Call :GetPowerSettingIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 238c9fa8-0aad-41ed-83f4-97be242c8f20 94ac6d29-73ce-41a6-809f-6363ba21b47e
+echo High performance errorlevel %errorlevel%
+Call :GetPowerSettingIndex a1841308-3541-4fab-bc81-f71556f20b4a 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec
+echo Power saver errorlevel %errorlevel%
+echo.
+echo Call GetPowerSettingIndex with only powerscheme index, subgroup index, setting index and checking errorlevel after
+Call :GetPowerSettingIndex 0 0 0
+echo Balanced errorlevel %errorlevel%
+Call :GetPowerSettingIndex 1 1 1
+echo High performance errorlevel %errorlevel%
+Call :GetPowerSettingIndex 2 2 2
+echo Power saver errorlevel %errorlevel%
+echo.
+echo Call GetPowerSettingIndex with powerscheme name, subgroup name, setting name and outputvariable and checking errorlevel after
+Call :GetPowerSettingIndex Balanced "Hard disk" "Turn off hard disk after" myoutputvariable
+echo Balanced errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSettingIndex "High performance" "Sleep" "Allow hybrid sleep" myoutputvariable
+echo High performance errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSettingIndex "Power saver" "Processor power management" "Maximum processor state" myoutputvariable
+echo Power saver errorlevel %errorlevel% %myoutputvariable%
+echo.
+echo Call GetPowerSettingIndex with powerscheme guid, subgroup guid, setting guid and checking errorlevel after
+Call :GetPowerSettingIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e myoutputvariable
+echo Balanced errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSettingIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 238c9fa8-0aad-41ed-83f4-97be242c8f20 94ac6d29-73ce-41a6-809f-6363ba21b47e myoutputvariable
+echo High performance errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSettingIndex a1841308-3541-4fab-bc81-f71556f20b4a 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec myoutputvariable
+echo Power saver errorlevel %errorlevel% %myoutputvariable%
+echo.
+echo Call GetPowerSettingIndex with powerscheme index, subgroup index, setting index and checking errorlevel after
+Call :GetPowerSettingIndex 0 0 0 myoutputvariable
+echo Balanced errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSettingIndex 1 1 1 myoutputvariable
+echo High performance errorlevel %errorlevel% %myoutputvariable%
+Call :GetPowerSettingIndex 2 2 2 myoutputvariable
+echo Power saver errorlevel %errorlevel% %myoutputvariable%
+echo.
 
 GoTO :EOF
 
@@ -133,11 +283,14 @@ set _rtrim_intermediate=!_rtrim_input:~,-%_rtrim_index%!
 endlocal & set %_rtrim_output%=%_rtrim_intermediate%
 GoTo :EOF
 
-::Usage Call :IsNumeric "%Value%" optional Output
+:: Input can be byval or byref
+:: will return && "success" if not numeric and || "fail" if numeric
+::Usage Call :IsNumeric Input optional Output
 :IsNumeric
 if "[%~1]"=="[]" exit /b 0
+if defined %~1 ( call set "_IsNumeric_input=%%%~1%%" ) else ( set "_IsNumeric_input=%~1" )
 set "IsNumericInternal=0123456789"
-echo.%~1| findstr /r "[^%IsNumericInternal%]" >nul && (
+echo.%_IsNumeric_input%| findstr /r "[^%IsNumericInternal%]" >nul && (
     if not "[%2]"=="[]" set %2=false
 ) || (
     if not "[%2]"=="[]" set %2=true
@@ -423,11 +576,11 @@ if %_GPS_contents_index% LEQ %_GPS_contents_ubound% GoTo :GetPowerSettings-conte
 set /a "_GPS_index+=1"
 if %_GPS_index% LEQ %powercfg.schemes.ubound% GoTo :GetPowerSettings-loop
 
-REM set /a "_GPS_index=0"
-REM :GetPowerSettings-loop-cleanup
-REM Call :ClearVariablesByPrefix powercfg.schemes[%_GPS_index%].contents
-REM set /a "_GPS_index+=1"
-REM if %_GPS_index% LEQ %powercfg.schemes.ubound% GoTo :GetPowerSettings-loop-cleanup
+set /a "_GPS_index=0"
+:GetPowerSettings-loop-cleanup
+Call :ClearVariablesByPrefix powercfg.schemes[%_GPS_index%].contents
+set /a "_GPS_index+=1"
+if %_GPS_index% LEQ %powercfg.schemes.ubound% GoTo :GetPowerSettings-loop-cleanup
 
 Call :ClearVariablesByPrefix %_GetPowerSettings_prefix% _GetPowerSettings
 GoTo :EOF
@@ -475,15 +628,13 @@ Call :ClearVariablesByPrefix _ListAllPowerSubgroups
 GoTo :EOF
 
 
-::Usage Call :ListPowerSubgroups Powerscheme(name or guid) optional OutputArray
+::Usage Call :ListPowerSubgroups Powerscheme(index, name or guid) optional OutputArray
 :ListPowerSubgroups
 if "[%~1]" EQU "[NOPREFIX]" ( set "_ListPowerSubgroups_noprefix=true" & shift )
 if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
 if "[%~2]" NEQ "[]" call set /a "_ListPowerSubgroups_output_ubound=%%%~2.ubound%%" 2>nul
 if "[%~2]" NEQ "[]" if "[%_ListPowerSubgroups_output_ubound%]" EQU "[]" ( set /a "_ListPowerSubgroups_output_ubound=0" ) else ( set /a "_ListPowerSubgroups_output_ubound+=1" )
-Call :IsNumeric "%~1" _ListPowerSubgroups_wasnumeric
-if "[%_ListPowerSubgroups_wasnumeric%]" NEQ "[true]" Call :FindPowerScheme "%~1" _ListPowerSubgroups_schemes_index 
-if "[%_ListPowerSubgroups_wasnumeric%]" EQU "[true]" set /a "_ListPowerSubgroups_schemes_index=%~1"
+Call :GetPowerSchemeIndex "%~1" _ListPowerSubgroups_schemes_index 
 call set /a "_ListPowerSubgroups_ubound=%%powercfg.schemes[%_ListPowerSubgroups_schemes_index%].subgroup.ubound%%"
 call set "_ListPowerSubgroups_scheme_name=%%powercfg.schemes[%_ListPowerSubgroups_schemes_index%].name%%."
 if "[%_ListPowerSubgroups_noprefix%]" EQU "[true]" set "_ListPowerSubgroups_scheme_name="
@@ -497,30 +648,99 @@ GoTo :EOF
 
 
 
-::Usage Call :FindPowerScheme Powerscheme(name or guid) optional OutputIndex
+::Usage Call :GetPowerSchemeIndex Powerscheme(index, name or guid) optional OutputIndex
 ::Returns powerscheme index
-:FindPowerScheme
+:GetPowerSchemeIndex
 if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
-set "_FindPowerScheme_search=%~1"
-set /a "_FindPowerScheme_index=0"
-:FindPowerScheme-loop
-call set "_FindPowerScheme_current_guid=%%powercfg.schemes[%_FindPowerScheme_index%].guid%%"
-call set "_FindPowerScheme_current_name=%%powercfg.schemes[%_FindPowerScheme_index%].name%%"
-if "[%_FindPowerScheme_search%]" EQU "[%_FindPowerScheme_current_guid%]" set "_FindPowerScheme_match_found=true" & GoTo :FindPowerScheme-loop-end
-if "[%_FindPowerScheme_search%]" EQU "[%_FindPowerScheme_current_name%]" set "_FindPowerScheme_match_found=true" & GoTo :FindPowerScheme-loop-end
-set /a "_FindPowerScheme_index+=1"
-if %_FindPowerScheme_index% LEQ %powercfg.schemes.ubound% GoTo :FindPowerScheme-loop
-:FindPowerScheme-loop-end
-if "[%_FindPowerScheme_match_found%]" EQU "[true]" if "[%~2]" NEQ "[]" set "%~2=%_FindPowerScheme_index%"
-if "[%_FindPowerScheme_match_found%]" EQU "[true]" Call :ClearVariablesByPrefix _FindPowerScheme & exit /b %_FindPowerScheme_index%
-Call :ClearVariablesByPrefix _FindPowerScheme
+set "_GetPowerSchemeIndex_search=%~1"
+Call :IsNumeric _GetPowerSchemeIndex_search || if "[%~2]" NEQ "[]" ( set "%~2=%_GetPowerSchemeIndex_search%" & Call :ClearVariablesByPrefix _GetPowerSchemeIndex & exit /b %_GetPowerSchemeIndex_search% ) else ( Call :ClearVariablesByPrefix _GetPowerSchemeIndex & exit /b %_GetPowerSchemeIndex_search% )
+set /a "_GetPowerSchemeIndex_index=0"
+:GetPowerSchemeIndex-loop
+call set "_GetPowerSchemeIndex_current_guid=%%powercfg.schemes[%_GetPowerSchemeIndex_index%].guid%%"
+call set "_GetPowerSchemeIndex_current_name=%%powercfg.schemes[%_GetPowerSchemeIndex_index%].name%%"
+if "[%_GetPowerSchemeIndex_search%]" EQU "[%_GetPowerSchemeIndex_current_guid%]" set "_GetPowerSchemeIndex_match_found=true" & GoTo :GetPowerSchemeIndex-loop-end
+if "[%_GetPowerSchemeIndex_search%]" EQU "[%_GetPowerSchemeIndex_current_name%]" set "_GetPowerSchemeIndex_match_found=true" & GoTo :GetPowerSchemeIndex-loop-end
+set /a "_GetPowerSchemeIndex_index+=1"
+if %_GetPowerSchemeIndex_index% LEQ %powercfg.schemes.ubound% GoTo :GetPowerSchemeIndex-loop
+:GetPowerSchemeIndex-loop-end
+if "[%_GetPowerSchemeIndex_match_found%]" EQU "[true]" if "[%~2]" NEQ "[]" set "%~2=%_GetPowerSchemeIndex_index%"
+if "[%_GetPowerSchemeIndex_match_found%]" EQU "[true]" Call :ClearVariablesByPrefix _GetPowerSchemeIndex & exit /b %_GetPowerSchemeIndex_index%
+Call :ClearVariablesByPrefix _GetPowerSchemeIndex
 exit /b -1
 
+
+::Usage Call :GetPowerSubgroupIndex Powerscheme(index, name or guid) PowerSubgroup(index, name or guid)  optional OutputIndex
+::Returns power subgroup index
+:GetPowerSubgroupIndex
+Call :GetPowerSchemeIndex "%~1" _GetPowerSubgroupIndex_scheme_index
+set "_GetPowerSubgroupIndex_search=%~2"
+Call :IsNumeric _GetPowerSubgroupIndex_search || if "[%~3]" NEQ "[]" ( set "%~3=%_GetPowerSubgroupIndex_search%" & Call :ClearVariablesByPrefix _GetPowerSubgroupIndex & exit /b %_GetPowerSubgroupIndex_search% ) else ( Call :ClearVariablesByPrefix _GetPowerSubgroupIndex & exit /b %_GetPowerSubgroupIndex_search% )
+set /a "_GetPowerSubgroupIndex_index=0"
+call set /a "_GetPowerSubgroupIndex_ubound=%%powercfg.schemes[%_GetPowerSubgroupIndex_scheme_index%].subgroup.ubound%%"
+:GetPowerSubgroupIndex-loop
+call set "_GetPowerSubgroupIndex_current_guid=%%powercfg.schemes[%_GetPowerSubgroupIndex_scheme_index%].subgroup[%_GetPowerSubgroupIndex_index%].guid%%"
+call set "_GetPowerSubgroupIndex_current_name=%%powercfg.schemes[%_GetPowerSubgroupIndex_scheme_index%].subgroup[%_GetPowerSubgroupIndex_index%].name%%"
+if "[%_GetPowerSubgroupIndex_search%]" EQU "[%_GetPowerSubgroupIndex_current_guid%]" set "_GetPowerSubgroupIndex_match_found=true" & GoTo :GetPowerSubgroupIndex-loop-end
+if "[%_GetPowerSubgroupIndex_search%]" EQU "[%_GetPowerSubgroupIndex_current_name%]" set "_GetPowerSubgroupIndex_match_found=true" & GoTo :GetPowerSubgroupIndex-loop-end
+set /a "_GetPowerSubgroupIndex_index+=1"
+if %_GetPowerSubgroupIndex_index% LEQ %_GetPowerSubgroupIndex_ubound% GoTo :GetPowerSubgroupIndex-loop
+:GetPowerSubgroupIndex-loop-end
+if "[%_GetPowerSubgroupIndex_match_found%]" EQU "[true]" if "[%~3]" NEQ "[]" set "%~3=%_GetPowerSubgroupIndex_index%"
+if "[%_GetPowerSubgroupIndex_match_found%]" EQU "[true]" Call :ClearVariablesByPrefix _GetPowerSubgroupIndex & exit /b %_GetPowerSubgroupIndex_index%
+Call :ClearVariablesByPrefix _GetPowerSubgroupIndex
+exit /b -1
+
+::Usage Call :GetPowerSubgroupIndex Powerscheme(index, name or guid) PowerSubgroup(index, name or guid) PowerSetting(index, name or guid) optional OutputIndex
+::Returns power setting index
+:GetPowerSettingIndex
+Call :GetPowerSchemeIndex "%~1" _GetPowerSettingIndex_scheme_index
+Call :GetPowerSubgroupIndex "%_GetPowerSettingIndex_scheme_index%" "%~2" _GetPowerSettingIndex_subgroup_index
+set "_GetPowerSettingIndex_search=%~3"
+Call :IsNumeric _GetPowerSettingIndex_search || if "[%~4]" NEQ "[]" ( set "%~4=%_GetPowerSettingIndex_search%" & Call :ClearVariablesByPrefix _GetPowerSettingIndex & exit /b %_GetPowerSettingIndex_search% ) else ( Call :ClearVariablesByPrefix _GetPowerSettingIndex & exit /b %_GetPowerSettingIndex_search% )
+set /a "_GetPowerSettingIndex_index=0"
+call set /a "_GetPowerSettingIndex_ubound=%%powercfg.schemes[%_GetPowerSettingIndex_scheme_index%].subgroup[%_GetPowerSettingIndex_subgroup_index%].setting.ubound%%"
+:GetPowerSettingIndex-loop
+call set "_GetPowerSettingIndex_current_guid=%%powercfg.schemes[%_GetPowerSettingIndex_scheme_index%].subgroup[%_GetPowerSettingIndex_subgroup_index%].setting[%_GetPowerSettingIndex_index%].guid%%"
+call set "_GetPowerSettingIndex_current_name=%%powercfg.schemes[%_GetPowerSettingIndex_scheme_index%].subgroup[%_GetPowerSettingIndex_subgroup_index%].setting[%_GetPowerSettingIndex_index%].name%%"
+if "[%_GetPowerSettingIndex_search%]" EQU "[%_GetPowerSettingIndex_current_guid%]" set "_GetPowerSettingIndex_match_found=true" & GoTo :GetPowerSettingIndex-loop-end
+if "[%_GetPowerSettingIndex_search%]" EQU "[%_GetPowerSettingIndex_current_name%]" set "_GetPowerSettingIndex_match_found=true" & GoTo :GetPowerSettingIndex-loop-end
+set /a "_GetPowerSettingIndex_index+=1"
+if %_GetPowerSettingIndex_index% LEQ %_GetPowerSettingIndex_ubound% GoTo :GetPowerSettingIndex-loop
+:GetPowerSettingIndex-loop-end
+if "[%_GetPowerSettingIndex_match_found%]" EQU "[true]" if "[%~4]" NEQ "[]" set "%~4=%_GetPowerSettingIndex_index%"
+if "[%_GetPowerSettingIndex_match_found%]" EQU "[true]" Call :ClearVariablesByPrefix _GetPowerSettingIndex & exit /b %_GetPowerSettingIndex_index%
+Call :ClearVariablesByPrefix _GetPowerSettingIndex
+exit /b -1
+
+:GetPowerSchemeGuid
+:GetPowerSchemeName
+:GetPowerSubgroupGuid
+:GetPowerSubgroupName
+:GetPowerSettingGuid
+:GetPowerSettingName
 
 :ListPowerSettings
 :GetDefaultSchemeName
 
 :FindSubgroup
 
+
+::Usage Call :GetSettingACValue OutputValue 
 :GetSettingACValue balanced.Hard disk.whatever output
 :GetSettingDCValue
+:GetSettingACValuePercentage
+:GetSettingACValuePercentage
+:GetSettingMin
+:GetSettingMax
+:GetSettingIndexName
+:GetSettingIndexFromName
+:GetSettingIncrement
+:GetSettingUnit
+
+
+:SetSettingACValue
+:SetSettingDCValue
+:IncrementSettingACValue
+:DecrementSettingACValue
+:IncrementSettingDCValue
+:DecrementSettingDCValue
