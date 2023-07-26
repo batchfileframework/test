@@ -22,11 +22,14 @@ REM Call :ClearVariablesByPrefix powercfg
 REM set powercfg
 cls
 
+Call :ClearVariablesByPrefix _
 Call :ClearVariablesByPrefix _powercfg_demo
 
 REM Call :GetPowercfgSchemes
 REM Call :GetPowerSchemeContents
 REM Call :GetPowerSettings
+
+Goto :skipsection
 
 echo List all power schemes by name
 Call :ListPowerSchemes 
@@ -208,6 +211,22 @@ echo High performance errorlevel %errorlevel% %myoutputvariable%
 Call :GetPowerSettingIndex 2 2 2 myoutputvariable
 echo Power saver errorlevel %errorlevel% %myoutputvariable%
 echo.
+
+
+
+echo.
+echo List all power settings in all subgroups in all power schemes
+Call :ListPowerSettingsInAllSchemes 
+
+echo.
+echo List the subgroups only using Call ListPowerSettingsInAllSubgroups 
+Call :ListPowerSettingsInAllSubgroups 0
+
+:skipsection
+
+echo.
+echo List the subgroups only using Call ListPowerSettingsInAllSubgroups, but without the power scheme prefix
+Call :ListPowerSettingsInAllSubgroups NOPREFIX 0
 
 GoTO :EOF
 
@@ -411,7 +430,7 @@ if "[%_GetPowercfgSchemes_guid%]" NEQ "[]" (
 	set "powercfg.schemes[%_GetPowercfgSchemes_guid%].index=%powercfg.schemes.ubound%"
 	set "powercfg.schemes[%_GetPowercfgSchemes_name%]=%_GetPowercfgSchemes_guid%"
 	set "powercfg.schemes[%_GetPowercfgSchemes_name%].index=%powercfg.schemes.ubound%"
-	if "[%_GetPowercfgSchemes_default%]" NEQ "[]" ( set "powercfg.schemes.default.guid=%_GetPowercfgSchemes_guid%" & set "powercfg.schemes.default.name=%_GetPowercfgSchemes_name%" )
+	if "[%_GetPowercfgSchemes_default%]" NEQ "[]" ( set "powercfg.schemes.default.guid=%_GetPowercfgSchemes_guid%" & set "powercfg.schemes.default.name=%_GetPowercfgSchemes_name%" & set "powercfg.schemes.default.index=%powercfg.schemes.ubound%" )
 	)
 set /a "_GetPowercfgSchemes_index+=1"
 if %_GetPowercfgSchemes_index% LEQ %_GetPowercfgSchemes.ubound% GoTo :GetPowercfgSchemes-loop
@@ -612,23 +631,7 @@ if %_ListPowerSchemes_index% LEQ %powercfg.schemes.ubound% GoTo :ListPowerScheme
 Call :ClearVariablesByPrefix _ListPowerSchemes
 GoTo :EOF
 
-:: If no output array is specified, the list will be echoed to the console
-::Usage Call :ListAllPowerSubgroups optional OutputArray
-:ListAllPowerSubgroups
-if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
-if "[%~1]" NEQ "[]" call set /a "_ListAllPowerSubgroups_output_ubound=%%%~1.ubound%%" 2>nul
-if "[%~1]" NEQ "[]" if "[%_ListAllPowerSubgroups_output_ubound%]" EQU "[]" ( set /a "_ListAllPowerSubgroups_output_ubound=0" ) else ( set /a "_ListAllPowerSubgroups_output_ubound+=1" )
-set /a "_ListAllPowerSubgroups_schemes_index=0"
-:ListAllPowerSubgroups-loop-schemes
-call set "_ListAllPowerSubgroups_scheme_name=%%powercfg.schemes[%_ListAllPowerSubgroups_schemes_index%].name%%"
-Call :ListPowerSubgroups "%_ListAllPowerSubgroups_scheme_name%" %~1
-set /a "_ListAllPowerSubgroups_schemes_index+=1"
-if %_ListAllPowerSubgroups_schemes_index% LEQ %powercfg.schemes.ubound% GoTo :ListAllPowerSubgroups-loop-schemes
-Call :ClearVariablesByPrefix _ListAllPowerSubgroups
-GoTo :EOF
-
-
-::Usage Call :ListPowerSubgroups Powerscheme(index, name or guid) optional OutputArray
+::Usage Call :ListPowerSubgroupsoptional NOPREFIX PowerScheme(index, name or guid) optional OutputArray
 :ListPowerSubgroups
 if "[%~1]" EQU "[NOPREFIX]" ( set "_ListPowerSubgroups_noprefix=true" & shift )
 if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
@@ -646,7 +649,65 @@ if %_ListPowerSubgroups_index% LEQ %_ListPowerSubgroups_ubound% GoTo :ListPowerS
 Call :ClearVariablesByPrefix _ListPowerSubgroups
 GoTo :EOF
 
+::Usage Call :ListPowerSettings optional NOPREFIX PowerScheme(index, name or guid) PowerSubgroup(index, name or guid) optional OutputArray
+:ListPowerSettings
+if "[%~1]" EQU "[NOPREFIX]" ( set "_ListPowerSettings_noprefix=true" & shift )
+if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
+if "[%~3]" NEQ "[]" call set /a "_ListPowerSettings_output_ubound=%%%~3.ubound%%" 2>nul
+if "[%~3]" NEQ "[]" if "[%_ListPowerSettings_output_ubound%]" EQU "[]" ( set /a "_ListPowerSettings_output_ubound=0" ) else ( set /a "_ListPowerSettings_output_ubound+=1" )
+Call :GetPowerSchemeIndex "%~1" _ListPowerSettings_schemes_index 
+Call :GetPowerSubgroupIndex "%~1" "%~2" _ListPowerSettings_subgroup_index 
+call set /a "_ListPowerSettings_ubound=%%powercfg.schemes[%_ListPowerSettings_schemes_index%].subgroup[%_ListPowerSettings_subgroup_index%].setting.ubound%%"
+call set "_ListPowerSettings_scheme_name=%%powercfg.schemes[%_ListPowerSettings_schemes_index%].name%%.%%powercfg.schemes[%_ListPowerSettings_schemes_index%].subgroup[%_ListPowerSettings_subgroup_index%].name%%."
+if "[%_ListPowerSettings_noprefix%]" EQU "[true]" set "_ListPowerSettings_scheme_name="
+set /a "_ListPowerSettings_index=0"
+:ListPowerSettings-loop
+if "[%~3]" EQU "[]" ( call echo %_ListPowerSettings_scheme_name%%%powercfg.schemes[%_ListPowerSettings_schemes_index%].subgroup[%_ListPowerSettings_subgroup_index%].setting[%_ListPowerSettings_index%].name%% ) else ( call set "%~3[%_ListPowerSettings_output_ubound%]=%_ListPowerSettings_scheme_name%%%powercfg.schemes[%_ListPowerSettings_schemes_index%].subgroup[%_ListPowerSettings_index%].name%%" & set "%~3.ubound=%_ListPowerSettings_output_ubound%" & set /a "_ListPowerSettings_output_ubound+=1" )
+set /a "_ListPowerSettings_index+=1"
+if %_ListPowerSettings_index% LEQ %_ListPowerSettings_ubound% GoTo :ListPowerSettings-loop
+Call :ClearVariablesByPrefix _ListPowerSettings
+GoTo :EOF
 
+::Usage Call :ListPowerSettingsInAllSubgroups PowerScheme(index, name or guid) optional OutputArray
+:ListPowerSettingsInAllSubgroups
+if "[%~1]" EQU "[NOPREFIX]" ( set "__ListPowerSettingsInAllSubgroups_noprefix=NOPREFIX" & shift )
+Call :ListPowerSubgroups NOPREFIX "%~1" __ListPowerSettingsInAllSubgroups_subgroups
+set /a "__ListPowerSettingsInAllSubgroups_ubound=%__ListPowerSettingsInAllSubgroups_subgroups.ubound%"
+set /a "__ListPowerSettingsInAllSubgroups_index=0"
+:ListPowerSettingsInAllSubgroups-loop
+Call :ListPowerSettings %__ListPowerSettingsInAllSubgroups_noprefix% "%~1" "%%__ListPowerSettingsInAllSubgroups_subgroups[%__ListPowerSettingsInAllSubgroups_index%]%%" "%~2"
+set /a "__ListPowerSettingsInAllSubgroups_index+=1"
+if %__ListPowerSettingsInAllSubgroups_index% LEQ %__ListPowerSettingsInAllSubgroups_ubound% GoTo :ListPowerSettingsInAllSubgroups-loop
+Call :ClearVariablesByPrefix __ListPowerSettingsInAllSubgroups
+GoTo :EOF
+
+::Usage Call :ListPowerSettingsInAllSchemes optional OutputArray
+:ListPowerSettingsInAllSchemes
+if "[%~1]" EQU "[NOPREFIX]" ( set "__ListPowerSettingsInAllSchemes_noprefix=NOPREFIX" & shift )
+Call :ListPowerSchemes __ListPowerSettingsInAllSchemes_schemes
+set /a "__ListPowerSettingsInAllSchemes_ubound=%__ListPowerSettingsInAllSchemes_schemes.ubound%"
+set /a "__ListPowerSettingsInAllSchemes_index=0"
+:ListPowerSettingsInAllSchemes-loop
+Call :ListPowerSettingsInAllSubgroups %__ListPowerSettingsInAllSchemes_noprefix% "%%__ListPowerSettingsInAllSchemes_schemes[%__ListPowerSettingsInAllSchemes_index%]%%" "%~1"
+set /a "__ListPowerSettingsInAllSchemes_index+=1"
+if %__ListPowerSettingsInAllSchemes_index% LEQ %__ListPowerSettingsInAllSchemes_ubound% GoTo :ListPowerSettingsInAllSchemes-loop
+Call :ClearVariablesByPrefix __ListPowerSettingsInAllSchemes
+GoTo :EOF
+
+:: If no output array is specified, the list will be echoed to the console
+::Usage Call :ListAllPowerSubgroups optional OutputArray
+:ListAllPowerSubgroups
+if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
+if "[%~1]" NEQ "[]" call set /a "_ListAllPowerSubgroups_output_ubound=%%%~1.ubound%%" 2>nul
+if "[%~1]" NEQ "[]" if "[%_ListAllPowerSubgroups_output_ubound%]" EQU "[]" ( set /a "_ListAllPowerSubgroups_output_ubound=0" ) else ( set /a "_ListAllPowerSubgroups_output_ubound+=1" )
+set /a "_ListAllPowerSubgroups_schemes_index=0"
+:ListAllPowerSubgroups-loop-schemes
+call set "_ListAllPowerSubgroups_scheme_name=%%powercfg.schemes[%_ListAllPowerSubgroups_schemes_index%].name%%"
+Call :ListPowerSubgroups "%_ListAllPowerSubgroups_scheme_name%" %~1
+set /a "_ListAllPowerSubgroups_schemes_index+=1"
+if %_ListAllPowerSubgroups_schemes_index% LEQ %powercfg.schemes.ubound% GoTo :ListAllPowerSubgroups-loop-schemes
+Call :ClearVariablesByPrefix _ListAllPowerSubgroups
+GoTo :EOF
 
 ::Usage Call :GetPowerSchemeIndex Powerscheme(index, name or guid) optional OutputIndex
 ::Returns powerscheme index
@@ -712,18 +773,61 @@ if "[%_GetPowerSettingIndex_match_found%]" EQU "[true]" Call :ClearVariablesByPr
 Call :ClearVariablesByPrefix _GetPowerSettingIndex
 exit /b -1
 
+::Usage Call :GetPowerSchemeGuid OutputGuid InputPowerSchemeName
 :GetPowerSchemeGuid
+Call :GetPowerSchemeIndex "%~2" _GetPowerSchemeGuid_index
+call set "%~1=%%powercfg[%_GetPowerSchemeGuid_index%].guid%%
+GoTo :EOF
+
+::Usage Call :GetPowerSchemeName OutputName InputPowerSchemeGuid
 :GetPowerSchemeName
+Call :GetPowerSchemeIndex "%~2" _GetPowerSchemeName_index
+call set "%~1=%%powercfg[%_GetPowerSchemeName_index%].name%%
+GoTo :EOF
+
+::Usage Call :GetPowerSubgroupGuid OutputGuid InputPowerSubgroupName
 :GetPowerSubgroupGuid
+Call :GetPowerSubgroupIndex "%~2" _GetPowerSubgroupGuid_index
+call set "%~1=%%powercfg[%_GetPowerSubgroupGuid_index%].guid%%
+GoTo :EOF
+
+::Usage Call :GetPowerSubgroupName OutputName InputPowerSubgroupGuid
 :GetPowerSubgroupName
-:GetPowerSettingGuid
-:GetPowerSettingName
+Call :GetPowerSubgroupIndex "%~2" _GetPowerSubgroupName_index
+call set "%~1=%%powercfg[%_GetPowerSubgroupName_index%].name%%
+GoTo :EOF
 
-:ListPowerSettings
+::Usage Call :GetPowerSettingGuid OutputGuid InputPowerSettingName
+:GetPowerSettingIndex
+Call :GetPowerSchemeIndex "%~2" _GetPowerSettingGuid_index
+call set "%~1=%%powercfg[%_GetPowerSettingGuid_index%].guid%%
+GoTo :EOF
+
+::Usage Call :GetPowerSettingName OutputName InputPowerSettingGuid
+:GetPowerSettingIndex
+Call :GetPowerSchemeIndex "%~2" _GetPowerSettingName_index
+call set "%~1=%%powercfg[%_GetPowerSettingName_index%].guid%%
+GoTo :EOF
+
+
+
+::Usage Call :GetDefaultSchemeName OutputIndex OutputGuid OutputName 
 :GetDefaultSchemeName
+if "[%~1]" NEQ "[]" set "%~1=%powercfg.schemes.default.index%"
+if "[%~2]" NEQ "[]" set "%~2=%powercfg.schemes.default.guid%"
+if "[%~3]" NEQ "[]" set "%~3=%powercfg.schemes.default.name%"
+exit /b %powercfg.schemes.default.index%
 
-:FindSubgroup
 
+::Usage Call :GetPowerID [schemename.[subgroupname.[settingname]
+::Default scheme will be returned if not specified
+:GetPowerID
+REM if two dots, run getscheme, run getsubgroup, run getsetting
+REM if one dot run getsubgroup, run getsetting
+REM if no dots run get setting, FIND subgroup, return default scheme
+REM what about scheme only, subgroup only, scheme.subgroup
+REM what about alias and other powercfg things with guid ?
+GoTo :EOF
 
 ::Usage Call :GetSettingACValue OutputValue 
 :GetSettingACValue balanced.Hard disk.whatever output
@@ -732,8 +836,8 @@ exit /b -1
 :GetSettingACValuePercentage
 :GetSettingMin
 :GetSettingMax
-:GetSettingIndexName
-:GetSettingIndexFromName
+:GetSettingFriendlyName
+:GetSettingIndexFromFriendlyName
 :GetSettingIncrement
 :GetSettingUnit
 
@@ -744,3 +848,59 @@ exit /b -1
 :DecrementSettingACValue
 :IncrementSettingDCValue
 :DecrementSettingDCValue
+
+:ShowAllPowercfgSettings
+:GetFullPowercfgReport
+REM get hibernate config status ???
+REM get fast startup status ???
+/AVAILABLESLEEPSTATES
+list all available and unavailable sleep states
+
+
+powercfg /DEVICEQUERY wake_from_S1_supported    Return all devices that support waking the system from a light sleep state.                              
+powercfg /DEVICEQUERY wake_from_S2_supported    Return all devices that support waking the system from a deeper sleep state.
+powercfg /DEVICEQUERY wake_from_S3_supported    Return all devices that support waking the system from the deepest sleep state.
+powercfg /DEVICEQUERY wake_from_any             Return all devices that support waking the system from any sleep state.
+powercfg /DEVICEQUERY S1_supported              List devices supporting light sleep.
+powercfg /DEVICEQUERY S2_supported              List devices supporting deeper sleep.
+powercfg /DEVICEQUERY S3_supported              List devices supporting deepest sleep.
+powercfg /DEVICEQUERY S4_supported              List devices supporting hibernation.
+powercfg /DEVICEQUERY wake_programmable         List devices that are user-configurable to wake the system from a sleep state.
+powercfg /DEVICEQUERY wake_armed                List devices that are currently configured to wake the system from any sleep state.
+powercfg /DEVICEQUERY all_devices               Return all devices present in the system
+
+show all devices and the sleep states they support
+show which devices can and can't wake the computer
+/LASTWAKE
+/WAKETIMERS
+powercfg /REQUESTS
+/ENERGY energy-report.html
+/BATTERYREPORT requier battery
+/SRUMUTIL requier hardware
+/SYSTEMSLEEPDIAGNOSTICS system-sleep-diagnostics.html
+/SLEEPSTUDY meme que /SYSTEMPOWERREPORT powercfg /SYSTEMPOWERREPORT -> sleepstudy-report.html
+/POWERTHROTTLING list
+REM get all security descriptors
+:SetHighPerformanceScheme
+:SetBalancedScheme
+:SetPowerSaverScheme
+::Usage Call :GetSecurityDescriptor InputGuid optional SecurityDescriptor
+:GetSecurityDescriptor 
+
+:DisableHibernation
+:EnableHibernation
+:SetHibernationFileToReduced
+:SetHibernationFileToFull
+:SetHibernationFilePercentage
+:DisableFastStartup
+:EnableFastStartup
+
+::Usage Call :EnablePowerThrottling PathToExe
+::Usage Call :EnablePowerThrottling PackageName
+:EnablePowerThrottling
+:DisablePowerThrottling
+:ShowPowerThrottling
+
+:EnableWakeByDevice
+:DisableWakeByDevice
+:OverridePowerRequest
