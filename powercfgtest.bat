@@ -62,155 +62,155 @@ Call :ClearVariablesByPrefix _powercfg_demo_array
 echo.
 
 REM Call :GetPowerSchemeIndex Powerscheme(name or guid) optional OutputIndex
-echo Testing GetPowerSchemeIndex
-echo Call GetPowerSchemeIndex with only powerscheme name and checking errorlevel after
-Call :GetPowerSchemeIndex Balanced
-echo Balanced errorlevel %errorlevel%
-Call :GetPowerSchemeIndex "High performance"
-echo High performance errorlevel %errorlevel%
-Call :GetPowerSchemeIndex "Power saver"
-echo Power saver errorlevel %errorlevel%
-echo.
-echo Call GetPowerSchemeIndex with only powerscheme guid and checking errorlevel after
-Call :GetPowerSchemeIndex 381b4222-f694-41f0-9685-ff5bb260df2e
-echo Balanced errorlevel %errorlevel%
-Call :GetPowerSchemeIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
-echo High performance errorlevel %errorlevel%
-Call :GetPowerSchemeIndex a1841308-3541-4fab-bc81-f71556f20b4a
-echo Power saver errorlevel %errorlevel%
-echo.
-echo Call GetPowerSchemeIndex with only powerscheme index and checking errorlevel after
-Call :GetPowerSchemeIndex 0
-echo Balanced errorlevel %errorlevel%
-Call :GetPowerSchemeIndex 1
-echo High performance errorlevel %errorlevel%
-Call :GetPowerSchemeIndex 2
-echo Power saver errorlevel %errorlevel%
-echo.
-echo Call GetPowerSchemeIndex with powerscheme name and outputvariable and checking errorlevel after
-Call :GetPowerSchemeIndex Balanced myoutputvariable
-echo Balanced errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSchemeIndex "High performance" myoutputvariable
-echo High performance errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSchemeIndex "Power saver" myoutputvariable
-echo Power saver errorlevel %errorlevel% %myoutputvariable%
-echo.
-echo Call GetPowerSchemeIndex with powerscheme guid and checking errorlevel after
-Call :GetPowerSchemeIndex 381b4222-f694-41f0-9685-ff5bb260df2e myoutputvariable
-echo Balanced errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSchemeIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c myoutputvariable
-echo High performance errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSchemeIndex a1841308-3541-4fab-bc81-f71556f20b4a myoutputvariable
-echo Power saver errorlevel %errorlevel% %myoutputvariable%
-echo.
-echo Call GetPowerSchemeIndex with powerscheme index and checking errorlevel after
-Call :GetPowerSchemeIndex 0 myoutputvariable
-echo Balanced errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSchemeIndex 1 myoutputvariable
-echo High performance errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSchemeIndex 2 myoutputvariable
-echo Power saver errorlevel %errorlevel% %myoutputvariable%
-echo.
+REM echo Testing GetPowerSchemeIndex
+REM echo Call GetPowerSchemeIndex with only powerscheme name and checking errorlevel after
+REM Call :GetPowerSchemeIndex Balanced
+REM echo Balanced errorlevel %errorlevel%
+REM Call :GetPowerSchemeIndex "High performance"
+REM echo High performance errorlevel %errorlevel%
+REM Call :GetPowerSchemeIndex "Power saver"
+REM echo Power saver errorlevel %errorlevel%
+REM echo.
+REM echo Call GetPowerSchemeIndex with only powerscheme guid and checking errorlevel after
+REM Call :GetPowerSchemeIndex 381b4222-f694-41f0-9685-ff5bb260df2e
+REM echo Balanced errorlevel %errorlevel%
+REM Call :GetPowerSchemeIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
+REM echo High performance errorlevel %errorlevel%
+REM Call :GetPowerSchemeIndex a1841308-3541-4fab-bc81-f71556f20b4a
+REM echo Power saver errorlevel %errorlevel%
+REM echo.
+REM echo Call GetPowerSchemeIndex with only powerscheme index and checking errorlevel after
+REM Call :GetPowerSchemeIndex 0
+REM echo Balanced errorlevel %errorlevel%
+REM Call :GetPowerSchemeIndex 1
+REM echo High performance errorlevel %errorlevel%
+REM Call :GetPowerSchemeIndex 2
+REM echo Power saver errorlevel %errorlevel%
+REM echo.
+REM echo Call GetPowerSchemeIndex with powerscheme name and outputvariable and checking errorlevel after
+REM Call :GetPowerSchemeIndex Balanced myoutputvariable
+REM echo Balanced errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSchemeIndex "High performance" myoutputvariable
+REM echo High performance errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSchemeIndex "Power saver" myoutputvariable
+REM echo Power saver errorlevel %errorlevel% %myoutputvariable%
+REM echo.
+REM echo Call GetPowerSchemeIndex with powerscheme guid and checking errorlevel after
+REM Call :GetPowerSchemeIndex 381b4222-f694-41f0-9685-ff5bb260df2e myoutputvariable
+REM echo Balanced errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSchemeIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c myoutputvariable
+REM echo High performance errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSchemeIndex a1841308-3541-4fab-bc81-f71556f20b4a myoutputvariable
+REM echo Power saver errorlevel %errorlevel% %myoutputvariable%
+REM echo.
+REM echo Call GetPowerSchemeIndex with powerscheme index and checking errorlevel after
+REM Call :GetPowerSchemeIndex 0 myoutputvariable
+REM echo Balanced errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSchemeIndex 1 myoutputvariable
+REM echo High performance errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSchemeIndex 2 myoutputvariable
+REM echo Power saver errorlevel %errorlevel% %myoutputvariable%
+REM echo.
 
-echo Testing GetPowerSubgroupIndex
-echo Call GetPowerSubgroupIndex with only powerscheme name, subgroup name and checking errorlevel after
-Call :GetPowerSubgroupIndex Balanced "Hard disk"
-echo Balanced errorlevel %errorlevel%
-Call :GetPowerSubgroupIndex "High performance" "Internet Explorer"
-echo High performance errorlevel %errorlevel%
-Call :GetPowerSubgroupIndex "Power saver" "Desktop background settings"
-echo Power saver errorlevel %errorlevel%
-echo.
-echo Call GetPowerSubgroupIndex with only powerscheme guid, subgroup guid and checking errorlevel after
-Call :GetPowerSubgroupIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442
-echo Balanced errorlevel %errorlevel%
-Call :GetPowerSubgroupIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 02f815b5-a5cf-4c84-bf20-649d1f75d3d8
-echo High performance errorlevel %errorlevel%
-Call :GetPowerSubgroupIndex a1841308-3541-4fab-bc81-f71556f20b4a 0d7dbae2-4294-402a-ba8e-26777e8488cd
-echo Power saver errorlevel %errorlevel%
-echo.
-echo Call GetPowerSubgroupIndex with only powerscheme index, subgroup index and checking errorlevel after
-Call :GetPowerSubgroupIndex 0 0
-echo Balanced errorlevel %errorlevel%
-Call :GetPowerSubgroupIndex 1 1
-echo High performance errorlevel %errorlevel%
-Call :GetPowerSubgroupIndex 2 2
-echo Power saver errorlevel %errorlevel%
-echo.
-echo Call GetPowerSubgroupIndex with powerscheme name, subgroup name and outputvariable and checking errorlevel after
-Call :GetPowerSubgroupIndex Balanced "Hard disk" myoutputvariable
-echo Balanced errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSubgroupIndex "High performance" "Internet Explorer" myoutputvariable
-echo High performance errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSubgroupIndex "Power saver" "Desktop background settings" myoutputvariable
-echo Power saver errorlevel %errorlevel% %myoutputvariable%
-echo.
-echo Call GetPowerSubgroupIndex with powerscheme guid, subgroup guid and checking errorlevel after
-Call :GetPowerSubgroupIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 myoutputvariable
-echo Balanced errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSubgroupIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 02f815b5-a5cf-4c84-bf20-649d1f75d3d8 myoutputvariable
-echo High performance errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSubgroupIndex a1841308-3541-4fab-bc81-f71556f20b4a 0d7dbae2-4294-402a-ba8e-26777e8488cd myoutputvariable
-echo Power saver errorlevel %errorlevel% %myoutputvariable%
-echo.
-echo Call GetPowerSubgroupIndex with powerscheme index, subgroup index and checking errorlevel after
-Call :GetPowerSubgroupIndex 0 0 myoutputvariable
-echo Balanced errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSubgroupIndex 1 1 myoutputvariable
-echo High performance errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSubgroupIndex 2 2 myoutputvariable
-echo Power saver errorlevel %errorlevel% %myoutputvariable%
-echo.
+REM echo Testing GetPowerSubgroupIndex
+REM echo Call GetPowerSubgroupIndex with only powerscheme name, subgroup name and checking errorlevel after
+REM Call :GetPowerSubgroupIndex Balanced "Hard disk"
+REM echo Balanced errorlevel %errorlevel%
+REM Call :GetPowerSubgroupIndex "High performance" "Internet Explorer"
+REM echo High performance errorlevel %errorlevel%
+REM Call :GetPowerSubgroupIndex "Power saver" "Desktop background settings"
+REM echo Power saver errorlevel %errorlevel%
+REM echo.
+REM echo Call GetPowerSubgroupIndex with only powerscheme guid, subgroup guid and checking errorlevel after
+REM Call :GetPowerSubgroupIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442
+REM echo Balanced errorlevel %errorlevel%
+REM Call :GetPowerSubgroupIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 02f815b5-a5cf-4c84-bf20-649d1f75d3d8
+REM echo High performance errorlevel %errorlevel%
+REM Call :GetPowerSubgroupIndex a1841308-3541-4fab-bc81-f71556f20b4a 0d7dbae2-4294-402a-ba8e-26777e8488cd
+REM echo Power saver errorlevel %errorlevel%
+REM echo.
+REM echo Call GetPowerSubgroupIndex with only powerscheme index, subgroup index and checking errorlevel after
+REM Call :GetPowerSubgroupIndex 0 0
+REM echo Balanced errorlevel %errorlevel%
+REM Call :GetPowerSubgroupIndex 1 1
+REM echo High performance errorlevel %errorlevel%
+REM Call :GetPowerSubgroupIndex 2 2
+REM echo Power saver errorlevel %errorlevel%
+REM echo.
+REM echo Call GetPowerSubgroupIndex with powerscheme name, subgroup name and outputvariable and checking errorlevel after
+REM Call :GetPowerSubgroupIndex Balanced "Hard disk" myoutputvariable
+REM echo Balanced errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSubgroupIndex "High performance" "Internet Explorer" myoutputvariable
+REM echo High performance errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSubgroupIndex "Power saver" "Desktop background settings" myoutputvariable
+REM echo Power saver errorlevel %errorlevel% %myoutputvariable%
+REM echo.
+REM echo Call GetPowerSubgroupIndex with powerscheme guid, subgroup guid and checking errorlevel after
+REM Call :GetPowerSubgroupIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 myoutputvariable
+REM echo Balanced errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSubgroupIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 02f815b5-a5cf-4c84-bf20-649d1f75d3d8 myoutputvariable
+REM echo High performance errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSubgroupIndex a1841308-3541-4fab-bc81-f71556f20b4a 0d7dbae2-4294-402a-ba8e-26777e8488cd myoutputvariable
+REM echo Power saver errorlevel %errorlevel% %myoutputvariable%
+REM echo.
+REM echo Call GetPowerSubgroupIndex with powerscheme index, subgroup index and checking errorlevel after
+REM Call :GetPowerSubgroupIndex 0 0 myoutputvariable
+REM echo Balanced errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSubgroupIndex 1 1 myoutputvariable
+REM echo High performance errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSubgroupIndex 2 2 myoutputvariable
+REM echo Power saver errorlevel %errorlevel% %myoutputvariable%
+REM echo.
 
-echo Testing GetPowerSettingIndex
-echo Call GetPowerSettingIndex with only powerscheme name, subgroup name, setting name and checking errorlevel after
-Call :GetPowerSettingIndex Balanced "Hard disk" "Turn off hard disk after"
-echo Balanced errorlevel %errorlevel%
-Call :GetPowerSettingIndex "High performance" "Sleep" "Allow hybrid sleep"
-echo High performance errorlevel %errorlevel%
-Call :GetPowerSettingIndex "Power saver" "Processor power management" "Maximum processor state"
-echo Power saver errorlevel %errorlevel%
-echo.
-echo Call GetPowerSettingIndex with only powerscheme guid, subgroup guid, setting guid and checking errorlevel after
-Call :GetPowerSettingIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e
-echo Balanced errorlevel %errorlevel%
-Call :GetPowerSettingIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 238c9fa8-0aad-41ed-83f4-97be242c8f20 94ac6d29-73ce-41a6-809f-6363ba21b47e
-echo High performance errorlevel %errorlevel%
-Call :GetPowerSettingIndex a1841308-3541-4fab-bc81-f71556f20b4a 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec
-echo Power saver errorlevel %errorlevel%
-echo.
-echo Call GetPowerSettingIndex with only powerscheme index, subgroup index, setting index and checking errorlevel after
-Call :GetPowerSettingIndex 0 0 0
-echo Balanced errorlevel %errorlevel%
-Call :GetPowerSettingIndex 1 1 1
-echo High performance errorlevel %errorlevel%
-Call :GetPowerSettingIndex 2 2 2
-echo Power saver errorlevel %errorlevel%
-echo.
-echo Call GetPowerSettingIndex with powerscheme name, subgroup name, setting name and outputvariable and checking errorlevel after
-Call :GetPowerSettingIndex Balanced "Hard disk" "Turn off hard disk after" myoutputvariable
-echo Balanced errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSettingIndex "High performance" "Sleep" "Allow hybrid sleep" myoutputvariable
-echo High performance errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSettingIndex "Power saver" "Processor power management" "Maximum processor state" myoutputvariable
-echo Power saver errorlevel %errorlevel% %myoutputvariable%
-echo.
-echo Call GetPowerSettingIndex with powerscheme guid, subgroup guid, setting guid and checking errorlevel after
-Call :GetPowerSettingIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e myoutputvariable
-echo Balanced errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSettingIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 238c9fa8-0aad-41ed-83f4-97be242c8f20 94ac6d29-73ce-41a6-809f-6363ba21b47e myoutputvariable
-echo High performance errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSettingIndex a1841308-3541-4fab-bc81-f71556f20b4a 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec myoutputvariable
-echo Power saver errorlevel %errorlevel% %myoutputvariable%
-echo.
-echo Call GetPowerSettingIndex with powerscheme index, subgroup index, setting index and checking errorlevel after
-Call :GetPowerSettingIndex 0 0 0 myoutputvariable
-echo Balanced errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSettingIndex 1 1 1 myoutputvariable
-echo High performance errorlevel %errorlevel% %myoutputvariable%
-Call :GetPowerSettingIndex 2 2 2 myoutputvariable
-echo Power saver errorlevel %errorlevel% %myoutputvariable%
-echo.
+REM echo Testing GetPowerSettingIndex
+REM echo Call GetPowerSettingIndex with only powerscheme name, subgroup name, setting name and checking errorlevel after
+REM Call :GetPowerSettingIndex Balanced "Hard disk" "Turn off hard disk after"
+REM echo Balanced errorlevel %errorlevel%
+REM Call :GetPowerSettingIndex "High performance" "Sleep" "Allow hybrid sleep"
+REM echo High performance errorlevel %errorlevel%
+REM Call :GetPowerSettingIndex "Power saver" "Processor power management" "Maximum processor state"
+REM echo Power saver errorlevel %errorlevel%
+REM echo.
+REM echo Call GetPowerSettingIndex with only powerscheme guid, subgroup guid, setting guid and checking errorlevel after
+REM Call :GetPowerSettingIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e
+REM echo Balanced errorlevel %errorlevel%
+REM Call :GetPowerSettingIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 238c9fa8-0aad-41ed-83f4-97be242c8f20 94ac6d29-73ce-41a6-809f-6363ba21b47e
+REM echo High performance errorlevel %errorlevel%
+REM Call :GetPowerSettingIndex a1841308-3541-4fab-bc81-f71556f20b4a 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec
+REM echo Power saver errorlevel %errorlevel%
+REM echo.
+REM echo Call GetPowerSettingIndex with only powerscheme index, subgroup index, setting index and checking errorlevel after
+REM Call :GetPowerSettingIndex 0 0 0
+REM echo Balanced errorlevel %errorlevel%
+REM Call :GetPowerSettingIndex 1 1 1
+REM echo High performance errorlevel %errorlevel%
+REM Call :GetPowerSettingIndex 2 2 2
+REM echo Power saver errorlevel %errorlevel%
+REM echo.
+REM echo Call GetPowerSettingIndex with powerscheme name, subgroup name, setting name and outputvariable and checking errorlevel after
+REM Call :GetPowerSettingIndex Balanced "Hard disk" "Turn off hard disk after" myoutputvariable
+REM echo Balanced errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSettingIndex "High performance" "Sleep" "Allow hybrid sleep" myoutputvariable
+REM echo High performance errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSettingIndex "Power saver" "Processor power management" "Maximum processor state" myoutputvariable
+REM echo Power saver errorlevel %errorlevel% %myoutputvariable%
+REM echo.
+REM echo Call GetPowerSettingIndex with powerscheme guid, subgroup guid, setting guid and checking errorlevel after
+REM Call :GetPowerSettingIndex 381b4222-f694-41f0-9685-ff5bb260df2e 0012ee47-9041-4b5d-9b77-535fba8b1442 6738e2c4-e8a5-4a42-b16a-e040e769756e myoutputvariable
+REM echo Balanced errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSettingIndex 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 238c9fa8-0aad-41ed-83f4-97be242c8f20 94ac6d29-73ce-41a6-809f-6363ba21b47e myoutputvariable
+REM echo High performance errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSettingIndex a1841308-3541-4fab-bc81-f71556f20b4a 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec myoutputvariable
+REM echo Power saver errorlevel %errorlevel% %myoutputvariable%
+REM echo.
+REM echo Call GetPowerSettingIndex with powerscheme index, subgroup index, setting index and checking errorlevel after
+REM Call :GetPowerSettingIndex 0 0 0 myoutputvariable
+REM echo Balanced errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSettingIndex 1 1 1 myoutputvariable
+REM echo High performance errorlevel %errorlevel% %myoutputvariable%
+REM Call :GetPowerSettingIndex 2 2 2 myoutputvariable
+REM echo Power saver errorlevel %errorlevel% %myoutputvariable%
+REM echo.
 
 
 
@@ -222,11 +222,31 @@ echo.
 echo List the subgroups only using Call ListPowerSettingsInAllSubgroups 
 Call :ListPowerSettingsInAllSubgroups 0
 
-:skipsection
+
 
 echo.
 echo List the subgroups only using Call ListPowerSettingsInAllSubgroups, but without the power scheme prefix
 Call :ListPowerSettingsInAllSubgroups NOPREFIX 0
+
+:skipsection
+
+echo.
+echo Creating the available SleepStates array
+Call :GetSleepStates
+
+echo.
+echo Showing Supported sleep states
+Call :GetSupportedSleepStates
+
+echo.
+echo Showing unsupported sleep states
+Call :GetUnsupportedSleepStates
+
+echo.
+echo Showing unsupported sleep states with reason 
+Call :GetUnsupportedSleepStatesWithReason
+
+
 
 GoTO :EOF
 
@@ -620,7 +640,7 @@ REM for each setting with units show percentage
 :: If no output array is specified, the list will be echoed to the console
 ::Usage Call :ListPowerSchemes optional OutputArray
 :ListPowerSchemes
-if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
+if not defined powercfg.schemes.ubound Call :GetPowerSettings
 if "[%~1]" NEQ "[]" call set /a "_ListPowerSchemes_output_ubound=%%%~1.ubound%%" 2>nul
 if "[%~1]" NEQ "[]" if "[%_ListPowerSchemes_output_ubound%]" EQU "[]" ( set /a "_ListPowerSchemes_output_ubound=0" ) else ( set /a "_ListPowerSchemes_output_ubound+=1" )
 set /a "_ListPowerSchemes_index=0"
@@ -634,7 +654,7 @@ GoTo :EOF
 ::Usage Call :ListPowerSubgroupsoptional NOPREFIX PowerScheme(index, name or guid) optional OutputArray
 :ListPowerSubgroups
 if "[%~1]" EQU "[NOPREFIX]" ( set "_ListPowerSubgroups_noprefix=true" & shift )
-if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
+if not defined powercfg.schemes.ubound Call :GetPowerSettings
 if "[%~2]" NEQ "[]" call set /a "_ListPowerSubgroups_output_ubound=%%%~2.ubound%%" 2>nul
 if "[%~2]" NEQ "[]" if "[%_ListPowerSubgroups_output_ubound%]" EQU "[]" ( set /a "_ListPowerSubgroups_output_ubound=0" ) else ( set /a "_ListPowerSubgroups_output_ubound+=1" )
 Call :GetPowerSchemeIndex "%~1" _ListPowerSubgroups_schemes_index 
@@ -652,7 +672,7 @@ GoTo :EOF
 ::Usage Call :ListPowerSettings optional NOPREFIX PowerScheme(index, name or guid) PowerSubgroup(index, name or guid) optional OutputArray
 :ListPowerSettings
 if "[%~1]" EQU "[NOPREFIX]" ( set "_ListPowerSettings_noprefix=true" & shift )
-if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
+if not defined powercfg.schemes.ubound Call :GetPowerSettings
 if "[%~3]" NEQ "[]" call set /a "_ListPowerSettings_output_ubound=%%%~3.ubound%%" 2>nul
 if "[%~3]" NEQ "[]" if "[%_ListPowerSettings_output_ubound%]" EQU "[]" ( set /a "_ListPowerSettings_output_ubound=0" ) else ( set /a "_ListPowerSettings_output_ubound+=1" )
 Call :GetPowerSchemeIndex "%~1" _ListPowerSettings_schemes_index 
@@ -697,7 +717,7 @@ GoTo :EOF
 :: If no output array is specified, the list will be echoed to the console
 ::Usage Call :ListAllPowerSubgroups optional OutputArray
 :ListAllPowerSubgroups
-if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
+if not defined powercfg.schemes.ubound Call :GetPowerSettings
 if "[%~1]" NEQ "[]" call set /a "_ListAllPowerSubgroups_output_ubound=%%%~1.ubound%%" 2>nul
 if "[%~1]" NEQ "[]" if "[%_ListAllPowerSubgroups_output_ubound%]" EQU "[]" ( set /a "_ListAllPowerSubgroups_output_ubound=0" ) else ( set /a "_ListAllPowerSubgroups_output_ubound+=1" )
 set /a "_ListAllPowerSubgroups_schemes_index=0"
@@ -712,7 +732,7 @@ GoTo :EOF
 ::Usage Call :GetPowerSchemeIndex Powerscheme(index, name or guid) optional OutputIndex
 ::Returns powerscheme index
 :GetPowerSchemeIndex
-if not defined powercfg.schemes[0].subgroup.ubound Call :GetPowerSettings
+if not defined powercfg.schemes.ubound Call :GetPowerSettings
 set "_GetPowerSchemeIndex_search=%~1"
 Call :IsNumeric _GetPowerSchemeIndex_search || if "[%~2]" NEQ "[]" ( set "%~2=%_GetPowerSchemeIndex_search%" & Call :ClearVariablesByPrefix _GetPowerSchemeIndex & exit /b %_GetPowerSchemeIndex_search% ) else ( Call :ClearVariablesByPrefix _GetPowerSchemeIndex & exit /b %_GetPowerSchemeIndex_search% )
 set /a "_GetPowerSchemeIndex_index=0"
@@ -842,7 +862,7 @@ GoTo :EOF
 :GetSettingUnit
 
 
-:SetSettingACValue
+:SetSettingACValue powercfg /CHANGE
 :SetSettingDCValue
 :IncrementSettingACValue
 :DecrementSettingACValue
@@ -880,6 +900,19 @@ powercfg /REQUESTS
 /SYSTEMSLEEPDIAGNOSTICS system-sleep-diagnostics.html
 /SLEEPSTUDY meme que /SYSTEMPOWERREPORT powercfg /SYSTEMPOWERREPORT -> sleepstudy-report.html
 /POWERTHROTTLING list
+/AVAILABLESLEEPSTATES
+powercfg /DEVICEQUERY all_devices
+powercfg /DEVICEQUERY S1_supported
+powercfg /DEVICEQUERY S2_supported
+powercfg /DEVICEQUERY S3_supported
+powercfg /DEVICEQUERY S4_supported
+powercfg /DEVICEQUERY wake_from_any
+powercfg /DEVICEQUERY wake_from_S1_supported
+powercfg /DEVICEQUERY wake_from_S2_supported
+powercfg /DEVICEQUERY wake_from_S3_supported
+powercfg /DEVICEQUERY wake_programmable
+powercfg /DEVICEQUERY wake_armed
+
 REM get all security descriptors
 :SetHighPerformanceScheme
 :SetBalancedScheme
@@ -895,6 +928,9 @@ REM get all security descriptors
 :DisableFastStartup
 :EnableFastStartup
 
+:ShowWhatIsPreventingSleep
+:OverrideWhatIsPreventingSleep
+
 ::Usage Call :EnablePowerThrottling PathToExe
 ::Usage Call :EnablePowerThrottling PackageName
 :EnablePowerThrottling
@@ -904,3 +940,144 @@ REM get all security descriptors
 :EnableWakeByDevice
 :DisableWakeByDevice
 :OverridePowerRequest
+
+:GetDevicePowerProperties
+
+:GetWakeProgrammableDevices
+:GetAllDevices
+:GetS1CapableDevices
+:GetS2CapableDevices
+:GetS3CapableDevices
+:GetS4CapableDevices
+:GetS1WakeDevices
+:GetS2WakeDevices
+:GetS3WakeDevices
+:GetAnyWakeDevices
+:GetWakeArmedDevices
+:GetWakeUnarmedDevices
+
+
+::Usage Call :GetSleepStates
+:GetSleepStates
+set "_GetPowerSettings_prefix=_GSS"
+Call :ClearVariablesByPrefix powercfg.sleepstates.contents
+Call :CommandToArray powercfg.sleepstates.contents "'powercfg /availablesleepstates'"
+set /a "_GSS_contents_index=0"
+set /a "_GSS_sleepstate_index=-1"
+set /a "_GSS_supported_sleepstate_index=-1"
+set /a "_GSS_unsupported_sleepstate_index=-1"
+set "_GSS_mode="
+set "_GSS_state="
+set "_GSS_message="
+:GetSleepStates-loop
+call set /a "_GSS_contents_ubound=%%powercfg.sleepstates.contents.ubound%%"
+:GetSleepStates-contents-loop
+call set "_GSS_contents_current=%%powercfg.sleepstates.contents[%_GSS_contents_index%]%%"
+set "_GSS_message="
+if "[%_GSS_mode%]" EQU "[Supported states]" set "_GSS_state="
+for /f "tokens=* delims=: " %%a in ("%_GSS_contents_current%") do ( 
+	if "[%%a]" EQU "[The following sleep states are available on this system:]" set "_GSS_mode=Supported states" & set "_GSS_state=" & GoTo :GetSleepStates-contents-loop-for-skip
+	if "[%%a]" EQU "[The following sleep states are not available on this system:]" set "_GSS_mode=Unsupported states" & set "_GSS_state=" & GoTo :GetSleepStates-contents-loop-for-skip
+	if "[%%a]" EQU "[Standby (S0 Low Power Idle)]" set "_GSS_state=Standby (S0 Low Power Idle)" & GoTo :GetSleepStates-contents-loop-for-skip
+	if "[%%a]" EQU "[Standby (S1)]" set "_GSS_state=Standby (S1)" & GoTo :GetSleepStates-contents-loop-for-skip
+	if "[%%a]" EQU "[Standby (S2)]" set "_GSS_state=Standby (S2)" & GoTo :GetSleepStates-contents-loop-for-skip
+	if "[%%a]" EQU "[Standby (S3)]" set "_GSS_state=Standby (S3)" & GoTo :GetSleepStates-contents-loop-for-skip
+	if "[%%a]" EQU "[Hibernate]" set "_GSS_state=Hibernate" & GoTo :GetSleepStates-contents-loop-for-skip
+	if "[%%a]" EQU "[Hybrid Sleep]" set "_GSS_state=Hybrid Sleep" & GoTo :GetSleepStates-contents-loop-for-skip
+	if "[%%a]" EQU "[Fast Startup]" set "_GSS_state=Fast Startup" & GoTo :GetSleepStates-contents-loop-for-skip
+	set "_GSS_message=%%a"
+	)
+:GetSleepStates-contents-loop-for-skip
+REM echo 1 %_GSS_mode% 2 %_GSS_state% 3 %_GSS_message% %_GSS_sleepstate_index% %_GSS_supported_sleepstate_index% %_GSS_unsupported_sleepstate_index%
+if "[%_GSS_mode%]" EQU "[Supported states]" (
+	if "[%_GSS_state%]" NEQ "[]" set /a "_GSS_sleepstate_index+=1"
+	if "[%_GSS_state%]" NEQ "[]" set /a "_GSS_supported_sleepstate_index+=1"
+)
+if "[%_GSS_mode%]" EQU "[Supported states]" (
+	if "[%_GSS_state%]" NEQ "[]" set "powercfg.sleepstates[%_GSS_sleepstate_index%].supported=true"
+	if "[%_GSS_state%]" NEQ "[]" set "powercfg.sleepstates[%_GSS_sleepstate_index%]=%_GSS_state%"
+	if "[%_GSS_state%]" NEQ "[]" set "powercfg.sleepstates.ubound=%_GSS_sleepstate_index%"
+	if "[%_GSS_state%]" NEQ "[]" set "powercfg.sleepstates.supported[%_GSS_supported_sleepstate_index%]=%_GSS_state%"
+	if "[%_GSS_state%]" NEQ "[]" set "powercfg.sleepstates.supported.ubound=%_GSS_supported_sleepstate_index%"
+	if "[%_GSS_state%]" NEQ "[]" set "powercfg.sleepstates[%_GSS_state%].supported=true"
+)
+if "[%_GSS_mode%]" EQU "[Unsupported states]" (
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set /a "_GSS_sleepstate_index+=1"
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set /a "_GSS_unsupported_sleepstate_index+=1"
+	
+)
+REM if "[%_GSS_mode%]" EQU "[Unsupported states]" if "[%_GSS_message%]" NEQ "[]" ( echo su %_GSS_sleepstate_index% un %_GSS_unsupported_sleepstate_index% )
+if "[%_GSS_mode%]" EQU "[Unsupported states]" (
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set "powercfg.sleepstates[%_GSS_sleepstate_index%].unsupported=true"
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set "powercfg.sleepstates[%_GSS_sleepstate_index%]=%_GSS_state%"
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set "powercfg.sleepstates[%_GSS_sleepstate_index%].message=%_GSS_message%"
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set "powercfg.sleepstates.ubound=%_GSS_sleepstate_index%"
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set "powercfg.sleepstates.unsupported[%_GSS_unsupported_sleepstate_index%]=%_GSS_state%"
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set "powercfg.sleepstates.unsupported[%_GSS_unsupported_sleepstate_index%].message=%_GSS_message%"
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set "powercfg.sleepstates.unsupported.ubound=%_GSS_unsupported_sleepstate_index%"
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set "powercfg.sleepstates[%_GSS_state%].unsupported=true"
+	if "[%_GSS_state%]" NEQ "[]" if "[%_GSS_message%]" NEQ "[]" set "powercfg.sleepstates[%_GSS_state%]=%_GSS_message%"
+)
+set /a "_GSS_contents_index+=1"
+if %_GSS_contents_index% LEQ %_GSS_contents_ubound% GoTo :GetSleepStates-contents-loop
+Call :ClearVariablesByPrefix %_GetPowerSettings_prefix% _GetPowerSettings powercfg.sleepstates.contents
+GoTo :EOF
+
+::Usage Call :GetSupportedSleepStates optional OutputArray
+:GetSupportedSleepStates
+if not defined powercfg.sleepstates.ubound Call :GetSleepStates
+set /a "_GetSupportedSleepStates_index=0"
+set /a "_GetSupportedSleepStates_ubound=%powercfg.sleepstates.supported.ubound%"
+:GetSupportedSleepStates-loop
+if "[%~1]" EQU "[]" ( call echo %%powercfg.sleepstates.supported[%_GetSupportedSleepStates_index%]%% ) else ( call set "%~1[%_GetSupportedSleepStates_index%]=%%powercfg.sleepstates.supported[%_GetSupportedSleepStates_index%]%%" & set "%~1.ubound=%_GetSupportedSleepStates_index%") 
+set /a "_GetSupportedSleepStates_index+=1"
+if %_GetSupportedSleepStates_index% LEQ %_GetSupportedSleepStates_ubound% GoTo :GetSupportedSleepStates-loop
+Call :ClearVariablesByPrefix _GetSupportedSleepStates
+GoTo :EOF
+
+::Usage Call :GetUnsupportedSleepStates optional OutputArray
+:GetUnsupportedSleepStates
+if not defined powercfg.sleepstates.ubound Call :GetSleepStates
+set /a "_GetUnsupportedSleepStates_index=0"
+set /a "_GetUnsupportedSleepStates_ubound=%powercfg.sleepstates.unsupported.ubound%"
+:GetUnsupportedSleepStates-loop
+if "[%~1]" EQU "[]" ( call echo %%powercfg.sleepstates.unsupported[%_GetUnsupportedSleepStates_index%]%% ) else ( call set "%~1[%_GetUnsupportedSleepStates_index%]=%%powercfg.sleepstates.unsupported[%_GetUnsupportedSleepStates_index%]%%" & set "%~1.ubound=%_GetUnsupportedSleepStates_index%") 
+set /a "_GetUnsupportedSleepStates_index+=1"
+if %_GetUnsupportedSleepStates_index% LEQ %_GetUnsupportedSleepStates_ubound% GoTo :GetUnsupportedSleepStates-loop
+Call :ClearVariablesByPrefix _GetUnsupportedSleepStates
+GoTo :EOF
+
+::Usage Call :GetUnsupportedSleepStatesWithReason optional OutputArray
+:GetUnsupportedSleepStatesWithReason
+if not defined powercfg.sleepstates.ubound Call :GetSleepStates
+set /a "_GetUnsupportedSleepStatesWithReason_index=0"
+set /a "_GetUnsupportedSleepStatesWithReason_ubound=%powercfg.sleepstates.unsupported.ubound%"
+:GetUnsupportedSleepStatesWithReason-loop
+if "[%~1]" EQU "[]" ( call echo %%powercfg.sleepstates.unsupported[%_GetUnsupportedSleepStatesWithReason_index%]%% : %%powercfg.sleepstates.unsupported[%_GetUnsupportedSleepStatesWithReason_index%].message%%  ) else ( call set "%~1[%_GetUnsupportedSleepStatesWithReason_index%]=%%powercfg.sleepstates.unsupported[%_GetUnsupportedSleepStatesWithReason_index%]%% : %%powercfg.sleepstates.unsupported[%_GetUnsupportedSleepStatesWithReason_index%].message%%" & set "%~1.ubound=%_GetUnsupportedSleepStatesWithReason_index%") 
+set /a "_GetUnsupportedSleepStatesWithReason_index+=1"
+if %_GetUnsupportedSleepStatesWithReason_index% LEQ %_GetUnsupportedSleepStatesWithReason_ubound% GoTo :GetUnsupportedSleepStatesWithReason-loop
+Call :ClearVariablesByPrefix _GetUnsupportedSleepStatesWithReason
+GoTo :EOF
+
+::Usage Call :SetMonitorTimeout optional AC-timeout-minutes optional DC-timeout-minutes
+:SetMonitorTimeout
+if "[%~1]" NEQ "[]" powercfg /change monitor-timeout-ac %~1
+if "[%~2]" NEQ "[]" powercfg /change monitor-timeout-ac %~2
+GoTo :EOF
+
+::Usage Call :SetDiskTimeout optional AC-timeout-minutes optional DC-timeout-minutes
+:SetDiskTimeout
+if "[%~1]" NEQ "[]" powercfg /change disk-timeout-ac %~1
+if "[%~2]" NEQ "[]" powercfg /change disk-timeout-ac %~2
+GoTo :EOF
+::Usage Call :SetStandbyTimeout optional AC-timeout-minutes optional DC-timeout-minutes
+:SetStandbyTimeout
+if "[%~1]" NEQ "[]" powercfg /change standby-timeout-ac %~1
+if "[%~2]" NEQ "[]" powercfg /change standby-timeout-ac %~2
+GoTo :EOF
+::Usage Call :SetHibernateTimeout optional AC-timeout-minutes optional DC-timeout-minutes
+:SetHibernateTimeout
+if "[%~1]" NEQ "[]" powercfg /change hibernate-timeout-ac %~1
+if "[%~2]" NEQ "[]" powercfg /change hibernate-timeout-ac %~2
+GoTo :EOF
+
