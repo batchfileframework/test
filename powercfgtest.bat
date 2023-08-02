@@ -214,6 +214,7 @@ REM echo.
 
 
 
+
 echo.
 echo List all power settings in all subgroups in all power schemes
 Call :ListPowerSettingsInAllSchemes 
@@ -229,6 +230,13 @@ echo List the subgroups only using Call ListPowerSettingsInAllSubgroups, but wit
 Call :ListPowerSettingsInAllSubgroups NOPREFIX 0
 
 :skipsection
+
+REM Call :StringRepeat-DEMO
+REM Call :GetConsoleDimensions-DEMO
+REM Call :SetConsoleDimensions-DEMO
+REM Call :SquareRoot-DEMO
+Call :GetCirclePoint-DEMO
+GoTo :EOF 
 
 echo.
 echo Creating the available SleepStates array
@@ -321,6 +329,39 @@ set /a "_rtrim_index-=1"
 set _rtrim_intermediate=!_rtrim_input:~,-%_rtrim_index%!
 endlocal & set %_rtrim_output%=%_rtrim_intermediate%
 GoTo :EOF
+
+::Usage Call :lenByRef OutputResult %VariableName%
+rem doesn't work ?
+:lenByVal
+setlocal enabledelayedexpansion
+set _len=%~2
+GoTo :len
+::Usage Call :len OutputResult VariableName
+:: 5% slower for 100 strings, maximum lenght = 8174 (will break at 8175) WRONG
+:len
+(   
+    setlocal EnableDelayedExpansion
+    (set^ _ln=!%~2!)
+    if defined _ln (
+        set "len=1"
+        for %%P in (4096 2048 1024 512 256 128 64 32 16 8 4 2 1) do (
+            if "!_ln:~%%P,1!" NEQ "" ( 
+                set /a "len+=%%P"
+                set "_ln=!_ln:~%%P!"
+            )
+        )
+    ) ELSE (
+        set len=0
+    )
+)
+( 
+    endlocal
+    set "%~1=%len%"
+    exit /b %len%
+)
+rem find stackoverflow link for this
+rem return value should equal len
+rem lenbyval should work
 
 :: Input can be byval or byref
 :: will return && "success" if not numeric and || "fail" if numeric
@@ -1081,3 +1122,470 @@ if "[%~1]" NEQ "[]" powercfg /change hibernate-timeout-ac %~1
 if "[%~2]" NEQ "[]" powercfg /change hibernate-timeout-ac %~2
 GoTo :EOF
 
+::Usage Call :GetPowerSchemeElements ElementString PowerSetting PowerSubgroup PowerScheme
+:GetPowerSchemeElements 
+for /f "tokens=1,2,3* delims=." %%a in ("%~1") ( echo a%%a b%%b c%%c d%%d)
+GoTo :EOF
+
+::Usage Call :GetPowerSchemeValues Powerscheme(index, name or guid) OutputArray
+:GetPowerSchemeValues
+set "_GetPowerSchemeValues_prefix=_GPSV"
+Call :ReadInputArgument _GPSV_scheme_input "%~1"
+Call :GetPowerSchemeIndex "%_GPSV_scheme_input%" _GPSV_scheme_index
+Call :ListPowerSettingsInAllSubgroups %_GPSV_scheme_index% _GPSV_settings
+set /a "_GPSV_scheme_subgroups_index=0"
+set /a "_GPSV_scheme_subgroups_ubound=%_GPSV_scheme_subgroups.ubound%"
+:GetPowerSchemeValues-subgroup-loop
+Call :ListPowerSubgroups NOPREFIX _GPSV_scheme_index _GPSV_scheme_subgroups
+
+
+
+Call :ClearVariablesByPrefix 
+set /a "_GPSV_scheme_subgroups_index+=1"
+if %_GPSV_scheme_subgroups_index% LEQ %_GPSV_scheme_subgroups_ubound% GoTo :GGetPowerSchemeValues-subgroup-loop
+Call :ClearVariablesByPrefix %_GetPowerSchemeValues_prefix% _GetPowerSchemeValues
+GoTo :EOF
+
+::Usage Call :ReadInputArgument OutputVariable Input
+:ReadInputArgument
+if defined %~2 call set %~1=%%%~2%%
+if not defined %~2 set %~1=%~2
+GoTo :EOF
+
+
+:MakeStringLenght-DEMO
+
+set mystring[0]=Mary had a little lamb. 
+set mystring[1]=Mary had a little lamb. 1
+set mystring[2]=Mary had a little lamb. 12
+set mystring[3]=Mary had a little lamb. 123
+set mystring[4]=Mary had a little lamb. 1234
+set mystring[5]=Mary had a little lamb. 12345
+set mystring[6]=Mary had a little lamb. 123456
+set mystring[7]=Mary had a little lamb. 1234567
+set mystring[8]=Mary had a little lamb. 12345678
+set mystring[9]=Mary had a little lamb. 123456789
+
+echo.
+echo Output mystring array AS IS
+set /a "_MakeStringLenght_DEMO_index=0"
+set /a "_MakeStringLenght_DEMO_ubound=9
+:MakeStringLenght-DEMO-loop
+call set _MakeStringLenght_DEMO_output=%%mystring[%_MakeStringLenght_DEMO_index%]%%
+echo output:%_MakeStringLenght_DEMO_output%:
+set /a "_MakeStringLenght_DEMO_index+=1"
+if %_MakeStringLenght_DEMO_index% LEQ %_MakeStringLenght_DEMO_ubound% GoTo :MakeStringLenght-DEMO-loop
+
+echo.
+echo Output mystring array MakeStringLenght=20
+set /a "_MakeStringLenght_DEMO_index=0"
+set /a "_MakeStringLenght_DEMO_ubound=9
+:MakeStringLenght-DEMO-loop
+Call :MakeStringLenght _MakeStringLenght_DEMO_output 20 mystring[%_MakeStringLenght_DEMO_index%]
+echo output:%_MakeStringLenght_DEMO_output%:
+set /a "_MakeStringLenght_DEMO_index+=1"
+if %_MakeStringLenght_DEMO_index% LEQ %_MakeStringLenght_DEMO_ubound% GoTo :MakeStringLenght-DEMO-loop
+
+echo.
+echo Output mystring array MakeStringLenght=30
+set /a "_MakeStringLenght_DEMO_index=0"
+set /a "_MakeStringLenght_DEMO_ubound=9
+:MakeStringLenght-DEMO-loop
+Call :MakeStringLenght _MakeStringLenght_DEMO_output 30 mystring[%_MakeStringLenght_DEMO_index%]
+echo output:%_MakeStringLenght_DEMO_output%:
+set /a "_MakeStringLenght_DEMO_index+=1"
+if %_MakeStringLenght_DEMO_index% LEQ %_MakeStringLenght_DEMO_ubound% GoTo :MakeStringLenght-DEMO-loop
+
+echo.
+echo Output mystring array RIGHTALIGNED MakeStringLenght=33
+set /a "_MakeStringLenght_DEMO_index=0"
+set /a "_MakeStringLenght_DEMO_ubound=9
+:MakeStringLenght-DEMO-loop
+Call :MakeStringLenght RIGHTALIGNED _MakeStringLenght_DEMO_output 33 mystring[%_MakeStringLenght_DEMO_index%]
+echo output:%_MakeStringLenght_DEMO_output%:
+set /a "_MakeStringLenght_DEMO_index+=1"
+if %_MakeStringLenght_DEMO_index% LEQ %_MakeStringLenght_DEMO_ubound% GoTo :MakeStringLenght-DEMO-loop
+
+GoTo :EOF
+
+
+::Usage Call :MakeStringLenght optional RIGHTALIGNED OutputString MaxLenght Input
+:MakeStringLenght
+if "[%~1]" EQU "[RIGHTALIGNED]" ( set "_MakeStringLenght_rightaligned=true" & shift )
+set "_MakeStringLenght_output=%~2"
+set "_MakeStringLenght_max_lenght=%~2"
+Call :ReadInputArgument _MakeStringLenght_input "%~3"
+Call :len _MakeStringLenght_input_len _MakeStringLenght_input
+
+if "[%_MakeStringLenght_max_lenght%]" EQU "[%_MakeStringLenght_input_len%]" set %_MakeStringLenght_output%=%_MakeStringLenght_input%
+if "[%_MakeStringLenght_max_lenght%]" EQU "[%_MakeStringLenght_input_len%]" exit /b 0
+if "[%_MakeStringLenght_max_lenght%]" GTR "[%_MakeStringLenght_input_len%]" set %_MakeStringLenght_output%=%_MakeStringLenght_input%
+
+if "[%_MakeStringLenght_max_lenght%]" LSS "[%_MakeStringLenght_input_len%]"
+
+len input
+if len equal maxlenght send input to output
+if len less than maxlenght, add spaces to end of variable until maxlenght, if right aligned, assign spaces to beginning
+if greater than maxlenght, trunkate string to from beginning to maxlenght if not right aligned, from -maxlenght to end if rightaligned
+
+GoTo :EOF
+
+:GetConsoleDimensions-DEMO
+
+Call :GetConsoleWidth __GetConsoleDimensions
+echo console width is %__GetConsoleDimensions%
+echo console width (from errorlevel) is %errorlevel%
+
+set "__GetConsoleDimensions="
+Call :GetConsoleWidth 
+echo console width (from errorlevel) is %errorlevel%
+
+echo.
+Call :GetConsoleHeight __GetConsoleDimensions
+echo console Height is %__GetConsoleDimensions%
+echo console Height (from errorlevel) is %errorlevel%
+
+set "__GetConsoleDimensions="
+Call :GetConsoleHeight 
+echo console Height (from errorlevel) is %errorlevel%
+
+echo.
+echo get console dimensions (real and buffer)
+Call :GetConsoleBufferDimensions __GetConsoleDimensionsWidthOutput __GetConsoleDimensionsHeightOutput
+echo console width %__GetConsoleDimensionsWidthOutput% height %__GetConsoleDimensionsHeightOutput%
+Call :GetConsoleDimensions __GetConsoleDimensionsWidthOutput __GetConsoleDimensionsHeightOutput
+echo console width %__GetConsoleDimensionsWidthOutput% height %__GetConsoleDimensionsHeightOutput%
+
+echo.
+echo Get the rest of the console properties
+Call :GetCodePage __GetConsoleDimensions
+echo console CodePage is %__GetConsoleDimensions%
+echo console CodePage (from errorlevel) is %errorlevel%
+Call :GetKeyboardDelay __GetConsoleDimensions
+echo console KeyboardDelay is %__GetConsoleDimensions%
+echo console KeyboardDelay (from errorlevel) is %errorlevel%
+Call :GetKeyboardRate __GetConsoleDimensions
+echo console KeyboardRate is %__GetConsoleDimensions%
+echo console KeyboardRate (from errorlevel) is %errorlevel%
+Call :GetConsoleBufferWidth __GetConsoleDimensions
+echo console BufferWidth is %__GetConsoleDimensions%
+echo console BufferWidth (from errorlevel) is %errorlevel%
+Call :GetConsoleBufferHeight __GetConsoleDimensions
+echo console BufferHeight is %__GetConsoleDimensions%
+echo console BufferHeight (from errorlevel) is %errorlevel%
+
+echo.
+echo populating console. object
+Call :GetConsoleProperties
+
+set console.
+
+echo.
+GoTo :EOF
+
+:SetConsoleDimensions-DEMO
+set "_SetConsoleDimensions_index=1"
+set "_SetConsoleDimensions_ubound=100"
+:SetConsoleDimensions-DEMO-loop
+Call :SetConsoleDimensions %_SetConsoleDimensions_index% %_SetConsoleDimensions_index%
+echo w%_SetConsoleDimensions_index%h%_SetConsoleDimensions_index%e%errorlevel%
+echo val%lastvalid%
+echo inval%lastinvalid%
+if %errorlevel%==0 set lastvalid=w%_SetConsoleDimensions_index%h%_SetConsoleDimensions_index%
+if %errorlevel%==-1 set lastinvalid=w%_SetConsoleDimensions_index%h%_SetConsoleDimensions_index%
+set /a "_SetConsoleDimensions_index+=1"
+if %_SetConsoleDimensions_index% LEQ %_SetConsoleDimensions_ubound% GoTo :SetConsoleDimensions-DEMO-loop
+
+timeout /t 5
+
+set "_SetConsoleDimensions_index=100"
+set "_SetConsoleDimensions_ubound=1"
+:SetConsoleDimensions-DEMO-loop-2
+Call :SetConsoleDimensions %_SetConsoleDimensions_index% %_SetConsoleDimensions_index%
+echo w%_SetConsoleDimensions_index%h%_SetConsoleDimensions_index%e%errorlevel%
+echo val%lastvalid%
+echo inval%lastinvalid%
+if %errorlevel%==0 set lastvalid=w%_SetConsoleDimensions_index%h%_SetConsoleDimensions_index%
+if %errorlevel%==-1 set lastinvalid=w%_SetConsoleDimensions_index%h%_SetConsoleDimensions_index%
+set /a "_SetConsoleDimensions_index-=1"
+if %_SetConsoleDimensions_index% GEQ %_SetConsoleDimensions_ubound% GoTo :SetConsoleDimensions-DEMO-loop-2
+
+
+timeout /t 2
+Call :SetConsoleDimensions 15 15
+echo w15h15
+timeout /t 2
+Call :SetConsoleDimensions 15 20
+echo w15h20
+timeout /t 2
+Call :SetConsoleDimensions 50 15
+echo w50h15
+timeout /t 2
+Call :SetConsoleDimensions 50 30 
+echo w50h30
+timeout /t 2
+Call :SetConsoleDimensions 100 20
+echo w100h20
+timeout /t 2
+Call :SetConsoleDimensions 130 50
+echo w130h50
+
+
+set "_SetConsoleDimensions_index=0"
+set "_SetConsoleDimensions_ubound=50"
+:SetConsoleDimensions-DEMO-loop-2
+Call :SetConsoleDimensions %_SetConsoleDimensions_index% %_SetConsoleDimensions_index%
+echo w%_SetConsoleDimensions_index%h%_SetConsoleDimensions_index%e%errorlevel%
+echo val%lastvalid%
+echo inval%lastinvalid%
+if %errorlevel%==0 set lastvalid=w%_SetConsoleDimensions_index%h%_SetConsoleDimensions_index%
+if %errorlevel%==-1 set lastinvalid=w%_SetConsoleDimensions_index%h%_SetConsoleDimensions_index%
+
+
+set /a "_SetConsoleDimensions_index-=1"
+if %_SetConsoleDimensions_index% GEQ %_SetConsoleDimensions_ubound% GoTo :SetConsoleDimensions-DEMO-loop-2
+
+
+GoTo :EOF
+
+::Usage Call :GetConsoleWidth optional OutputVariable
+::Also returns width via return value
+:GetConsoleWidth
+for /f "tokens=1,* delims=:" %%b in ('powershell -Command "& { $Host.UI.RawUI.WindowSize.Width }"') do (
+	set /a "_GetConsoleWidth_width=%%b"
+)
+if "[%~1]" NEQ "[]" set "%~1=%_GetConsoleWidth_width%"
+set "_GetConsoleWidth_width=" & exit /b %_GetConsoleWidth_width%
+
+::Usage Call :GetConsoleHeight optional OutputVariable
+::Also returns height via return value
+:GetConsoleHeight
+for /f "tokens=1,* delims=:" %%b in ('powershell -Command "& { $Host.UI.RawUI.WindowSize.Height }"') do (
+	set /a "_GetConsoleHeight_height=%%b"
+)
+if "[%~1]" NEQ "[]" set "%~1=%_GetConsoleHeight_height%"
+set "_GetConsoleHeight_height=" & exit /b %_GetConsoleHeight_height%
+
+::Usage Call :GetConsoleBufferWidth optional OutputVariable
+::Also returns width via return value
+:GetConsoleBufferWidth
+for /f "tokens=1,* delims=:" %%b in ('mode con') do (
+	if "[%%b]" EQU "[    Columns]" set /a "_GetConsoleBufferWidth_width=%%c"
+)
+if "[%~1]" NEQ "[]" set "%~1=%_GetConsoleBufferWidth_width%"
+set "_GetConsoleBufferWidth_width=" & exit /b %_GetConsoleBufferWidth_width%
+
+::Usage Call :GetConsoleBufferHeight optional OutputVariable
+::Also returns height via return value
+:GetConsoleBufferHeight
+for /f "tokens=1,* delims=:" %%b in ('mode con') do (
+	if "[%%b]" EQU "[    Lines]" set /a "_GetConsoleBufferHeight_height=%%c"
+)
+if "[%~1]" NEQ "[]" set "%~1=%_GetConsoleBufferHeight_height%"
+set "_GetConsoleBufferHeight_height=" & exit /b %_GetConsoleBufferHeight_height%
+
+::Usage Call :GetConsoleDimensions WidthOutput HeightOutput
+:GetConsoleDimensions
+for /f "tokens=1,* delims=:" %%b in ('powershell -Command "& { $Host.UI.RawUI.WindowSize.Width }"') do (
+	set /a "_GetConsoleDimensions_width=%%b"
+)
+for /f "tokens=1,* delims=:" %%b in ('powershell -Command "& { $Host.UI.RawUI.WindowSize.Height }"') do (
+	set /a "_GetConsoleDimensions_height=%%b"
+)
+set "%~1=%_GetConsoleDimensions_width%"
+set "%~2=%_GetConsoleDimensions_height%"
+set "_GetConsoleDimensions_width=" & set "_GetConsoleDimensions_height="
+GoTo :EOF
+
+::Usage Call :GetConsoleBufferDimensions WidthOutput HeightOutput
+:GetConsoleBufferDimensions
+for /f "tokens=1,* delims=:" %%b in ('mode con') do (
+	if "[%%b]" EQU "[    Columns]" set /a "_GetConsoleBufferDimensions_width=%%c"
+	if "[%%b]" EQU "[    Lines]" set /a "_GetConsoleBufferDimensions_height=%%c"
+)
+set "%~1=%_GetConsoleBufferDimensions_width%"
+set "%~2=%_GetConsoleBufferDimensions_height%"
+set "_GetConsoleBufferDimensions_width=" & set "_GetConsoleBufferDimensions_height="
+GoTo :EOF
+
+::Usage Call :GetCodePage optional OutputVariable
+::Also returns code page via return value
+:GetCodePage
+for /f "tokens=1,* delims=:" %%b in ('mode con') do (
+	if "[%%b]" EQU "[    Code page]" set /a "_GetCodePage_page=%%c"
+)
+if "[%~1]" NEQ "[]" set "%~1=%_GetCodePage_page%"
+set "_GetCodePage_page=" & exit /b %_GetCodePage_page%
+
+::Usage Call :GetKeyboardDelay optional OutputVariable
+::Also returns keyboard delay via return value
+:GetKeyboardDelay
+for /f "tokens=1,* delims=:" %%b in ('mode con') do (
+	if "[%%b]" EQU "[    Keyboard delay]" set /a "_GetKeyboardDelay_delay=%%c"
+)
+if "[%~1]" NEQ "[]" set "%~1=%_GetKeyboardDelay_delay%"
+set "_GetKeyboardDelay_delay=" & exit /b %_GetKeyboardDelay_delay%
+
+::Usage Call :GetKeyboardRate optional OutputVariable
+::Also returns keyboard rate via return value
+:GetKeyboardRate
+for /f "tokens=1,* delims=:" %%b in ('mode con') do (
+	if "[%%b]" EQU "[    Keyboard rate]" set /a "_GetKeyboardRate_rate=%%c"
+)
+if "[%~1]" NEQ "[]" set "%~1=%_GetKeyboardRate_rate%"
+set "_GetKeyboardRate_rate=" & exit /b %_GetKeyboardRate_rate%
+
+::Usage Call :GetConsoleDimensions
+:GetConsoleProperties
+for /f "tokens=1,* delims=:" %%b in ('mode con') do (
+	if "[%%b]" EQU "[    Columns]" set /a "_GetConsoleProperties_bufferwidth=%%c"
+	if "[%%b]" EQU "[    Lines]" set /a "_GetConsoleProperties_bufferheight=%%c"
+	if "[%%b]" EQU "[    Code page]" set /a "_GetConsoleProperties_codepage=%%c"
+	if "[%%b]" EQU "[    Keyboard delay]" set /a "_GetConsoleProperties_delay=%%c"
+	if "[%%b]" EQU "[    Keyboard rate]" set /a "_GetConsoleProperties_rate=%%c"
+)
+for /f "tokens=1,* delims=:" %%b in ('powershell -Command "& { $Host.UI.RawUI.WindowSize.Width }"') do (
+	set /a "_GetConsoleProperties_width=%%b"
+)
+for /f "tokens=1,* delims=:" %%b in ('powershell -Command "& { $Host.UI.RawUI.WindowSize.Height }"') do (
+	set /a "_GetConsoleProperties_height=%%b"
+)
+set /a "console.width=%_GetConsoleProperties_width%"
+set /a "console.height=%_GetConsoleProperties_height%"
+set /a "console.buffer.width=%_GetConsoleProperties_bufferwidth%"
+set /a "console.buffer.height=%_GetConsoleProperties_bufferheight%"
+set /a "console.codepage=%_GetConsoleProperties_codepage%"
+set /a "console.delay=%_GetConsoleProperties_delay%"
+set /a "console.rate=%_GetConsoleProperties_rate%"
+Call :ClearVariablesByPrefix _GetConsoleProperties
+GoTo :EOF
+
+::Usage Call :SetConsoleDimensions width height
+:SetConsoleDimensions
+mode con cols=%~1 lines=%~2
+GoTo :EOF
+
+:StringRepeat-DEMO
+
+echo.
+set "__StringRepeat_demo=
+echo StringRepeat character A 5 times 
+Call :StringRepeat __StringRepeat_demo 5 A
+echo output value :%__StringRepeat_demo%
+
+echo.
+set "__StringRepeat_demo=
+echo StringRepeat string AbC 5 times
+Call :StringRepeat __StringRepeat_demo 5 AbC
+echo output value :%__StringRepeat_demo%
+
+echo.
+set "__StringRepeat_demo=
+echo StringRepeat string Hel lo 5 times
+Call :StringRepeat __StringRepeat_demo 5 "Hel lo"
+echo output value :%__StringRepeat_demo%
+
+echo.
+set "__StringRepeat_demo=
+echo StringRepeat character A 5 times (input passed as variable)
+set " __StringRepeat_demo_input=A"
+Call :StringRepeat __StringRepeat_demo 5 __StringRepeat_demo_input
+echo output value :%__StringRepeat_demo%
+
+echo.
+set "__StringRepeat_demo=
+echo StringRepeat string AbC 5 times (input passed as variable)
+set " __StringRepeat_demo_input=AbC"
+Call :StringRepeat __StringRepeat_demo 5 __StringRepeat_demo_input
+echo output value :%__StringRepeat_demo%
+
+echo.
+set "__StringRepeat_demo=
+echo StringRepeat string Hel lo 5 times (input passed as variable)
+set " __StringRepeat_demo_input=Hel lo"
+Call :StringRepeat __StringRepeat_demo 5 __StringRepeat_demo_input
+echo output value :%__StringRepeat_demo%
+
+GoTo :EOF
+
+::Usage Call :StringRepeat OutputVariable Count Input
+:StringRepeat
+set "_StringRepeat_output=%~1"
+set "_StringRepeat_count=%~2"
+set _StringRepeat_input=%~3
+if defined %~3 call set _StringRepeat_input=%%%~3%%
+set /a "_StringRepeat_index=0"
+:StringRepeat-loop
+set "_StringRepeat_internal=%_StringRepeat_internal%%_StringRepeat_input%"
+set /a "_StringRepeat_index+=1"
+if %_StringRepeat_index% LSS %_StringRepeat_count% GoTo :StringRepeat-loop
+set "%_StringRepeat_output%=%_StringRepeat_internal%"
+Call :ClearVariablesByPrefix _StringRepeat
+GoTo :EOF
+
+::Usage Call :SquareRoot Input optional OutputVariable
+:: https://stackoverflow.com/questions/52977314/how-to-do-square-root-with-windows-command-processor-using-a-batch-file (brute force yeah !)
+:sqrt
+:SquareRoot
+set /a "_SquareRoot_Input=%~1"
+set /a "_SquareRoot_Index=0"
+:SquareRoot-loop
+set /a "_SquareRoot_square=%_SquareRoot_Index%*%_SquareRoot_Index%"
+set /a "_SquareRoot_Index+=1"
+if %_SquareRoot_square% LSS %_SquareRoot_Input% GoTo :SquareRoot-loop
+set /a "_SquareRoot_Index-=1"
+if "[%~2]" NEQ "[]" set /a %~2=%_SquareRoot_Index%
+Call :ClearVariablesByPrefix _SquareRoot & exit /b %_SquareRoot_Index%
+
+:SquareRoot-DEMO
+set /a "__SquareRoot_DEMO_index=0" 
+set /a "__SquareRoot_DEMO_ubound=100" 
+:SquareRoot-DEMO-loop
+Call :SquareRoot %__SquareRoot_DEMO_index% __SquareRoot_DEMO_result
+echo input %__SquareRoot_DEMO_index% sqrt %__SquareRoot_DEMO_result%
+set /a "__SquareRoot_DEMO_index+=1" 
+if %__SquareRoot_DEMO_index% LEQ %__SquareRoot_DEMO_ubound% GoTo :SquareRoot-DEMO-loop
+
+echo testing errorlevel output
+
+set /a "__SquareRoot_DEMO_index=0" 
+set /a "__SquareRoot_DEMO_ubound=100" 
+:SquareRoot-DEMO-loop-1
+Call :SquareRoot %__SquareRoot_DEMO_index%
+echo input %__SquareRoot_DEMO_index% sqrt %errorlevel%
+set /a "__SquareRoot_DEMO_index+=1" 
+if %__SquareRoot_DEMO_index% LEQ %__SquareRoot_DEMO_ubound% GoTo :SquareRoot-DEMO-loop-1
+
+GoTo :EOF
+
+
+::Usage Call :GetCirclePoint Xvalue Radius optional Output
+:GetCirclePoint
+set /a "_GetCirclePoint_Xvalue=%~1"
+set /a "_GetCirclePoint_radius=%~2"
+set /a "_GetCirclePoint_Xvalue_square=%_GetCirclePoint_Xvalue%*%_GetCirclePoint_Xvalue%"
+set /a "_GetCirclePoint_radius_square=%_GetCirclePoint_radius%*%_GetCirclePoint_radius%"
+set /a "_GetCirclePoint_hypothenuse_square=%_GetCirclePoint_radius_square%-%_GetCirclePoint_Xvalue_square%"
+Call :SquareRoot %_GetCirclePoint_hypothenuse_square% _GetCirclePoint_hypothenuse
+if "[%~3]" NEQ "[]" set /a "%~3=%_GetCirclePoint_hypothenuse%"
+exit /b %_GetCirclePoint_hypothenuse%
+
+:GetCirclePoint-DEMO
+set /a "__GetCirclePoint_DEMO_index=0"
+set /a "__GetCirclePoint_DEMO_radius=10"
+:GetCirclePoint-DEMO-loop
+Call :GetCirclePoint %__GetCirclePoint_DEMO_index% %__GetCirclePoint_DEMO_radius% __GetCirclePoint_DEMO_point
+set /a "__GetCirclePoint_DEMO_space=%__GetCirclePoint_DEMO_point%-1"
+Call :StringRepeat __GetCirclePoint_DEMO_space %__GetCirclePoint_DEMO_space% " "
+set "__GetCirclePoint_DEMO_point=%__GetCirclePoint_DEMO_space%O"
+set "__GetCirclePoint[%__GetCirclePoint_DEMO_index%]=%__GetCirclePoint_DEMO_point%"
+set /a "__GetCirclePoint_DEMO_index+=1"
+if %__GetCirclePoint_DEMO_index% LEQ %__GetCirclePoint_DEMO_radius% GoTo :GetCirclePoint-DEMO-loop
+
+set /a "__GetCirclePoint_DEMO_index=0"
+set /a "__GetCirclePoint_DEMO_radius=10"
+:GetCirclePoint-DEMO-loop-1
+call echo %%__GetCirclePoint[%__GetCirclePoint_DEMO_index%]%%
+set /a "__GetCirclePoint_DEMO_index+=1"
+if %__GetCirclePoint_DEMO_index% LEQ %__GetCirclePoint_DEMO_radius% GoTo :GetCirclePoint-DEMO-loop-1
+GoTo :EOF
