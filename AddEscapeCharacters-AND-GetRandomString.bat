@@ -26,7 +26,8 @@ REM if "[%silent%]"=="[true]" echo Silent mode is enabled
 REM if not "[%verbose%]"=="[]" echo Verbose level : %verbose%
 REM if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
-Call :InsertTextAtLineNumber-DEMO 
+Call :PrintLine-DEMO
+REM Call :InsertTextAtLineNumber-DEMO 
 REM Call :GetLineLenght-DEMO
 REM Call :CoinFlip-DEMO
 REM Call :ReadLineRange-DEMO
@@ -72,7 +73,7 @@ REM Internal Functions
 :InsertTextAtLineNumber-DEMO 
 
 Call :ClearVariablesByPrefix my _ILALN
-GoTo :InsertTextAtLineNumber-DEMO-skip
+REM GoTo :InsertTextAtLineNumber-DEMO-skip
 
 del GetLineLenght-DEMO.txt 2>nul
 
@@ -317,6 +318,105 @@ echo answer from myoutput : %myoutput%
 
 GoTo :EOF
 
+:PrintLine-DEMO
+
+echo print original file
+echo. 
+type ReadLineRange-DEMO.txt
+
+echo.
+echo printline test
+echo.
+REM there is no line 0
+REM Call :Printline ReadLineRange-DEMO.txt 0
+Call :Printline ReadLineRange-DEMO.txt 1 
+Call :Printline ReadLineRange-DEMO.txt 2 
+Call :Printline ReadLineRange-DEMO.txt 3 
+Call :Printline ReadLineRange-DEMO.txt 4 
+Call :Printline ReadLineRange-DEMO.txt 5 
+Call :Printline ReadLineRange-DEMO.txt 6
+Call :Printline ReadLineRange-DEMO.txt 7
+Call :Printline ReadLineRange-DEMO.txt 8
+Call :Printline ReadLineRange-DEMO.txt 9
+Call :Printline ReadLineRange-DEMO.txt 10
+Call :Printline ReadLineRange-DEMO.txt 11
+Call :Printline ReadLineRange-DEMO.txt 12
+Call :Printline ReadLineRange-DEMO.txt 13
+Call :Printline ReadLineRange-DEMO.txt 14
+Call :Printline ReadLineRange-DEMO.txt 15
+
+
+ 
+echo. 
+echo readline test
+echo.
+Call :Readline ReadLineRange-DEMO.txt 1 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 2 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 3 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 4 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 5 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 6 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 7 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 8 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 9 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 10 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 11 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 12 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 13 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 14 _myreadline
+echo "%_myreadline%"
+Call :Readline ReadLineRange-DEMO.txt 15 _myreadline
+echo "%_myreadline%"
+
+
+echo. 
+echo readlinealt test
+echo.
+Call :Readlinealt ReadlineRange-DEMO.txt 1 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 2 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 3 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 4 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 5 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 6 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 7 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 8 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 9 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 10 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 11 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 12 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 13 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 14 _myReadline
+echo "%_myreadline%"
+Call :Readlinealt ReadlineRange-DEMO.txt 15 _myReadline
+echo "%_myreadline%"
+
+GoTo :EOF
 
 :ReadLineRange-DEMO
 Call :ClearVariablesByPrefix _RLR my
@@ -1515,13 +1615,30 @@ set /a "%~2.ubound=%_RML_LineNumberArray.ubound%"
 Call :ClearVariablesByPrefix %_ReadMultiLine_prefix% _ReadMultiLine
 GoTo :EOF
 
+
 ::Usage Call :Readline Filename LineNumber OutputVariable
+:Readlinealt
+Call :SetIfNotDefined "%~1" _Readline_Filename "%~2" _Readline_LineNumber "%~3" _Readline_Output 0 _Readline_Index
+set /a "_Readline_LineNumber-=1"
+if %_Readline_LineNumber% GTR 0 set "_ReadLine_skip=skip=%_Readline_LineNumber%" 
+for /f "%_ReadLine_skip% tokens=1,* delims=:" %%a in ('findstr /n "^" "%_Readline_Filename%"') do (
+		set "%_Readline_Output%=%%b" 
+		REM set %_Readline_Output%=%%b
+		GoTo :Readline-end
+)
+:Readline-endalt
+Call :ClearVariablesByPrefix _Readline
+GoTo :EOF
+
+REM ::This old version can't return empty lines
+REM ::Usage Call :Readline Filename LineNumber OutputVariable
 :Readline
 Call :SetIfNotDefined "%~1" _Readline_Filename "%~2" _Readline_LineNumber "%~3" _Readline_Output 0 _Readline_Index
 set /a "_Readline_LineNumber-=1"
 if %_Readline_LineNumber% GTR 0 set "_ReadLine_skip=skip=%_Readline_LineNumber%" 
 for /f "%_ReadLine_skip% delims=" %%a in (%_Readline_Filename%) do (
-		set %_Readline_Output%=%%a
+		set "%_Readline_Output%=%%a"
+		REM set %_Readline_Output%=%%a
 		GoTo :Readline-end
 )
 :Readline-end
@@ -1529,18 +1646,47 @@ Call :ClearVariablesByPrefix _Readline
 GoTo :EOF
 
 
+REM https://www.google.com/search?channel=fs&client=ubuntu-sn&q=batch+file+loop+every+line+including+empty+line+of+file
+REM https://www.google.com/search?q=batch+file+loop+every+line+including+empty+line+of+file+site:stackoverflow.com&client=ubuntu-sn&hs=50g&channel=fs&sa=X&ved=2ahUKEwiIiJev-s6AAxU9q4kEHZWjAO8QrQIoBHoECBcQBQ
+REM https://stackoverflow.com/questions/55524695/batch-replace-line-in-text-file-using-for-loop-including-blank-lines
+REM https://stackoverflow.com/questions/56262152/cmd-script-reading-from-file-and-writing-to-file-loses-empty-line
+REM https://stackoverflow.com/questions/66719775/how-do-i-read-a-text-file-including-empty-lines-in-batch
+REM https://stackoverflow.com/questions/47067655/not-skipping-empty-lines-in-batch-file
+REM https://stackoverflow.com/questions/31315629/why-does-for-f-not-ignore-blank-lines
+REM https://stackoverflow.com/questions/75811626/read-txt-file-line-by-line-using-batch-including-lines-that-start-with-a-semico
+REM https://stackoverflow.com/questions/21933942/keeping-blank-lines-intact-when-reading-from-one-file-to-another
+REM https://stackoverflow.com/questions/38723595/preserve-empty-lines-in-a-text-file-while-using-batch-for-f
+REM https://stackoverflow.com/questions/23075953/batch-script-to-find-and-replace-a-string-in-text-file-without-creating-an-extra/23076141#23076141
+REM https://stackoverflow.com/questions/155932/how-do-you-loop-through-each-line-in-a-text-file-using-a-windows-batch-file
+REM https://stackoverflow.com/questions/31314203/windows-batch-how-to-keep-empty-lines-with-loop-for-f
+
+
 REM ::Usage Call :Printline Filename LineNumber 
 :Printline
 Call :SetIfNotDefined "%~1" _Printline_Filename "%~2" _Printline_LineNumber 0 _Printline_Index
 set /a "_Printline_LineNumber-=1"
-if %_Printline_LineNumber% GTR 0 set "_ReadLine_skip=skip=%_Printline_LineNumber%" 
-for /f "%_ReadLine_skip% delims=" %%a in (%_Printline_Filename%) do (
-    echo %%a
+if %_Printline_LineNumber% GTR 0 set "_Printline_skip=skip=%_Printline_LineNumber%" 
+for /f "%_Printline_skip% tokens=1,* delims=:" %%a in ('findstr /n "^" "%_Printline_Filename%"') do (
+	echo %%b
 	GoTo :Printline-end
 )
 :Printline-end
 Call :ClearVariablesByPrefix _Printline
 GoTo :EOF
+
+REM ::This old version can't print empty lines
+REM ::Usage Call :Printline Filename LineNumber 
+REM :Printline
+REM Call :SetIfNotDefined "%~1" _Printline_Filename "%~2" _Printline_LineNumber 0 _Printline_Index
+REM set /a "_Printline_LineNumber-=1"
+REM if %_Printline_LineNumber% GTR 0 set "_Printline_skip=skip=%_Printline_LineNumber%" 
+REM for /f "%_Printline_skip% delims=" %%a in (%_Printline_Filename%) do (
+    REM echo %%a
+	REM GoTo :Printline-end
+REM )
+REM :Printline-end
+REM Call :ClearVariablesByPrefix _Printline
+REM GoTo :EOF
 
 
 ::Usage Call :CopyArray InputArray OutputArray
@@ -1728,7 +1874,7 @@ GoTo :len
 ( 
     endlocal
     set "%~1=%len%"
-    exit /b
+    exit /b %len%
 )
 rem find stackoverflow link for this
 rem return value should equal len
