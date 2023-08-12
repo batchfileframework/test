@@ -26,11 +26,16 @@ REM if "[%silent%]"=="[true]" echo Silent mode is enabled
 REM if not "[%verbose%]"=="[]" echo Verbose level : %verbose%
 REM if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
-Call :PrintLine-DEMO
+REM call :TrimBeforeChar-DEMO
+REM Call :IsLabel-DEMO
+Call :FindAllLabels-DEMO
+REM Call :FindAllEmptyLines-DEMO
+REM Call :ReadMultiLine-DEMO
+REM Call :ReadLineRange-DEMO
+REM Call :PrintLine-DEMO
 REM Call :InsertTextAtLineNumber-DEMO 
 REM Call :GetLineLenght-DEMO
 REM Call :CoinFlip-DEMO
-REM Call :ReadLineRange-DEMO
 REM Call :PrintCharMap 
 REM call :NumberStringToArray-DEMO
 REM call :IsDelayedExpansionEnabled-DEMO
@@ -287,11 +292,11 @@ GoTo :EOF
 
 Call :ClearVariablesByPrefix my _GLL
 
-del GetLineLenght-DEMO.txt 2>nul
+REM del GetLineLenght-DEMO.txt 2>nul
 echo.
-echo Creating 15 line file GetLineLenght-DEMO.txt, each line has 5 more random characters than the previous
+if not exist GetLineLenght-DEMO.txt echo Creating 15 line file GetLineLenght-DEMO.txt, each line has 5 more random characters than the previous
 set /a "_my_string_lenght=5"
-Call :RunMultipleTimes 15 "call :GetRandomString %%%%_my_string_lenght%%%% myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>GetLineLenght-DEMO.txt" "set /a _my_string_lenght+=5"
+if not exist GetLineLenght-DEMO.txt Call :RunMultipleTimes 15 "call :GetRandomString %%%%_my_string_lenght%%%% myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>GetLineLenght-DEMO.txt" "set /a _my_string_lenght+=5"
 
 set myLineNumber=3
 Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
@@ -309,6 +314,10 @@ set myLineNumber=15
 Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
 echo line number %myLineNumber%, length %myLength% (EL) %errorlevel%
 
+set myLineNumber=16
+Call :GetLineLenght GetLineLenght-DEMO.txt %myLineNumber% myLength
+echo line number %myLineNumber%, length %myLength% (EL) %errorlevel%
+
 echo.
 echo How many line does GetLineLenght-DEMO.txt have ?
 Call :GetLineCount GetLineLenght-DEMO.txt
@@ -320,6 +329,14 @@ GoTo :EOF
 
 :PrintLine-DEMO
 
+del GetLineLenght-DEMO.txt 2>nul
+echo.
+echo Creating 15 line file PrintLine-DEMO, each line has 5 more random characters than the previous
+set /a "_my_string_lenght=5"
+Call :RunMultipleTimes 15 "call :GetRandomString %%%%_my_string_lenght%%%% myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R%%%%_RunMultipleTimes_index%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>PrintLine-DEMO.txt" "set /a _my_string_lenght+=5"
+
+
+
 echo print original file
 echo. 
 type ReadLineRange-DEMO.txt
@@ -328,101 +345,170 @@ echo.
 echo printline test
 echo.
 REM there is no line 0
-REM Call :Printline ReadLineRange-DEMO.txt 0
-Call :Printline ReadLineRange-DEMO.txt 1 
-Call :Printline ReadLineRange-DEMO.txt 2 
-Call :Printline ReadLineRange-DEMO.txt 3 
-Call :Printline ReadLineRange-DEMO.txt 4 
-Call :Printline ReadLineRange-DEMO.txt 5 
-Call :Printline ReadLineRange-DEMO.txt 6
-Call :Printline ReadLineRange-DEMO.txt 7
-Call :Printline ReadLineRange-DEMO.txt 8
-Call :Printline ReadLineRange-DEMO.txt 9
-Call :Printline ReadLineRange-DEMO.txt 10
-Call :Printline ReadLineRange-DEMO.txt 11
-Call :Printline ReadLineRange-DEMO.txt 12
-Call :Printline ReadLineRange-DEMO.txt 13
-Call :Printline ReadLineRange-DEMO.txt 14
-Call :Printline ReadLineRange-DEMO.txt 15
+REM Call :Printline PrintLine-DEMO.txt0
+Call :Printline PrintLine-DEMO.txt 1 
+Call :Printline PrintLine-DEMO.txt 2 
+Call :Printline PrintLine-DEMO.txt 3 
+Call :Printline PrintLine-DEMO.txt 4 
+Call :Printline PrintLine-DEMO.txt 5 
+Call :Printline PrintLine-DEMO.txt 6
+Call :Printline PrintLine-DEMO.txt 7
+Call :Printline PrintLine-DEMO.txt 8
+Call :Printline PrintLine-DEMO.txt 9
+Call :Printline PrintLine-DEMO.txt 10
+Call :Printline PrintLine-DEMO.txt 11
+Call :Printline PrintLine-DEMO.txt 12
+Call :Printline PrintLine-DEMO.txt 13
+Call :Printline PrintLine-DEMO.txt 14
+Call :Printline PrintLine-DEMO.txt 15
 
 
  
 echo. 
 echo readline test
 echo.
-Call :Readline ReadLineRange-DEMO.txt 1 _myreadline
+Call :Readline PrintLine-DEMO.txt 1 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 2 _myreadline
+Call :Readline PrintLine-DEMO.txt 2 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 3 _myreadline
+Call :Readline PrintLine-DEMO.txt 3 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 4 _myreadline
+Call :Readline PrintLine-DEMO.txt 4 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 5 _myreadline
+Call :Readline PrintLine-DEMO.txt 5 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 6 _myreadline
+Call :Readline PrintLine-DEMO.txt 6 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 7 _myreadline
+Call :Readline PrintLine-DEMO.txt 7 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 8 _myreadline
+Call :Readline PrintLine-DEMO.txt 8 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 9 _myreadline
+Call :Readline PrintLine-DEMO.txt 9 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 10 _myreadline
+Call :Readline PrintLine-DEMO.txt 10 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 11 _myreadline
+Call :Readline PrintLine-DEMO.txt 11 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 12 _myreadline
+Call :Readline PrintLine-DEMO.txt 12 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 13 _myreadline
+Call :Readline PrintLine-DEMO.txt 13 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 14 _myreadline
+Call :Readline PrintLine-DEMO.txt 14 _myreadline
 echo "%_myreadline%"
-Call :Readline ReadLineRange-DEMO.txt 15 _myreadline
+Call :Readline PrintLine-DEMO.txt 15 _myreadline
 echo "%_myreadline%"
 
+
+REM echo. 
+REM echo readlinealt test
+REM echo.
+REM Call :Readlinealt PrintLine-DEMO.txt 1 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 2 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 3 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 4 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 5 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 6 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 7 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 8 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 9 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 10 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 11 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 12 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 13 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 14 _myReadline
+REM echo "%_myreadline%"
+REM Call :Readlinealt PrintLine-DEMO.txt 15 _myReadline
+REM echo "%_myreadline%"
 
 echo. 
-echo readlinealt test
+echo readline test but using set to check variable assignation
 echo.
-Call :Readlinealt ReadlineRange-DEMO.txt 1 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 2 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 3 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 4 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 5 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 6 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 7 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 8 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 9 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 10 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 11 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 12 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 13 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 14 _myReadline
-echo "%_myreadline%"
-Call :Readlinealt ReadlineRange-DEMO.txt 15 _myReadline
-echo "%_myreadline%"
+Call :Readline PrintLine-DEMO.txt 1 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 2 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 3 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 4 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 5 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 6 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 7 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 8 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 9 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 10 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 11 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 12 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 13 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 14 _myreadline
+set _myreadline
+Call :Readline PrintLine-DEMO.txt 15 _myreadline
+set _myreadline
+
+
+REM echo. 
+REM echo readlinealt test but using set to check variable assignation
+REM echo.
+REM Call :Readlinealt PrintLine-DEMO.txt 1 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 2 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 3 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 4 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 5 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 6 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 7 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 8 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 9 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 10 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 11 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 12 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 13 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 14 _myReadline
+REM set _myreadline
+REM Call :Readlinealt PrintLine-DEMO.txt 15 _myReadline
+REM set _myreadline
 
 GoTo :EOF
 
 :ReadLineRange-DEMO
 Call :ClearVariablesByPrefix _RLR my
 
-del ReadLineRange-DEMO.txt 2>nul
-Call :RunMultipleTimes 15 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>ReadLineRange-DEMO.txt"
+REM del ReadLineRange-DEMO.txt 2>nul
+if not exist ReadLineRange-DEMO.txt Call :RunMultipleTimes 15 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>ReadLineRange-DEMO.txt"
 
 Call :ReadLineRange "ReadLineRange-DEMO.txt" 7 11 myLineArray
 
@@ -766,10 +852,27 @@ echo 2
 Call :RunMultipleTimes 3 "call echo !!!!myOutputArray[!!_RunMultipleTimes_index!!]!!!!"
 endlocal
 
+:ReadMultiLine-DEMO
 
+Call :ClearVariablesByPrefix my
 
+REM del ReadMultiLine-DEMO.txt 2>nul
+if not exist ReadMultiLine-DEMO.txt echo creating file ReadMultiLine-DEMO.txt with 15 lines of 30 random characters
+if not exist ReadMultiLine-DEMO.txt Call :RunMultipleTimes 15 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>ReadMultiLine-DEMO.txt"
 
+set myArrayOfLineNumbers[0]=2
+set myArrayOfLineNumbers[1]=5
+set myArrayOfLineNumbers[2]=6
+set myArrayOfLineNumbers[3]=12
+set myArrayOfLineNumbers.ubound=3
+echo.
+echo testing ReadMultiline
+Call :ReadMultiLine "ReadMultiLine-DEMO.txt" myArrayOfLineNumbers myOutputArray 
+REM echo echo array
+REM Call :EchoArray myOutputArray
+set myOutputArray
 
+GoTo :EOF
 
 
 
@@ -1405,8 +1508,8 @@ if %_ATTF_LineText_type% EQU text (
 		FOR /L %%a IN (!_ATTF_LineText_lbound!,1,!_ATTF_LineText_ubound!) DO >>%_ATTF_OutputFilename% echo !%~3[%%a]!
 		endlocal
 	) ELSE IF %_ATTF_LineText_type% EQU file (
-		for /f "delims=" %%a in (%~3) do (
-			set _ATTF_buffer=%%a
+		for /f "tokens=1,* delims=:" %%a in ('findstr /n "^" "%~3"') do (
+			set _ATTF_buffer=%%b
 			setlocal enabledelayedexpansion
 			>>%_ATTF_OutputFilename% echo !_ATTF_buffer!
 			endlocal
@@ -1505,16 +1608,405 @@ for /f "%_ITALN_skip% delims=" %%a in (%_ITALN_InputFilename%) do (
 Call :ClearVariablesByPrefix %_InsertTextAtLineNumber_prefix% _InsertTextAtLineNumber
 GoTo :EOF
 
+:FindAllEmptyLines-DEMO
+
+
+REM del FindAllEmptyLines-DEMO.txt 2>nul
+if not exist FindAllEmptyLines.txt Call :RunMultipleTimes 15 "call :GetRandomString 30 myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>FindAllEmptyLines.txt"
+
+Call :FindAllEmptyLines "FindAllEmptyLines.txt" EmptyLinesArray
+
+GoTo :EOF
+
+::Usage Call :FileToArray OutputArray Filename
+:FileToArray
+set "_FileToArray_prefix=_FTA"
+set "_FTA_Output=%~1"
+call set "_FTA_Output_ubound=%%%~1.ubound%%"
+if "[%_FTA_Output_ubound%]"=="[]" ( set "_FTA_Output_ubound=1" ) else ( set /a "_FTA_Output_ubound+=1" ) 
+call set "_FTA_Output_lbound=%%%~1.lbound%%"
+if "[%_FTA_Output_lbound%]"=="[]" set "_FTA_Output_lbound=1"
+set /a "_FTA_initial_ubound=%_FTA_Output_ubound%"
+shift
+:FileToArray-arguments
+if "[%~1]" EQU "[skip]" ( set "_FTA_skip=skip=%~2 " & shift & shift & GoTo :FileToArray-arguments )
+if "[%~1]" EQU "[eol]" ( set "_FTA_eol=eol=%~2 " & shift & shift & GoTo :FileToArray-arguments )
+if "[%~1]" EQU "[tokens]" ( set "_FTA_tokens=tokens=%~2 " & shift & shift & GoTo :FileToArray-arguments )
+if "[%~1]" EQU "[delims]" ( set "_FTA_delimiters=delims=%~2" & shift & shift & GoTo :FileToArray-arguments )
+if "[%~1]" EQU "[usebackquote]" ( set "_FTA_backquote=usebackq " & shift & GoTo :FileToArray-arguments )
+if "[%_FTA_tokens%]" EQU "[]" set "_FTA_tokens=tokens=*"
+setlocal enabledelayedexpansion
+set _FTA_localscope=true
+for /f "%_FTA_backquote%%_FTA_skip%%_FTA_eol%%_FTA_tokens%%_FTA_delimiters%" %%a in ('findstr /n "^" "%~1"') do (
+	set %_FTA_Output%[!_FTA_Output_ubound!]=%%a 
+	set /a "_FTA_Output_ubound+=1"
+	)
+if "[%_FTA_initial_ubound%]" NEQ "[%_FTA_Output_ubound%]" set /a "%_FTA_Output%.ubound=!_FTA_Output_ubound!-1"
+if "[%_FTA_Output_lbound%]" NEQ "[]" set /a "%_FTA_Output%.lbound=!_FTA_Output_lbound!"
+for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do ( endlocal & set "%%a" )
+if defined _FTA_localscope endlocal
+Call :ClearVariablesByPrefix %_FileToArray_prefix% _FileToArray
+GoTo :EOF
+
+
 ::Usage Call :FindAllEmptyLines Filename EmptyLinesArray
 :FindAllEmptyLines
 
-::Usage Call :FindAllLabels Filename LabelsArray
-:FindAllLabels
+for /f "tokens=1,* delims=:" %%a in ('findstr /n "^" "%~1"') do ( if "[%%b]" EQU "[]" echo line %%a is empty )
+
+GoTo :EOF
+
+:FindAllLabels-DEMO
+
+Call :ClearVariablesByPrefix FileLines OutputLabelArray  OutputEmptylineArray _FALFFLA _FAERFA
+
+Call :FileToArray FileLines "batchsample.bat"
+
+Call :TrimBeforeCharArray ":" FileLines
+
+GoTo :EOF 
+
+Call :FindAllLabelsFromFileLineArray FileLines OutputLabelArray
+
+Call :FindAllEmptyRowsFromArray FileLines OutputEmptylineArray
+
+Call :ClearVariablesByPrefix FileLines
+
+GoTo :EOF
+
+::Usage Call :FindAllENDFUNCrowsFromArray FileLineArray OutputEmptylineArray
+:FindAllENDFUNCrowsFromArray
+set "_FindAllENDFUNCrowsFromArray_prefix=_FAEFRFA"
+set "_FAEFRFA_Lines=%~1"
+call set /a "_FAEFRFA_ubound=%%%_FAEFRFA_Lines%.ubound%%"
+call set /a "_FAEFRFA_index=%%%_FAEFRFA_Lines%.lbound%%"
+set "_FAEFRFA_Output=%~2"
+call set /a "_FAEFRFA_output_lbound=%%%_FAEFRFA_Output%.lbound%%" 2>nul
+call set /a "_FAEFRFA_output_ubound=%%%_FAEFRFA_Output%.ubound%%" 2>nul
+if not defined _FAEFRFA_output_lbound set /a "_FAEFRFA_output_lbound=0"
+if not defined _FAEFRFA_output_ubound set /a "_FAEFRFA_output_ubound=-1"
+:FindAllENDFUNCrowsFromArray-loop
+
+
+
+REM if "[!_IsLabel_char!]" EQU "[]" GoTo :IsLabel-end
+REM if "[!_IsLabel_char!]" EQU "[%TAB%]" ( if "[%_IsLabel_result%]" NEQ "[true]" ( set /a "_IsLabel_index+=1" & GoTo :IsLabel-loop ) else ( GoTo :IsLabel-end ) )
+REM if "[!_IsLabel_char!]" EQU "[ ]" ( if "[%_IsLabel_result%]" NEQ "[true]" ( set /a "_IsLabel_index+=1" & GoTo :IsLabel-loop ) else ( GoTo :IsLabel-end ) )
+REM if "[!_IsLabel_char!]" EQU "[:]" ( if "[%_IsLabel_result%]" NEQ "[true]" ( set /a "_IsLabel_index+=1" & set "_IsLabel_result=true" & GoTo :IsLabel-loop ) else ( GoTo :IsLabel-end ) )
+
+set /a "_FAEFRFA_index+=1"
+if %_FAEFRFA_index% LEQ %_FAEFRFA_ubound% GoTo :FindAllENDFUNCrowsFromArray-loop
+Call :ClearVariablesByPrefix %_FindAllENDFUNCrowsFromArray_prefix% _FindAllENDFUNCrowsFromArray
+GoTo :EOF
+
+::Usage Call :FindAllEmptyRowsFromArray FileLineArray OutputEmptylineArray
+:FindAllEmptyRowsFromArray
+set "_FindAllEmptyRowsFromArray_prefix=_FAERFA"
+set "_FAERFA_Lines=%~1"
+call set /a "_FAERFA_ubound=%%%_FAERFA_Lines%.ubound%%"
+call set /a "_FAERFA_index=%%%_FAERFA_Lines%.lbound%%"
+set "_FAERFA_Output=%~2"
+call set /a "_FAERFA_output_lbound=%%%_FAERFA_Output%.lbound%%" 2>nul
+call set /a "_FAERFA_output_ubound=%%%_FAERFA_Output%.ubound%%" 2>nul
+if not defined _FAERFA_output_lbound set /a "_FAERFA_output_lbound=0"
+if not defined _FAERFA_output_ubound set /a "_FAERFA_output_ubound=-1"
+:FindAllEmptyRowsFromArray-loop
+if not defined %_FAERFA_Lines%[%_FAERFA_index%] set /a "_FAERFA_output_ubound+=1" 
+if not defined %_FAERFA_Lines%[%_FAERFA_index%] set "%_FAERFA_Output%[%_FAERFA_output_ubound%]=%_FAERFA_index%"
+set /a "_FAERFA_index+=1"
+if %_FAERFA_index% LEQ %_FAERFA_ubound% GoTo :FindAllEmptyRowsFromArray-loop
+Call :ClearVariablesByPrefix %_FindAllEmptyRowsFromArray_prefix% _FindAllEmptyRowsFromArray
+GoTo :EOF
+
+::Usage Call :FindAllLabelsFromFileLineArray FileLineArray OutputLabelArray
+:FindAllLabelsFromFileLineArray
+set "_FindAllLabelsFromFileLineArray_prefix=_FALFFLA"
+set "_FALFFLA_Lines=%~1"
+call set /a "_FALFFLA_ubound=%%%_FALFFLA_Lines%.ubound%%"
+call set /a "_FALFFLA_index=%%%_FALFFLA_Lines%.lbound%%"
+set "_FALFFLA_Output=%~2"
+call set /a "_FALFFLA_output_lbound=%%%_FALFFLA_Output%.lbound%%" 2>nul
+call set /a "_FALFFLA_output_ubound=%%%_FALFFLA_Output%.ubound%%" 2>nul
+if not defined _FALFFLA_output_lbound set /a "_FALFFLA_output_lbound=0"
+if not defined _FALFFLA_output_ubound set /a "_FALFFLA_output_ubound=-1"
+:FindAllLabelsFromFileLineArray-loop
+REM if %_FALFFLA_index%==2 echo %_FALFFLA_Lines%[%_FALFFLA_index%]
+REM if %_FALFFLA_index%==2 call echo %%%_FALFFLA_Lines%[%_FALFFLA_index%]%%
+REM Call :TrimBeforeChar %_FALFFLA_Lines%[%_FALFFLA_index%] : %_FALFFLA_Lines%[%_FALFFLA_index%]
+Call :IsLabel _FALFFLA_IsLabel %_FALFFLA_Lines%[%_FALFFLA_index%]
+if "[%_FALFFLA_IsLabel%]" EQU "[true]" set /a "_FALFFLA_output_ubound+=1" 
+if "[%_FALFFLA_IsLabel%]" EQU "[true]" (
+	set "%_FALFFLA_Output%[%_FALFFLA_output_ubound%]=%_FALFFLA_index%"
+	Call :GetLabel %_FALFFLA_Output%[%_FALFFLA_output_ubound%].labelname %_FALFFLA_Lines%[%_FALFFLA_index%]
+	)
+REM if "[%_FALFFLA_IsLabel%]" EQU "[true]" call echo %%%_FALFFLA_Output%[%_FALFFLA_output_ubound%].labelname%%
+REM echo falffla %_FALFFLA_index%
+set /a "_FALFFLA_index+=1"
+REM if %_FALFFLA_index% GTR 500 GoTo :FindAllLabelsFromFileLineArray-skip
+if %_FALFFLA_index% LEQ %_FALFFLA_ubound% GoTo :FindAllLabelsFromFileLineArray-loop
+REM :FindAllLabelsFromFileLineArray-skip
+set /a "%_FALFFLA_Output%.lbound=%_FALFFLA_output_lbound%"
+set /a "%_FALFFLA_Output%.ubound=%_FALFFLA_output_ubound%"
+Call :ClearVariablesByPrefix %_FindAllLabelsFromFileLineArray_prefix% _FindAllLabelsFromFileLineArray
+GoTo :EOF
+
+
+REM BROKEN
+REM ::Usage Call :FindAllLabels Filename LabelsArray
+REM :FindAllLabels
+REM setlocal enabledelayedexpansion
+REM set /a "_FindAllLabels_linecount=0"
+REM for /f "tokens=1,* delims=:" %%a in ('findstr /n "^" "%~1"') do (
+	REM set "_FindAllLabels_line_cleaned=" & set "_FindAllLabels_LabelName=" & set "_FindAllLabels_IsLabel="
+	REM set /a "_FindAllLabels_linecount+=1"
+	REM set _FindAllLabels_line=%%b
+	REM REM Call :TrimBeforeChar  _FindAllLabels_line_cleaned : _FindAllLabels_line
+	REM Call :IsLabel REMOVELINENUMBERS _FindAllLabels_IsLabel _FindAllLabels_line
+	REM if "[!_FindAllLabels_IsLabel!]" EQU "[true]" Call :GetLabel _FindAllLabels_LabelName _FindAllLabels_line_cleaned
+	REM if "[!_FindAllLabels_IsLabel!]" EQU "[true]"  echo line number : !_FindAllLabels_linecount! , !_FindAllLabels_line_cleaned! was label ? !_FindAllLabels_IsLabel! , labelname !_FindAllLabels_LabelName! , EL %errorlevel% , text was %%b
+	REM )
+REM endlocal
 REM for each line of text
 REM loop through each char 
 REM if it's not space tab or semicolon, this is not a label
 REM maybe use delim=: ?
 REM once semicolon, continue until space or tab or end of line is found, this is the label
+REM GoTo :EOF
+REM BROKEN
+
+::Usage Call :TrimBeforeCharArray TrimChar InputArray
+:TrimBeforeCharArray
+set "_TrimBeforeCharArray_prefix=_TBCA"
+set "_TBCA_Lines=%~2"
+set "_TBCA_TrimChar=%~1"
+call set /a "_TBCA_ubound=%%%_TBCA_Lines%.ubound%%" 2>nul
+call set /a "_TBCA_index=%%%_TBCA_Lines%.lbound%%" 2>nul
+if "[%_TBCA_index%]" EQU "[]" set /a "_TBCA_index=0"
+:TrimBeforeCharArray-loop
+call set %_TBCA_Lines%[%_TBCA_index%]=%%%_TBCA_Lines%[%_TBCA_index%]:*%_TBCA_TrimChar%=%%
+set /a "_TBCA_index+=1"
+if %_TBCA_index% LEQ %_TBCA_ubound% GoTo :TrimBeforeCharArray-loop
+Call :ClearVariablesByPrefix %_TrimBeforeCharArray_prefix% _TrimBeforeCharArray
+GoTo :EOF
+
+::Usage Call :TrimBeforeChar OutputVar TrimChar InputVar
+:TrimBeforeChar
+call set %~1=%%%~3:*%~2=%%
+GoTo :EOF
+
+::Usage Call :IsLabel Output Input
+:IsLabel
+setlocal enabledelayedexpansion
+set "TAB=	"
+set "_IsLabel_Output=%~1"
+set /a "_IsLabel_index=0"
+REM echo input %~2
+REM set _islabel
+:IsLabel-loop
+set "_IsLabel_char=!%~2:~%_IsLabel_index%,1!
+REM echo input !%_IsLabel_Input%!
+REM echo current char is i!_IsLabel_char!i name %_IsLabel_labelname%
+if "[!_IsLabel_char!]" EQU "[]" GoTo :IsLabel-end
+if "[!_IsLabel_char!]" EQU "[%TAB%]" ( if "[%_IsLabel_result%]" NEQ "[true]" ( set /a "_IsLabel_index+=1" & GoTo :IsLabel-loop ) else ( GoTo :IsLabel-end ) )
+if "[!_IsLabel_char!]" EQU "[ ]" ( if "[%_IsLabel_result%]" NEQ "[true]" ( set /a "_IsLabel_index+=1" & GoTo :IsLabel-loop ) else ( GoTo :IsLabel-end ) )
+if "[!_IsLabel_char!]" EQU "[:]" ( if "[%_IsLabel_result%]" NEQ "[true]" ( set /a "_IsLabel_index+=1" & set "_IsLabel_result=true" & GoTo :IsLabel-loop ) else ( GoTo :IsLabel-end ) )
+if "[%_IsLabel_result%]" EQU "[true]" ( set /a "_IsLabel_index+=1" & set "_IsLabel_labelname=%_IsLabel_labelname%!_IsLabel_char!" & GoTo :IsLabel-end )
+REM echo ending loop  current char is !_IsLabel_char! name %_IsLabel_labelname% islabel %_IsLabel_result%
+:IsLabel-end
+if "[%_IsLabel_labelname%]" NEQ "[]" ( set "_IsLabel_result=0" ) else ( set "_IsLabel_result=1" )
+if "[%_IsLabel_result%]" EQU "[0]" ( set "_IsLabel_output_value=true" ) else ( set "_IsLabel_output_value=false" )
+REM echo result %_IsLabel_result% name %_IsLabel_labelname%
+endlocal & Call :ClearVariablesByPrefix _IsLabel & set "%_IsLabel_Output%=%_IsLabel_output_value%" & exit /b %_IsLabel_result%
+
+::Usage Call :GetLabel Output Input
+:GetLabel
+setlocal enabledelayedexpansion
+set "TAB=	"
+set "_GetLabel_Output=%~1"
+REM set _GetLabel_Input=%~2
+set /a "_GetLabel_index=0"
+REM echo input %~2
+REM set _GetLabel
+:GetLabel-loop
+set "_GetLabel_char=!%~2:~%_GetLabel_index%,1!
+REM echo current char is i!_GetLabel_char!i name %_GetLabel_labelname%
+if "[!_GetLabel_char!]" EQU "[]" GoTo :GetLabel-end
+if "[!_GetLabel_char!]" EQU "[%TAB%]" ( if "[%_GetLabel_result%]" NEQ "[true]" ( set /a "_GetLabel_index+=1" & GoTo :GetLabel-loop ) else ( GoTo :GetLabel-end ) )
+if "[!_GetLabel_char!]" EQU "[ ]" ( if "[%_GetLabel_result%]" NEQ "[true]" ( set /a "_GetLabel_index+=1" & GoTo :GetLabel-loop ) else ( GoTo :GetLabel-end ) )
+if "[!_GetLabel_char!]" EQU "[:]" ( if "[%_GetLabel_result%]" NEQ "[true]" ( set /a "_GetLabel_index+=1" & set "_GetLabel_result=true" & GoTo :GetLabel-loop ) else ( GoTo :GetLabel-end ) )
+if "[%_GetLabel_result%]" EQU "[true]" ( set /a "_GetLabel_index+=1" & set "_GetLabel_labelname=%_GetLabel_labelname%!_GetLabel_char!" & GoTo :GetLabel-loop )
+echo ending loop  current char is !_GetLabel_char! name %_GetLabel_labelname% GetLabel %_GetLabel_result%
+:GetLabel-end
+if "[%_GetLabel_labelname%]" NEQ "[]" ( set "_GetLabel_result=0" ) else ( set "_GetLabel_result=1" )
+REM set _GetLabel
+REM echo result %_GetLabel_result% name %_GetLabel_labelname%
+endlocal & Call :ClearVariablesByPrefix _GetLabel & set "%_GetLabel_Output%=%_GetLabel_labelname%" & exit /b %_GetLabel_result%
+
+
+:IsLabel-DEMO
+
+echo. 
+set __IsLabel_DEMO=My test line
+echo testing IsLabel with line %__IsLabel_DEMO%
+Call :IsLabel _IsLabel_return __IsLabel_DEMO && echo this was a label %__IsLabel_DEMO% || echo this was not a label %__IsLabel_DEMO%
+Call :GetLabel _IsLabel_return __IsLabel_DEMO
+echo return value is %_IsLabel_return%
+set "_IsLabel_return="
+
+echo. 
+set __IsLabel_DEMO=:YesALabel
+echo testing IsLabel with line %__IsLabel_DEMO%
+Call :IsLabel _IsLabel_return __IsLabel_DEMO && echo this was a label %__IsLabel_DEMO% || echo this was not a label %__IsLabel_DEMO%
+Call :GetLabel _IsLabel_return __IsLabel_DEMO
+echo return value is %_IsLabel_return%
+set "_IsLabel_return="
+
+echo. 
+set __IsLabel_DEMO=   :LabelWithSpaceInFront
+echo testing IsLabel with line %__IsLabel_DEMO%
+Call :IsLabel _IsLabel_return __IsLabel_DEMO && echo this was a label %__IsLabel_DEMO% || echo this was not a label %__IsLabel_DEMO%
+Call :GetLabel _IsLabel_return __IsLabel_DEMO
+echo return value is %_IsLabel_return%
+set "_IsLabel_return="
+
+echo. 
+set __IsLabel_DEMO=  	  :LabelWithSpaceAndTabs
+echo testing IsLabel with line %__IsLabel_DEMO%
+Call :IsLabel _IsLabel_return __IsLabel_DEMO && echo this was a label %__IsLabel_DEMO% || echo this was not a label %__IsLabel_DEMO%
+Call :GetLabel _IsLabel_return __IsLabel_DEMO
+echo return value is %_IsLabel_return%
+set "_IsLabel_return="
+
+echo. 
+set __IsLabel_DEMO=::This is a comment
+echo testing IsLabel with line %__IsLabel_DEMO%
+Call :IsLabel _IsLabel_return __IsLabel_DEMO && echo this was a label %__IsLabel_DEMO% || echo this was not a label %__IsLabel_DEMO%
+Call :GetLabel _IsLabel_return __IsLabel_DEMO
+echo return value is %_IsLabel_return%
+set "_IsLabel_return="
+
+echo. 
+set __IsLabel_DEMO=if blabla EQU notthat do nothing
+echo testing IsLabel with line %__IsLabel_DEMO%
+Call :IsLabel _IsLabel_return __IsLabel_DEMO && echo this was a label %__IsLabel_DEMO% || echo this was not a label %__IsLabel_DEMO%
+Call :GetLabel _IsLabel_return __IsLabel_DEMO
+echo return value is %_IsLabel_return%
+set "_IsLabel_return="
+
+
+GoTo :EOF
+
+:TrimBeforeChar-DEMO
+
+echo Testing TrimBeforeChar
+
+echo.
+set _myvariable=This is a test
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+echo.
+set _myvariable=This is : a test
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+echo.
+set _myvariable=This is a test:
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+echo.
+set _myvariable=This: is a test
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+echo.
+set _myvariable=:This is a test
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+echo.
+set _myvariable=::This is a test
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+echo.
+set _myvariable=This is :: a test
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+echo.
+set _myvariable=:This is : a test
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+echo.
+set _myvariable=::This is : a test
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+echo.
+set _myvariable=69:This is : a test
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+echo.
+set _myvariable=69::This is : a test
+set _mytrimchar=:
+echo testing input variable 1%_myvariable%1 trimchar is 2%_mytrimchar%2
+Call :TrimBeforeChar _myoutput %_mytrimchar% _myvariable
+echo result is %_myoutput%
+
+
+GoTo :EOF
+
+
+
+:AppendToArray
+
+:AddLabelToList
+:AddEmptyLineToList
+:AddFunctionEndToList
+:AddFunctionCallToList
+:AddGoToToList
+
+REM for reference only
+REM ::Usage Call :ltrim OutputVariable Input
+REM :ltrim
+REM setlocal enabledelayedexpansion
+REM set "TAB=	"
+REM set "_ltrim_output=%~1"
+REM set "_ltrim_input=%~2"
+REM if defined %~2 ( set "_ltrim_input=!%~2!" ) 
+REM set /a "_ltrim_index=0"
+REM :ltrim-loop
+REM set "_ltrim_char=!_ltrim_input:~%_ltrim_index%,1!
+REM if "[!_ltrim_char!]" EQU "[%TAB%]" ( set /a "_ltrim_index+=1" & GoTo :ltrim-loop )
+REM if "[!_ltrim_char!]" EQU "[ ]" ( set /a "_ltrim_index+=1" & GoTo :ltrim-loop )
+REM set _ltrim_intermediate=!_ltrim_input:~%_ltrim_index%!
+REM endlocal & set %_ltrim_output%=%_ltrim_intermediate%
+REM GoTo :EOF
+
 
 ::Usage Call :FindBatchFunctions Filename FunctionArray
 :FindBatchFunctions
@@ -1529,11 +2021,28 @@ REM once semicolon, continue until space or tab or end of line is found, this is
 set "_GetLineCount_prefix=_GLC"
 Call :SetIfNotDefined "%~1" _GLC_Filename "%~2" _GLC_OutputLineCount
 set /a "_GLC_LineCount=0"
-for /f "delims=" %%a in (%_GLC_Filename%) do ( set /a "_GLC_LineCount+=1" )
+for /f "tokens=1,* delims=:" %%a in ('findstr /n "^" "%_GLC_Filename%"') do ( set /a "_GLC_LineCount+=1" )
 if "[%_GLC_OutputLineCount%]" NEQ "[]" set /a "%_GLC_OutputLineCount%=%_GLC_LineCount%"
 Call :ClearVariablesByPrefix %_GetLineCount_prefix% _GetLineCount & exit /b %_GLC_LineCount% 
 
+REM returns erroneous values ?!?!
+::Usage Call :GetLineLenght Filename RowNumber Lenght
+REM :GetLineLenghtalt
+REM set "_GetLineLenght_prefix=_GLL"
+REM Call :SetIfNotDefined "%~1" _GLL_Filename "%~2" _GLL_LineNumber  "%~3" _GLL_OutputLineLenght
+REM set /a "_GLL_LineNumber-=1"
+REM if %_GLL_LineNumber% GTR 0 set "_GLL_skip=skip=%_GLL_LineNumber%" 
+REM for /f "%_GLL_skip% tokens=1,* delims=:" %%a in ('findstr /n "^" "%_GLL_Filename%"') do (
+REM for /f "%_GLL_skip% delims=" %%a in (%_GLL_Filename%) do (
+		REM set _GLL_buffer=%%a
+		REM GoTo :GetLineLenght-endalt
+REM )
+REM :GetLineLenght-endalt
+REM Call :len _GLL_buffer_len _GLL_buffer
+REM set %_GLL_OutputLineLenght%=%_GLL_buffer_len%
+REM Call :ClearVariablesByPrefix %_GetLineLenght_prefix% _GetLineLenght & exit /b %_GLL_buffer_len% 
 
+REM this version can't handle empty lines
 REM returns erroneous values ?!?!
 ::Usage Call :GetLineLenght Filename RowNumber Lenght
 :GetLineLenght
@@ -1541,8 +2050,8 @@ set "_GetLineLenght_prefix=_GLL"
 Call :SetIfNotDefined "%~1" _GLL_Filename "%~2" _GLL_LineNumber  "%~3" _GLL_OutputLineLenght
 set /a "_GLL_LineNumber-=1"
 if %_GLL_LineNumber% GTR 0 set "_GLL_skip=skip=%_GLL_LineNumber%" 
-for /f "%_GLL_skip% delims=" %%a in (%_GLL_Filename%) do (
-		set _GLL_buffer=%%a
+for /f "%_GLL_skip% tokens=1,* delims=:" %%a in ('findstr /n "^" "%_GLL_Filename%"') do (
+		set _GLL_buffer=%%b
 		GoTo :GetLineLenght-end
 )
 :GetLineLenght-end
@@ -1561,8 +2070,8 @@ set /a "_RLR_StartLine-=1"
 :ReadLineRange-loop
 set /a "_RLR_OutputLineArray.ubound+=1"
 if %_RLR_StartLine% GTR 0 set "_RLR_skip=skip=%_RLR_StartLine%" 
-for /f "%_RLR_skip% delims=" %%a in (%_RLR_Filename%) do (
-		set %_RLR_OutputLineArray%[%_RLR_OutputLineArray.ubound%]=%%a
+for /f "%_RLR_skip% tokens=1,* delims=:" %%a in ('findstr /n "^" "%_RLR_Filename%"') do (
+		set %_RLR_OutputLineArray%[%_RLR_OutputLineArray.ubound%]=%%b
 		GoTo :ReadLineRange-end
 )
 set /a "_RLR_OutputLineArray.ubound-=1"
@@ -1617,33 +2126,34 @@ GoTo :EOF
 
 
 ::Usage Call :Readline Filename LineNumber OutputVariable
-:Readlinealt
-Call :SetIfNotDefined "%~1" _Readline_Filename "%~2" _Readline_LineNumber "%~3" _Readline_Output 0 _Readline_Index
-set /a "_Readline_LineNumber-=1"
-if %_Readline_LineNumber% GTR 0 set "_ReadLine_skip=skip=%_Readline_LineNumber%" 
-for /f "%_ReadLine_skip% tokens=1,* delims=:" %%a in ('findstr /n "^" "%_Readline_Filename%"') do (
-		set "%_Readline_Output%=%%b" 
-		REM set %_Readline_Output%=%%b
-		GoTo :Readline-end
-)
-:Readline-endalt
-Call :ClearVariablesByPrefix _Readline
-GoTo :EOF
-
-REM ::This old version can't return empty lines
-REM ::Usage Call :Readline Filename LineNumber OutputVariable
 :Readline
 Call :SetIfNotDefined "%~1" _Readline_Filename "%~2" _Readline_LineNumber "%~3" _Readline_Output 0 _Readline_Index
 set /a "_Readline_LineNumber-=1"
+set "%_Readline_Output%="
 if %_Readline_LineNumber% GTR 0 set "_ReadLine_skip=skip=%_Readline_LineNumber%" 
-for /f "%_ReadLine_skip% delims=" %%a in (%_Readline_Filename%) do (
-		set "%_Readline_Output%=%%a"
-		REM set %_Readline_Output%=%%a
+for /f "%_ReadLine_skip% tokens=1,* delims=:" %%a in ('findstr /n "^" "%_Readline_Filename%"') do (
+		set %_Readline_Output%=%%b
+		REM set %_Readline_Output%=%%b
 		GoTo :Readline-end
 )
 :Readline-end
 Call :ClearVariablesByPrefix _Readline
 GoTo :EOF
+
+REM ::This old version can't return empty lines
+REM ::Usage Call :Readline Filename LineNumber OutputVariable
+REM :Readline
+REM Call :SetIfNotDefined "%~1" _Readline_Filename "%~2" _Readline_LineNumber "%~3" _Readline_Output 0 _Readline_Index
+REM set /a "_Readline_LineNumber-=1"
+REM if %_Readline_LineNumber% GTR 0 set "_ReadLine_skip=skip=%_Readline_LineNumber%" 
+REM for /f "%_ReadLine_skip% delims=" %%a in (%_Readline_Filename%) do (
+		REM set "%_Readline_Output%=%%a"
+		REM REM set %_Readline_Output%=%%a
+		REM GoTo :Readline-end
+REM )
+REM :Readline-end
+REM Call :ClearVariablesByPrefix _Readline
+REM GoTo :EOF
 
 
 REM https://www.google.com/search?channel=fs&client=ubuntu-sn&q=batch+file+loop+every+line+including+empty+line+of+file
@@ -1802,6 +2312,7 @@ exit /b %_CoinFlip% & set "_CoinFlip="
 ::Usage Call :GetArrayPrefix InputArray OutputPrefixList
 :GetArrayPrefix
 
+:: This function is very very old and sucks now, TODO REWRITE
 :: Set EchoArrayPrefix EchoArraySuffix to insert text before or after
 :: Example set EchoArrayPrefix=InputArray[%%index%%]=
 :: EchoArray InputArray optional start optional end
