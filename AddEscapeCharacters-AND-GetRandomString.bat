@@ -26,9 +26,13 @@ REM if "[%silent%]"=="[true]" echo Silent mode is enabled
 REM if not "[%verbose%]"=="[]" echo Verbose level : %verbose%
 REM if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
+Call :SimpleFileToArray-DEMO
+REM Call :GetFunctionDefinition-DEMO
+REM Call :FindAllLabels-DEMO
+REM Call :GetProperFunctionDefinition_IsLabelAfunction-DEMO
 REM call :TrimBeforeChar-DEMO
 REM Call :IsLabel-DEMO
-Call :FindAllLabels-DEMO
+REM Call :IsEndOfFunction-DEMO
 REM Call :FindAllEmptyLines-DEMO
 REM Call :ReadMultiLine-DEMO
 REM Call :ReadLineRange-DEMO
@@ -1559,6 +1563,7 @@ IF %_ITALN_LineText_type% EQU array (
 set /a "_ITALN_LineCount=0"
 set /a "_ITALN_LineNumber-=1"
 setlocal enabledelayedexpansion
+REM THIS REMOVES EMPTY LINES !!!!!!
 for /f "delims=" %%a in (%_ITALN_InputFilename%) do (
 		if %_ITALN_LineNumber% EQU !_ITALN_LineCount! GoTo :InsertTextAtLineNumber-for-skip
 		set /a "_ITALN_LineCount+=1"
@@ -1599,6 +1604,7 @@ if %_ITALN_LineText_type% EQU text (
 		REM echo is empty, do nothing
 	)
 if %_ITALN_LineNumber% GTR 0 set "_ITALN_skip=skip=%_ITALN_LineNumber%" 
+REM THIS REMOVES EMPTY LINES !!!!!!
 for /f "%_ITALN_skip% delims=" %%a in (%_ITALN_InputFilename%) do (
 		set _ITALN_buffer=%%a
 		setlocal enabledelayedexpansion
@@ -1607,6 +1613,19 @@ for /f "%_ITALN_skip% delims=" %%a in (%_ITALN_InputFilename%) do (
 )
 Call :ClearVariablesByPrefix %_InsertTextAtLineNumber_prefix% _InsertTextAtLineNumber
 GoTo :EOF
+
+REM INCOMPLETE
+::Usage Call :IsLabelInFile LabelName Filename
+:IsLabelInFile
+
+loop through
+findstr /r /c:"^[ \t]*:%~1" "%~2"
+for each loop, check that LabelName is an exact match to output
+if yes, exit /b 0 , else exit /b 1
+
+
+GoTo :EOF
+
 
 :FindAllEmptyLines-DEMO
 
@@ -1617,6 +1636,96 @@ if not exist FindAllEmptyLines.txt Call :RunMultipleTimes 15 "call :GetRandomStr
 Call :FindAllEmptyLines "FindAllEmptyLines.txt" EmptyLinesArray
 
 GoTo :EOF
+
+:SimpleFileToArray-DEMO
+Call :ClearVariablesByPrefix _FTA LinesArray
+echo start SimpleFileToArray %time%
+Call :SimpleFileToArray LinesArray batchsample.bat
+echo end SimpleFileToArray %time%
+GoTo :EOF
+
+REM ::Usage Call :SimpleFileToArray OutputArray Filename
+REM :SimpleFileToArray
+REM set "_FTA_Output=%~1"
+REM set "_FTA_ubound=1"
+REM setlocal enabledelayedexpansion
+REM set _FTA_localscope=true
+REM for /f delims^=^ eol^= %%I in ('%SystemRoot%\System32\findstr.exe /n "^" "%~2"') do (
+	REM set _FTA_buffer=%%I
+	REM set %_FTA_Output%[!_FTA_ubound!]=!_FTA_buffer:*:=!
+	REM set /a "_FTA_ubound+=1"
+	REM )
+REM for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do endlocal & set %%a
+REM if defined _FTA_localscope endlocal
+REM GoTo :EOF
+
+
+REM ::Usage Call :SimpleFileToArray OutputArray Filename
+REM :SimpleFileToArray
+REM set "_FTA_Output=%~1"
+REM set "_FTA_ubound=1"
+REM for /f delims^=^ eol^= %%I in ('%SystemRoot%\System32\findstr.exe /n "^" "%~2"') do (
+	REM set _FTA_buffer=%%I
+	REM setlocal enabledelayedexpansion
+	REM set _FTA_buffer=!_FTA_buffer:*:=!
+	REM echo set %_FTA_Output%[!_FTA_ubound!]=!_FTA_buffer!
+	REM set %_FTA_Output%[!_FTA_ubound!]=!_FTA_buffer!
+	REM set /a "_FTA_ubound+=1"
+	REM set _FTA_ubound=!_FTA_ubound!
+	REM endlocal & set /a "_FTA_ubound=%_FTA_ubound%" & set %_FTA_Output%[%_FTA_ubound%]=%_FTA_buffer%
+	REM )
+REM GoTo :EOF
+
+::Usage Call :SimpleFileToArray OutputArray Filename
+:SimpleFileToArray
+set "_FTA_Output=%~1"
+set "_FTA_ubound=1"
+setlocal enabledelayedexpansion
+set _FTA_localscope=true
+for /f delims^=^ eol^= %%I in ('%SystemRoot%\System32\findstr.exe /n "^" "%~2"') do (
+	setlocal disabledelayedexpansion
+	set _FTA_buffer=%%I
+	setlocal enabledelayedexpansion
+	set /a "_FTA_ubound+=1"
+	endlocal & endlocal & set /a "_FTA_ubound=!_FTA_ubound!" & set %_FTA_Output%[!_FTA_ubound!]=!_FTA_buffer:*:=!
+	)
+for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do endlocal & set %%a
+if defined _FTA_localscope endlocal
+GoTo :EOF
+
+REM ::Usage Call :SimpleFileToArray OutputArray Filename
+REM :SimpleFileToArray
+REM set "_FTA_Output=%~1"
+REM set "_FTA_ubound=1"
+REM setlocal enabledelayedexpansion
+REM set _FTA_localscope=true
+REM for /f delims^=^ eol^= %%I in ('%SystemRoot%\System32\findstr.exe /n "^" "%~2"') do (
+	REM setlocal disabledelayedexpansion
+	REM set _FTA_buffer=%%I
+	REM endlocal & set %_FTA_Output%[!_FTA_ubound!]=!_FTA_buffer:*:=!
+	REM set /a "_FTA_ubound+=1"
+	REM )
+REM for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do endlocal & set %%a
+REM if defined _FTA_localscope endlocal
+REM GoTo :EOF
+
+::Usage Call :SimpleFileToArray OutputArray Filename
+REM :SimpleFileToArray
+REM set "_FTA_Output=%~1"
+REM set "_FTA_ubound=1"
+REM for /f delims^=^ eol^= %%I in ('%SystemRoot%\System32\findstr.exe /n "^" "%~2"') do (
+	
+	REM echo %%I
+	REM set _FTA_buffer=%%I
+	REM setlocal enabledelayedexpansion
+	REM set _FTA_buffer=!_FTA_buffer:!=^^!!
+	REM set _FTA_buffer=!_FTA_buffer:*:=!
+	REM set /a "_FTA_ubound+=1"
+	REM endlocal & set /a "_FTA_ubound=%_FTA_ubound%" & set %_FTA_Output%[%_FTA_ubound%]=%_FTA_buffer%
+	REM )
+REM if defined _FTA_localscope endlocal
+REM GoTo :EOF
+
 
 ::Usage Call :FileToArray OutputArray Filename
 :FileToArray
@@ -1631,19 +1740,22 @@ shift
 :FileToArray-arguments
 if "[%~1]" EQU "[skip]" ( set "_FTA_skip=skip=%~2 " & shift & shift & GoTo :FileToArray-arguments )
 if "[%~1]" EQU "[eol]" ( set "_FTA_eol=eol=%~2 " & shift & shift & GoTo :FileToArray-arguments )
-if "[%~1]" EQU "[tokens]" ( set "_FTA_tokens=tokens=%~2 " & shift & shift & GoTo :FileToArray-arguments )
-if "[%~1]" EQU "[delims]" ( set "_FTA_delimiters=delims=%~2" & shift & shift & GoTo :FileToArray-arguments )
-if "[%~1]" EQU "[usebackquote]" ( set "_FTA_backquote=usebackq " & shift & GoTo :FileToArray-arguments )
-if "[%_FTA_tokens%]" EQU "[]" set "_FTA_tokens=tokens=*"
+REM if "[%~1]" EQU "[tokens]" ( set "_FTA_tokens=tokens=%~2 " & shift & shift & GoTo :FileToArray-arguments )
+REM if "[%~1]" EQU "[delims]" ( set "_FTA_delimiters=delims=%~2" & shift & shift & GoTo :FileToArray-arguments )
+REM if "[%~1]" EQU "[usebackquote]" ( set "_FTA_backquote=usebackq " & shift & GoTo :FileToArray-arguments )
+REM if "[%_FTA_tokens%]" EQU "[]" set "_FTA_tokens=tokens=*"
+if "[%_FTA_delimiters%]" EQU "[]" set "_FTA_delimiters=delims="
 setlocal enabledelayedexpansion
 set _FTA_localscope=true
-for /f "%_FTA_backquote%%_FTA_skip%%_FTA_eol%%_FTA_tokens%%_FTA_delimiters%" %%a in ('findstr /n "^" "%~1"') do (
-	set %_FTA_Output%[!_FTA_Output_ubound!]=%%a 
+for /f "%_FTA_backquote%%_FTA_skip%%_FTA_eol%%_FTA_tokens%%_FTA_delimiters%" %%a in ('%SystemRoot%\System32\findstr.exe /n "^" "%~1"') do (
+	set _FTA_buffer=%%a
+	set %_FTA_Output%[!_FTA_Output_ubound!]=!_FTA_buffer:*:=!
 	set /a "_FTA_Output_ubound+=1"
 	)
+
 if "[%_FTA_initial_ubound%]" NEQ "[%_FTA_Output_ubound%]" set /a "%_FTA_Output%.ubound=!_FTA_Output_ubound!-1"
 if "[%_FTA_Output_lbound%]" NEQ "[]" set /a "%_FTA_Output%.lbound=!_FTA_Output_lbound!"
-for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do ( endlocal & set "%%a" )
+for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do endlocal & set %%a
 if defined _FTA_localscope endlocal
 Call :ClearVariablesByPrefix %_FileToArray_prefix% _FileToArray
 GoTo :EOF
@@ -1656,47 +1768,185 @@ for /f "tokens=1,* delims=:" %%a in ('findstr /n "^" "%~1"') do ( if "[%%b]" EQU
 
 GoTo :EOF
 
-:FindAllLabels-DEMO
 
-Call :ClearVariablesByPrefix FileLines OutputLabelArray  OutputEmptylineArray _FALFFLA _FAERFA
+:GetFunctionDefinition-DEMO
 
-Call :FileToArray FileLines "batchsample.bat"
+if "[%outputlabelarray.ubound%]" EQU "[]" Call :FindAllLabels-DEMO
 
-Call :TrimBeforeCharArray ":" FileLines
+echo GetFunctionDefinition %time%
+Call :GetFunctionDefinition OutputArray OutputLabelArray OutputEmptylineArray OutputEndOf_Array "loop loop2 end skip cleanup argument params" 
+echo GetFunctionDefinition %time%
 
-GoTo :EOF 
-
-Call :FindAllLabelsFromFileLineArray FileLines OutputLabelArray
-
-Call :FindAllEmptyRowsFromArray FileLines OutputEmptylineArray
-
-Call :ClearVariablesByPrefix FileLines
 
 GoTo :EOF
 
-::Usage Call :FindAllENDFUNCrowsFromArray FileLineArray OutputEmptylineArray
-:FindAllENDFUNCrowsFromArray
-set "_FindAllENDFUNCrowsFromArray_prefix=_FAEFRFA"
-set "_FAEFRFA_Lines=%~1"
-call set /a "_FAEFRFA_ubound=%%%_FAEFRFA_Lines%.ubound%%"
-call set /a "_FAEFRFA_index=%%%_FAEFRFA_Lines%.lbound%%"
-set "_FAEFRFA_Output=%~2"
-call set /a "_FAEFRFA_output_lbound=%%%_FAEFRFA_Output%.lbound%%" 2>nul
-call set /a "_FAEFRFA_output_ubound=%%%_FAEFRFA_Output%.ubound%%" 2>nul
-if not defined _FAEFRFA_output_lbound set /a "_FAEFRFA_output_lbound=0"
-if not defined _FAEFRFA_output_ubound set /a "_FAEFRFA_output_ubound=-1"
-:FindAllENDFUNCrowsFromArray-loop
+::Usage Call :GetFunctionDefinition OutputArray LabelsArray EmptyLinesArray EndOf_Array optional ExclusionList
+:GetFunctionDefinition
+set "_GetFunctionDefinition_prefix=_GFD"
+REM loopthrough labels
+REM copy only labels that don' t match the exclusion list
+REM for each label find the EndOf_ line
+REM for each label, find first empty row before label line number
+REM for each label, find first empty row after label line number
+if "[%~5]" EQU "[]" ( set "_GFD_label_exclusion=loop loop2 end skip cleanup argument params" ) else set ( "_GFD_label_exclusion=%~5" )
+set "_GFD_output=%~1"
+call set "_GFD_output_ubound=%%%~1.ubound%%"
+if "[%_GFD_output_ubound%]" EQU "[]" set "_GFD_output_ubound=-1"
+set "_GFD_labels=%~2"
+call set "_GFD_labels_ubound=%%%~2.ubound%%"
+set /a "_GFD_labels_index=0"
+set "_GFD_empty=%~3"
+call set "_GFD_empty_ubound=%%%~3.ubound%%"
+echo setting  _GFD_EndOf, it should eb OutputEndOf_Array
+set "_GFD_EndOf=%~4"
+echo _GFD_EndOf is %_GFD_EndOf%
+call set "_GFD_EndOf_ubound=%%%~4.ubound%%"
+:GetFunctionDefinition-loop
+set "_GFD_EnfOfFunctionLine=" & set "_GFD_EmptyBeforeLine=" & set "_GFD_AfterBeforeLine="
+echo calling GetFunctionDefinition_IsLabelAfunction
+Call :GetFunctionDefinition_IsLabelAfunction %%%_GFD_labels%[%_GFD_labels_index%].labelname%% "%_GFD_label_exclusion%" || GoTo :GetFunctionDefinition-loop-skip
+echo calling GetFunctionDefinition_FindEndOfFunctionLineNumber _GFD_EndOf %_GFD_EndOf%
+Call :GetFunctionDefinition_FindEndOfFunctionLineNumber %%%_GFD_labels%[%_GFD_labels_index%].labelname%% %_GFD_EndOf% _GFD_EnfOfFunctionLine
+if "[%_GFD_EnfOfFunctionLine%]" EQU "[]" GoTo :GetFunctionDefinition-loop-skip
+REM if "[%_GFD_EnfOfFunctionLine%]" EQU "[]" Call :GetFunctionDefinition_FindUnmarkedFunctionEndLineNumber
+echo calling GetFunctionDefinition_FindEmptyRowBeforeLineNumber
+Call :GetFunctionDefinition_FindEmptyRowBeforeLineNumber %%%_GFD_labels%[%_GFD_labels_index%]%% %_GFD_empty% _GFD_EmptyBeforeLine
+echo calling GetFunctionDefinition_FindEmptyRowAfterLineNumber
+Call :GetFunctionDefinition_FindEmptyRowAfterLineNumber %_GFD_EnfOfFunctionLine% %_GFD_empty% _GFD_AfterBeforeLine
+rem output %%%_GFD_labels%[%_GFD_labels_index%].labelname%% _GFD_EmptyBeforeLine _GFD_AfterBeforeLine _GFD_EnfOfFunctionLine
+set /a "_GFD_output_ubound+=1"
+call output %_GFD_EmptyBeforeLine% %%%_GFD_labels%[%_GFD_labels_index%].labelname%% %_GFD_EnfOfFunctionLine%  %_GFD_AfterBeforeLine% 
+call set %_GFD_output%[%_GFD_output_ubound%].name=%%%_GFD_labels%[%_GFD_labels_index%].labelname%%
+call set %_GFD_output%[%_GFD_output_ubound%].functionstart=%%%_GFD_labels%[%_GFD_labels_index%]%%
+set %_GFD_output%[%_GFD_output_ubound%].functionend=%_GFD_EnfOfFunctionLine%
+set %_GFD_output%[%_GFD_output_ubound%].commentstart=%_GFD_EmptyBeforeLine%
+set %_GFD_output%[%_GFD_output_ubound%].commentend=%_GFD_AfterBeforeLine%
+:GetFunctionDefinition-loop-skip
+set /a "_GFD_labels_index+=1"
+if %_GFD_labels_index% LEQ %_GFD_labels_ubound% GoTo :GetFunctionDefinition-loop
+GoTo :EOF
 
 
+::Usage Call :GetFunctionDefinition_IsLabelAfunction LabelName optional ExclusionList
+:GetFunctionDefinition_IsLabelAfunction
+set "_GetFunctionDefinition_label_with_space=%~1" & set "_GetFunctionDefinition_exclusion_list=%~2"
+set "_GetFunctionDefinition_label_with_space=%_GetFunctionDefinition_label_with_space:-= %
+if "[%_GetFunctionDefinition_exclusion_list%]" EQU "[]" set "_GetFunctionDefinition_exclusion_list=loop loop2 skip end cleanup argument params"
+REM for %%a in (%_GetFunctionDefinition_exclusion_list%) do ( for %%c in (%_GetFunctionDefinition_label_with_space%) do ( if "[%%a]" EQU "[%%c]" echo matching %%a and %%c ) )
+for %%a in (%_GetFunctionDefinition_exclusion_list%) do ( for %%c in (%_GetFunctionDefinition_label_with_space%) do ( if "[%%a]" EQU "[%%c]" exit /b 1 ) )
+exit /b 0
+GoTo :EOF
 
-REM if "[!_IsLabel_char!]" EQU "[]" GoTo :IsLabel-end
-REM if "[!_IsLabel_char!]" EQU "[%TAB%]" ( if "[%_IsLabel_result%]" NEQ "[true]" ( set /a "_IsLabel_index+=1" & GoTo :IsLabel-loop ) else ( GoTo :IsLabel-end ) )
-REM if "[!_IsLabel_char!]" EQU "[ ]" ( if "[%_IsLabel_result%]" NEQ "[true]" ( set /a "_IsLabel_index+=1" & GoTo :IsLabel-loop ) else ( GoTo :IsLabel-end ) )
-REM if "[!_IsLabel_char!]" EQU "[:]" ( if "[%_IsLabel_result%]" NEQ "[true]" ( set /a "_IsLabel_index+=1" & set "_IsLabel_result=true" & GoTo :IsLabel-loop ) else ( GoTo :IsLabel-end ) )
+::Usage Call :GetFunctionDefinition_FindEmptyRowBeforeLineNumber LabelLineNumber EmptyLinesArray OutputLineNumber
+:GetFunctionDefinition_FindEmptyRowBeforeLineNumber
+set /a "_GFD_empty_index=0"
+set "_GFD_empty=%~2"
+call set "_GFD_empty_ubound=%%%~3.ubound%%"
+set /a "_GFD_functionline=%~1"
+set "_GFD_currentline="
+set "_GFD_lastline="
+:GetFunctionDefinition_FindEmptyRowBeforeLineNumber-loop
+call set _GFD_currentline=%%%_GFD_empty%[%_GFD_empty_index%]%%
+if %_GFD_currentline% LSS %_GFD_functionline% set "_GFD_lastline=%_GFD_currentline%"
+if %_GFD_currentline% GEQ %_GFD_functionline% GoTo :GetFunctionDefinition_FindEmptyRowBeforeLineNumber-end
+set /a "_GFD_empty_index+=1"
+if %_GFD_empty_index% LEQ %_GFD_empty_ubound% GoTo :GetFunctionDefinition_FindEmptyRowBeforeLineNumber-loop
+:GetFunctionDefinition_FindEmptyRowBeforeLineNumber-end
+set /a "%~3=%_GFD_lastline%"
+GoTo :EOF
 
-set /a "_FAEFRFA_index+=1"
-if %_FAEFRFA_index% LEQ %_FAEFRFA_ubound% GoTo :FindAllENDFUNCrowsFromArray-loop
-Call :ClearVariablesByPrefix %_FindAllENDFUNCrowsFromArray_prefix% _FindAllENDFUNCrowsFromArray
+::Usage Call :GetFunctionDefinition_FindEmptyRowAfterLineNumber LabelLineNumber EmptyLinesArray OutputLineNumber
+:GetFunctionDefinition_FindEmptyRowAfterLineNumber
+set /a "_GFD_Empty_index=0"
+set "_GFD_Empty=%~2"
+call set "_GFD_Empty_ubound=%%%~3.ubound%%"
+set /a "_GFD_FunctionLine=%~1"
+set "_GFD_CurrentLine="
+set "_GFD_LastLine="
+:GetFunctionDefinition_FindEmptyRowAfterLineNumber-loop
+call set _GFD_currentline=%%%_GFD_Empty%[%_GFD_Empty_index%]%%
+if %_GFD_CurrentLine% GEQ %_GFD_FunctionLine% ( set "_GFD_LastLine=%_GFD_CurrentLine%" & GoTo :GetFunctionDefinition_FindEmptyRowAfterLineNumber-end )
+set /a "_GFD_Empty_index+=1"
+if %_GFD_Empty_index% LEQ %_GFD_LastLine% GoTo :GetFunctionDefinition_FindEmptyRowAfterLineNumber-loop
+:GetFunctionDefinition_FindEmptyRowAfterLineNumber-end
+set /a "%~3=%_GFD_LastLine%"
+GoTo :EOF
+
+::Usage Call :GetFunctionDefinition_FindEndOfFunctionLineNumber FunctionName EndOfFunctionLinesArray OutputLineNumber
+:GetFunctionDefinition_FindEndOfFunctionLineNumber
+set "_GFD_Endof_currentname=" & set "_GFD_Endof_current_substitutions=" & set "_GFD_function_name="
+set "_GFD_function_name=:EndOf_%~1"
+set /a "_GFD_Endof_index=0"
+set "_GFD_Endof_array=%~2"
+echo "_GFD_Endof_ubound=%%%~2.ubound%%"
+call echo "_GFD_Endof_ubound=%%%~2.ubound%%"
+call set "_GFD_Endof_ubound=%%%~2.ubound%%"
+set "_GFD_Endof_line="
+:GetFunctionDefinition_FindEndOfFunctionLineNumber-loop
+echo call set "_GFD_Endof_currentname=%%%_GFD_Endof_array%[%_GFD_Endof_index%].EndOf_name%%
+call echo call set "_GFD_Endof_currentname=%%%_GFD_Endof_array%[%_GFD_Endof_index%].EndOf_name%%
+call set "_GFD_Endof_currentname=%%%_GFD_Endof_array%[%_GFD_Endof_index%].EndOf_name%%
+call set "_GFD_Endof_current_substitutions=%%_GFD_Endof_currentname:%_GFD_function_name%=%%
+echo _GFD_Endof_currentname %_GFD_Endof_currentname% 11 %_GFD_Endof_array%[%_GFD_Endof_index%].EndOf_name 22 _GFD_function_name %_GFD_function_name%
+if "[%_GFD_Endof_currentname%]" NEQ "[%_GFD_Endof_current_substitutions%]" ( call set /a "_GFD_Endof_line=%%%_GFD_Endof_array%[%_GFD_Endof_index%]%%" & GoTo :GetFunctionDefinition_FindEndOfFunctionLineNumber-end )
+echo helo
+set /a "_GFD_Endof_index+=1"
+echo lohe  if %_GFD_Endof_index% LEQ %_GFD_Endof_ubound% 
+if %_GFD_Endof_index% LEQ %_GFD_Endof_ubound% GoTo :GetFunctionDefinition_FindEndOfFunctionLineNumber-loop
+echo lohe2
+:GetFunctionDefinition_FindEndOfFunctionLineNumber-end
+if defined _GFD_Endof_line set /a "%~3=%_GFD_Endof_line%"
+GoTo :EOF
+
+
+:FindAllLabels-DEMO
+Call :ClearVariablesByPrefix  _FAERFA OutputEndOf_Array
+goto :FindAllLabels-DEMO-skip
+Call :ClearVariablesByPrefix FileLines OutputLabelArray  OutputEmptylineArray _FALFFLA _FAERFA
+echo ClearVariablesByPrefix %time%
+Call :FileToArray FileLines "batchsample.bat"
+echo FileToArray %time%
+REM Call :TrimBeforeCharArray ":" FileLines
+REM echo TrimBeforeCharArray %time%
+
+Call :FindAllLabelsFromFileLineArray FileLines OutputLabelArray
+echo FindAllLabelsFromFileLineArray %time%
+
+Call :FindAllEmptyRowsFromArray FileLines OutputEmptylineArray
+echo FindAllEmptyRowsFromArray %time%
+:FindAllLabels-DEMO-skip
+Call :FindAllEndOf_rowsFromArray FileLines OutputEndOf_Array
+echo FindAllEndOf_rowsFromArray %time%
+
+
+REM Call :ClearVariablesByPrefix FileLines
+REM echo ClearVariablesByPrefix %time%
+GoTo :EOF
+
+
+::Usage Call :FindAllEndOf_rowsFromArray FileLineArray OutputEmptylineArray
+:FindAllEndOf_rowsFromArray
+set "_FindAllEndOf_rowsFromArray_prefix=_FAEORFA"
+set "_FAEORFA_Lines=%~1"
+call set /a "_FAEORFA_ubound=%%%_FAEORFA_Lines%.ubound%%"
+call set /a "_FAEORFA_index=%%%_FAEORFA_Lines%.lbound%%"
+set "_FAEORFA_Output=%~2"
+call set /a "_FAEORFA_output_lbound=%%%_FAEORFA_Output%.lbound%%" 2>nul
+call set /a "_FAEORFA_output_ubound=%%%_FAEORFA_Output%.ubound%%" 2>nul
+if not defined _FAEORFA_output_lbound set /a "_FAEORFA_output_lbound=0"
+if not defined _FAEORFA_output_ubound set /a "_FAEORFA_output_ubound=-1"
+:FindAllEndOf_rowsFromArray-loop
+Call :IsEndOfFunction _FAEORFA_IsEndOf_ %_FAEORFA_Lines%[%_FAEORFA_index%]
+if "[%_FAEORFA_IsEndOf_%]" EQU "[true]" set /a "_FAEORFA_output_ubound+=1" 
+if "[%_FAEORFA_IsEndOf_%]" EQU "[true]" (
+	set "%_FAEORFA_Output%[%_FAEORFA_output_ubound%]=%_FAEORFA_index%"
+	Call :GetEndOfFunction %_FAEORFA_Output%[%_FAEORFA_output_ubound%].EndOf_name %_FAEORFA_Lines%[%_FAEORFA_index%]
+	)
+set /a "_FAEORFA_index+=1"
+if %_FAEORFA_index% LEQ %_FAEORFA_ubound% GoTo :FindAllEndOf_rowsFromArray-loop
+set /a "%_FAEORFA_Output%.lbound=%_FAEORFA_output_lbound%"
+set /a "%_FAEORFA_Output%.ubound=%_FAEORFA_output_ubound%"
+Call :ClearVariablesByPrefix %_FindAllENDFUNCrowsFromArray_prefix% _FindAllEndOf_rowsFromArray
 GoTo :EOF
 
 ::Usage Call :FindAllEmptyRowsFromArray FileLineArray OutputEmptylineArray
@@ -1710,6 +1960,7 @@ call set /a "_FAERFA_output_lbound=%%%_FAERFA_Output%.lbound%%" 2>nul
 call set /a "_FAERFA_output_ubound=%%%_FAERFA_Output%.ubound%%" 2>nul
 if not defined _FAERFA_output_lbound set /a "_FAERFA_output_lbound=0"
 if not defined _FAERFA_output_ubound set /a "_FAERFA_output_ubound=-1"
+set _FAERFA
 :FindAllEmptyRowsFromArray-loop
 if not defined %_FAERFA_Lines%[%_FAERFA_index%] set /a "_FAERFA_output_ubound+=1" 
 if not defined %_FAERFA_Lines%[%_FAERFA_index%] set "%_FAERFA_Output%[%_FAERFA_output_ubound%]=%_FAERFA_index%"
@@ -1794,6 +2045,62 @@ GoTo :EOF
 call set %~1=%%%~3:*%~2=%%
 GoTo :EOF
 
+::Usage Call :IsEndOfFunction Output Input
+:IsEndOfFunction
+setlocal enabledelayedexpansion
+set "TAB=	"
+set "_IsEndOfFunction_Output=%~1"
+set /a "_IsEndOfFunction_index=0"
+REM echo input %~2
+REM set _IsEndOfFunction
+:IsEndOfFunction-loop
+set "_IsEndOfFunction_char=!%~2:~%_IsEndOfFunction_index%,1!
+REM echo input !%_IsEndOfFunction_Input%!
+REM echo current char is i!_IsEndOfFunction_char!i name %_IsEndOfFunction_labelname%
+if "[!_IsEndOfFunction_char!]" EQU "[]" GoTo :IsEndOfFunction-end
+if "[!_IsEndOfFunction_char!]" EQU "[%TAB%]" set /a "_IsEndOfFunction_index+=1" & GoTo :IsEndOfFunction-loop
+if "[!_IsEndOfFunction_char!]" EQU "[ ]" set /a "_IsEndOfFunction_index+=1" & GoTo :IsEndOfFunction-loop
+if "[!_IsEndOfFunction_char!]" EQU "[:]" if "!%~2:~%_IsEndOfFunction_index%,7!" EQU ":EndOf_" set "_IsEndOfFunction_labelname=true"
+
+REM echo ending loop  current char is !_IsEndOfFunction_char! name %_IsEndOfFunction_labelname% IsEndOfFunction %_IsEndOfFunction_result%
+:IsEndOfFunction-end
+if "[%_IsEndOfFunction_labelname%]" NEQ "[]" ( set "_IsEndOfFunction_result=0" ) else ( set "_IsEndOfFunction_result=1" )
+if "[%_IsEndOfFunction_result%]" EQU "[0]" ( set "_IsEndOfFunction_output_value=true" ) else ( set "_IsEndOfFunction_output_value=false" )
+REM echo result %_IsEndOfFunction_result% name %_IsEndOfFunction_labelname%
+endlocal & Call :ClearVariablesByPrefix _IsEndOfFunction & set "%_IsEndOfFunction_Output%=%_IsEndOfFunction_output_value%" & exit /b %_IsEndOfFunction_result%
+
+::Usage Call :GetEndOfFunction Output Input
+:GetEndOfFunction
+setlocal enabledelayedexpansion
+set "TAB=	"
+set "_GetEndOfFunction_Output=%~1"
+set /a "_GetEndOfFunction_index=0"
+REM echo input %~2
+REM set _GetEndOfFunction
+:GetEndOfFunction-loop
+set "_GetEndOfFunction_char=!%~2:~%_GetEndOfFunction_index%,1!
+REM echo input !%_GetEndOfFunction_Input%!
+REM echo current char is i!_GetEndOfFunction_char!i name %_GetEndOfFunction_labelname%
+REM if "[!_GetEndOfFunction_char!]" EQU "[]" GoTo :GetEndOfFunction-end
+if "[!_GetEndOfFunction_char!]" EQU "[%TAB%]" set /a "_GetEndOfFunction_index+=1" & GoTo :GetEndOfFunction-loop
+if "[!_GetEndOfFunction_char!]" EQU "[ ]" set /a "_GetEndOfFunction_index+=1" & GoTo :GetEndOfFunction-loop
+if "[!_GetEndOfFunction_char!]" EQU "[:]" if "!%~2:~%_GetEndOfFunction_index%,7!" EQU ":EndOf_" GoTo :GetEndOfFunction-foundeof-pre-loop
+GoTo :GetEndOfFunction-end
+:GetEndOfFunction-foundeof-pre-loop
+if "[%_GetEndOfFunction_labelname%]" NEQ "[]" set "_GetEndOfFunction_labelname=%_GetEndOfFunction_labelname% "
+:GetEndOfFunction-foundeof-loop
+set "_GetEndOfFunction_char=!%~2:~%_GetEndOfFunction_index%,1!
+if "[!_GetEndOfFunction_char!]" EQU "[%TAB%]" set /a "_GetEndOfFunction_index+=1" & GoTo :GetEndOfFunction-loop
+if "[!_GetEndOfFunction_char!]" EQU "[ ]" set /a "_GetEndOfFunction_index+=1" & GoTo :GetEndOfFunction-loop
+if "[!_GetEndOfFunction_char!]" EQU "[]" GoTo :GetEndOfFunction-end
+set /a "_GetEndOfFunction_index+=1" & set "_GetEndOfFunction_labelname=%_GetEndOfFunction_labelname%!_GetEndOfFunction_char!" & GoTo :GetEndOfFunction-foundeof-loop
+REM echo ending loop  current char is !_GetEndOfFunction_char! name %_GetEndOfFunction_labelname% GetEndOfFunction %_GetEndOfFunction_result%
+:GetEndOfFunction-end
+if "[%_GetEndOfFunction_labelname%]" NEQ "[]" ( set "_GetEndOfFunction_result=0" ) else ( set "_GetEndOfFunction_result=1" )
+REM echo labelname %_GetEndOfFunction_labelname%
+REM echo result %_GetEndOfFunction_result% name %_GetEndOfFunction_labelname%
+endlocal & Call :ClearVariablesByPrefix _GetEndOfFunction & set "%_GetEndOfFunction_Output%=%_GetEndOfFunction_labelname%" & exit /b %_GetEndOfFunction_result%
+
 ::Usage Call :IsLabel Output Input
 :IsLabel
 setlocal enabledelayedexpansion
@@ -1841,6 +2148,50 @@ if "[%_GetLabel_labelname%]" NEQ "[]" ( set "_GetLabel_result=0" ) else ( set "_
 REM set _GetLabel
 REM echo result %_GetLabel_result% name %_GetLabel_labelname%
 endlocal & Call :ClearVariablesByPrefix _GetLabel & set "%_GetLabel_Output%=%_GetLabel_labelname%" & exit /b %_GetLabel_result%
+
+
+
+:GetProperFunctionDefinition_IsLabelAfunction-DEMO
+
+set "_testexclusion=loop loop2 end skip cleanup argument params"
+
+echo.
+set _testlabel=This-is-a-test-label
+echo test label %_testlabel%
+Call :GetProperFunctionDefinition_IsLabelAfunction "%_testlabel%" "%_testexclusion%" && echo it is a valid function || echo it is excluded
+echo  %errorlevel%
+
+echo.
+set _testlabel=This-is-a-test-label-loop
+echo test label %_testlabel%
+Call :GetProperFunctionDefinition_IsLabelAfunction "%_testlabel%" "%_testexclusion%" && echo it is a valid function || echo it is excluded
+echo  %errorlevel%
+
+echo.
+set _testlabel=This-is-a-test-label-skip
+echo test label %_testlabel%
+Call :GetProperFunctionDefinition_IsLabelAfunction "%_testlabel%" "%_testexclusion%" && echo it is a valid function || echo it is excluded
+echo  %errorlevel%
+
+echo.
+set _testlabel=This-is-a-test-label-params
+echo test label %_testlabel%
+Call :GetProperFunctionDefinition_IsLabelAfunction "%_testlabel%" "%_testexclusion%" && echo it is a valid function || echo it is excluded
+echo  %errorlevel%
+
+echo.
+set _testlabel=This-is-a-test-label-end
+echo test label %_testlabel%
+Call :GetProperFunctionDefinition_IsLabelAfunction "%_testlabel%" "%_testexclusion%" && echo it is a valid function || echo it is excluded
+echo  %errorlevel%
+
+echo.
+set _testlabel=This-is-a-test-label
+echo test label %_testlabel%
+Call :GetProperFunctionDefinition_IsLabelAfunction "%_testlabel%" "%_testexclusion%" && echo it is a valid function || echo it is excluded
+echo  %errorlevel%
+
+GoTo :EOF
 
 
 :IsLabel-DEMO
@@ -1893,6 +2244,106 @@ Call :GetLabel _IsLabel_return __IsLabel_DEMO
 echo return value is %_IsLabel_return%
 set "_IsLabel_return="
 
+
+GoTo :EOF
+
+:IsEndOfFunction-DEMO
+
+echo. 
+set __IsEndOfFunction_DEMO=My test line
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=:YesALabel
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=   :LabelWithSpaceInFront
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=  	  :LabelWithSpaceAndTabs
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=::This is a comment
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=:EndOf_YesALabel
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=   :EndOf_LabelWithSpaceInFront
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=  	  :EndOf_LabelWithSpaceAndTabs
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=if blabla EQU notthat do nothing
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=:EndOf_YesALabel :EndOf_anotherlabel
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=   :EndOf_LabelWithSpaceInFront :butthat'snotalabel
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
+
+echo. 
+set __IsEndOfFunction_DEMO=  	  :EndOf_LabelWithSpaceAndTabs    		     :EndOf_YetAnotherlabel
+echo testing IsEndOfFunction with line %__IsEndOfFunction_DEMO%
+Call :IsEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO && echo this was a label %__IsEndOfFunction_DEMO% || echo this was not a label %__IsEndOfFunction_DEMO%
+Call :GetEndOfFunction _IsEndOfFunction_return __IsEndOfFunction_DEMO
+echo return value is %_IsEndOfFunction_return%
+set "_IsEndOfFunction_return="
 
 GoTo :EOF
 
