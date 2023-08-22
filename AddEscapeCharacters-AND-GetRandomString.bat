@@ -26,7 +26,8 @@ REM if "[%silent%]"=="[true]" echo Silent mode is enabled
 REM if not "[%verbose%]"=="[]" echo Verbose level : %verbose%
 REM if not "[%verbose%]"=="[]" if %verbose% GTR 49 echo Verbose level 50 or more
 
-Call :SimpleFileToArray-DEMO
+Call :GetRandomString-CreateRandomFile-DEMO
+REM Call :SimpleFileToArray-DEMO
 REM Call :GetFunctionDefinition-DEMO
 REM Call :FindAllLabels-DEMO
 REM Call :GetProperFunctionDefinition_IsLabelAfunction-DEMO
@@ -507,6 +508,17 @@ REM Call :Readlinealt PrintLine-DEMO.txt 15 _myReadline
 REM set _myreadline
 
 GoTo :EOF
+
+
+:GetRandomString-CreateRandomFile-DEMO
+
+
+Call :RunMultipleTimes 100 "call :GetRandomString 100 myoutput[%%%%_RunMultipleTimes_index%%%%] USEALLCHARS" "Call :len myoutput[%%%%_RunMultipleTimes_index%%%%].len2 myoutput[%%%%_RunMultipleTimes_index%%%%]" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%" "call call echo R %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%].len2%%%%%%%% %%%%%%%%myoutput[%%%%_RunMultipleTimes_index%%%%]%%%%%%%%>>CreateRandomFile-DEMO.txt"
+
+
+GoTo :EOF
+
+
 
 :ReadLineRange-DEMO
 Call :ClearVariablesByPrefix _RLR my
@@ -1637,12 +1649,12 @@ Call :FindAllEmptyLines "FindAllEmptyLines.txt" EmptyLinesArray
 
 GoTo :EOF
 
-:SimpleFileToArray-DEMO
-Call :ClearVariablesByPrefix _FTA LinesArray
-echo start SimpleFileToArray %time%
-Call :SimpleFileToArray LinesArray batchsample.bat
-echo end SimpleFileToArray %time%
-GoTo :EOF
+REM :SimpleFileToArray-DEMO
+REM Call :ClearVariablesByPrefix _FTA LinesArray
+REM echo start SimpleFileToArray %time%
+REM Call :SimpleFileToArray LinesArray batchsample.bat
+REM echo end SimpleFileToArray %time%
+REM GoTo :EOF
 
 REM ::Usage Call :SimpleFileToArray OutputArray Filename
 REM :SimpleFileToArray
@@ -1676,22 +1688,22 @@ REM for /f delims^=^ eol^= %%I in ('%SystemRoot%\System32\findstr.exe /n "^" "%~
 	REM )
 REM GoTo :EOF
 
-::Usage Call :SimpleFileToArray OutputArray Filename
-:SimpleFileToArray
-set "_FTA_Output=%~1"
-set "_FTA_ubound=1"
-setlocal enabledelayedexpansion
-set _FTA_localscope=true
-for /f delims^=^ eol^= %%I in ('%SystemRoot%\System32\findstr.exe /n "^" "%~2"') do (
-	setlocal disabledelayedexpansion
-	set _FTA_buffer=%%I
-	setlocal enabledelayedexpansion
-	set /a "_FTA_ubound+=1"
-	endlocal & endlocal & set /a "_FTA_ubound=!_FTA_ubound!" & set %_FTA_Output%[!_FTA_ubound!]=!_FTA_buffer:*:=!
-	)
-for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do endlocal & set %%a
-if defined _FTA_localscope endlocal
-GoTo :EOF
+REM ::Usage Call :SimpleFileToArray OutputArray Filename
+REM :SimpleFileToArray
+REM set "_FTA_Output=%~1"
+REM set "_FTA_ubound=1"
+REM setlocal enabledelayedexpansion
+REM set _FTA_localscope=true
+REM for /f delims^=^ eol^= %%I in ('%SystemRoot%\System32\findstr.exe /n "^" "%~2"') do (
+	REM setlocal disabledelayedexpansion
+	REM set _FTA_buffer=%%I
+	REM setlocal enabledelayedexpansion
+	REM set /a "_FTA_ubound+=1"
+	REM endlocal & endlocal & set /a "_FTA_ubound=!_FTA_ubound!" & set %_FTA_Output%[!_FTA_ubound!]=!_FTA_buffer:*:=!
+	REM )
+REM for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do endlocal & set %%a
+REM if defined _FTA_localscope endlocal
+REM GoTo :EOF
 
 REM ::Usage Call :SimpleFileToArray OutputArray Filename
 REM :SimpleFileToArray
@@ -1726,7 +1738,6 @@ REM for /f delims^=^ eol^= %%I in ('%SystemRoot%\System32\findstr.exe /n "^" "%~
 REM if defined _FTA_localscope endlocal
 REM GoTo :EOF
 
-
 ::Usage Call :FileToArray OutputArray Filename
 :FileToArray
 set "_FileToArray_prefix=_FTA"
@@ -1745,20 +1756,55 @@ REM if "[%~1]" EQU "[delims]" ( set "_FTA_delimiters=delims=%~2" & shift & shift
 REM if "[%~1]" EQU "[usebackquote]" ( set "_FTA_backquote=usebackq " & shift & GoTo :FileToArray-arguments )
 REM if "[%_FTA_tokens%]" EQU "[]" set "_FTA_tokens=tokens=*"
 if "[%_FTA_delimiters%]" EQU "[]" set "_FTA_delimiters=delims="
-setlocal enabledelayedexpansion
-set _FTA_localscope=true
+REM setlocal enabledelayedexpansion
+REM set _FTA_localscope=true
 for /f "%_FTA_backquote%%_FTA_skip%%_FTA_eol%%_FTA_tokens%%_FTA_delimiters%" %%a in ('%SystemRoot%\System32\findstr.exe /n "^" "%~1"') do (
-	set _FTA_buffer=%%a
-	set %_FTA_Output%[!_FTA_Output_ubound!]=!_FTA_buffer:*:=!
-	set /a "_FTA_Output_ubound+=1"
+	REM set _FTA_buffer=%%a
+	REM set %_FTA_Output%[!_FTA_Output_ubound!]=!_FTA_buffer:*:=!
+	call set %_FTA_Output%[%%_FTA_Output_ubound%%]=%%a
+	call set /a "_FTA_Output_ubound+=1"
 	)
 
 if "[%_FTA_initial_ubound%]" NEQ "[%_FTA_Output_ubound%]" set /a "%_FTA_Output%.ubound=!_FTA_Output_ubound!-1"
 if "[%_FTA_Output_lbound%]" NEQ "[]" set /a "%_FTA_Output%.lbound=!_FTA_Output_lbound!"
-for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do endlocal & set %%a
-if defined _FTA_localscope endlocal
+REM for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do endlocal & set %%a
+REM if defined _FTA_localscope endlocal
 Call :ClearVariablesByPrefix %_FileToArray_prefix% _FileToArray
 GoTo :EOF
+
+REM This version loses "!"
+REM ::Usage Call :FileToArray OutputArray Filename
+REM :FileToArray
+REM set "_FileToArray_prefix=_FTA"
+REM set "_FTA_Output=%~1"
+REM call set "_FTA_Output_ubound=%%%~1.ubound%%"
+REM if "[%_FTA_Output_ubound%]"=="[]" ( set "_FTA_Output_ubound=1" ) else ( set /a "_FTA_Output_ubound+=1" ) 
+REM call set "_FTA_Output_lbound=%%%~1.lbound%%"
+REM if "[%_FTA_Output_lbound%]"=="[]" set "_FTA_Output_lbound=1"
+REM set /a "_FTA_initial_ubound=%_FTA_Output_ubound%"
+REM shift
+REM :FileToArray-arguments
+REM if "[%~1]" EQU "[skip]" ( set "_FTA_skip=skip=%~2 " & shift & shift & GoTo :FileToArray-arguments )
+REM if "[%~1]" EQU "[eol]" ( set "_FTA_eol=eol=%~2 " & shift & shift & GoTo :FileToArray-arguments )
+REM REM if "[%~1]" EQU "[tokens]" ( set "_FTA_tokens=tokens=%~2 " & shift & shift & GoTo :FileToArray-arguments )
+REM REM if "[%~1]" EQU "[delims]" ( set "_FTA_delimiters=delims=%~2" & shift & shift & GoTo :FileToArray-arguments )
+REM REM if "[%~1]" EQU "[usebackquote]" ( set "_FTA_backquote=usebackq " & shift & GoTo :FileToArray-arguments )
+REM REM if "[%_FTA_tokens%]" EQU "[]" set "_FTA_tokens=tokens=*"
+REM if "[%_FTA_delimiters%]" EQU "[]" set "_FTA_delimiters=delims="
+REM setlocal enabledelayedexpansion
+REM set _FTA_localscope=true
+REM for /f "%_FTA_backquote%%_FTA_skip%%_FTA_eol%%_FTA_tokens%%_FTA_delimiters%" %%a in ('%SystemRoot%\System32\findstr.exe /n "^" "%~1"') do (
+	REM set _FTA_buffer=%%a
+	REM set %_FTA_Output%[!_FTA_Output_ubound!]=!_FTA_buffer:*:=!
+	REM set /a "_FTA_Output_ubound+=1"
+	REM )
+
+REM if "[%_FTA_initial_ubound%]" NEQ "[%_FTA_Output_ubound%]" set /a "%_FTA_Output%.ubound=!_FTA_Output_ubound!-1"
+REM if "[%_FTA_Output_lbound%]" NEQ "[]" set /a "%_FTA_Output%.lbound=!_FTA_Output_lbound!"
+REM for /F "delims=" %%a in ('set %_FTA_Output% 2^>nul') do endlocal & set %%a
+REM if defined _FTA_localscope endlocal
+REM Call :ClearVariablesByPrefix %_FileToArray_prefix% _FileToArray
+REM GoTo :EOF
 
 
 ::Usage Call :FindAllEmptyLines Filename EmptyLinesArray
@@ -1901,7 +1947,7 @@ GoTo :EOF
 
 :FindAllLabels-DEMO
 Call :ClearVariablesByPrefix  _FAERFA OutputEndOf_Array
-goto :FindAllLabels-DEMO-skip
+REM goto :FindAllLabels-DEMO-skip
 Call :ClearVariablesByPrefix FileLines OutputLabelArray  OutputEmptylineArray _FALFFLA _FAERFA
 echo ClearVariablesByPrefix %time%
 Call :FileToArray FileLines "batchsample.bat"
