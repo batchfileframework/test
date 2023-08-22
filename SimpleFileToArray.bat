@@ -476,7 +476,18 @@ REM findstr /N /I /C:"goto :EOF" /C:"exit /B" test.txt
 GoTo :EOF
 
 :GetFunctionsFromLabels OutputFunctionsArray InputLabels
-remove from exclusion list
+this function
+remove using an exclusion list
+all labels that have the excluded word in the last section of the name, as they are always internal function labels
+
+loop loop2 loop3 loop# end skip skip2 skipn test test1 testn cleanup argument params args next prev iteration pre post
+0 1 2 3 4 5 6 7 8 9
+
+in function name, treat _ - . the same
+
+also remove 
+
+
 GoTo :EOF
 
 :GetBatchFileStructure BatchFileStructureArray EmptyLinesArray (LabelsArray or FunctionArray) (EndOfFunctionArray or ExitArray)
