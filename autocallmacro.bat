@@ -651,3 +651,136 @@ In this method:
     %~1 will get the first parameter provided after the macro expansion. So, %Call% test will essentially become (echo this is macro call first %~1 argument) test, and %~1 will evaluate to test.
 
 This approach is a more accurate reflection of how macros tend to be used in batch scripting. They are essentially pre-canned script snippets that are "expanded" into place in the script where they're used, and then they operate on whatever follows them in the command line.
+
+
+
+This did not work, %~1 still does not evalue as the first argument "test" 
+
+I see that the difference between executing an internal or an external function is just the colon ":" character.
+
+What we really need to do is the macro needs to expand either to "call "  or "call :"  and the macro needs to figure out which of the two is the right one.
+
+Also the macro does not have access to the word after the macro, as far as I can tell.
+
+I see a couple possible solution 
+
+so instead of the normal 
+
+call :test "hello world!" 
+
+We could have 
+
+%call %test "hello world" 
+
+Where the macro expands to "call " or "call "
+
+I think what the macro needs to do is, 
+find the current line of execution, 
+find the text %call % in that line.  
+and then extract the text between %call % and the next space character
+Determine if this text exists as an internal label, if it is, expand the text as "call :"
+If it does not exist as an internal label then expand to "call "
+ChatGPT
+
+Alright, using the idea you've presented, we can make a macro that leverages the built-in findstr command to search the batch script itself to determine if a label exists.
+
+Let's break this down:
+
+    Use findstr to search for the label in the currently executing batch file.
+    Based on whether or not the label is found, the macro will expand to either "call :" or just "call ".
+
+This strategy won't be 100% foolproof (e.g., if a label name is also a commonly used word elsewhere in the script), but it should work for most typical use-cases.
+
+Here's how this can be done:
+
+batch
+
+@echo off
+setlocal enabledelayedexpansion
+
+:: Define the macro
+set "call=for %%a in (dummy) do ( findstr /r "^:!argument!:" "%~0" >nul && (call :!argument!) || (call !argument!) )"
+
+:: Set up a test case
+set argument=test
+
+:: Use the macro
+%call%
+
+:: Define the test label
+:test
+echo "This is an internal label called test"
+exit /b
+
+Here's a breakdown:
+
+    The for %%a in (dummy) loop is a common trick to enable us to use a block of commands in a macro, even though we're only executing the loop once.
+    findstr /r "^:!argument!:" "%~0" searches the currently executing batch file (%~0) for a line beginning with : followed by the value of !argument! (which we're setting up as our label/function name).
+    >nul redirects the output of findstr to nul, so we don't see it.
+    && means "if the previous command was successful (i.e., the label was found)". In this case, we then use call :!argument!.
+    || means "if the previous command failed (i.e., the label wasn't found)". In this case, we then use call !argument!.
+
+Note: This macro assumes you have already set the argument variable to the name of the function or label you want to call before invoking %call%.
+
+For practical purposes, this may require you to slightly change how you structure and invoke your calls. You'll set argument and then invoke %call%, rather than directly invoking the label or function.
+User
+2 / 2
+Here is a discussion for a possible method to find the current line of execution 
+
+How to: Get the current line number
+
+#1 Post by jeb » 14 May 2015 08:50
+
+[text trunkated]
+original text https://www.dostips.com/forum/viewtopic.php?f=3&t=6455
+
+This is an interesting discussion regarding the challenge of retrieving the current line number in a batch script while it's running. I'll break it down for a clearer understanding:
+
+    jeb's Method:
+        Approach: The method revolves around self-modifying the batch file twice during its execution.
+        Steps:
+            The original batch file is copied to a .tmp file for backup purposes.
+            The entire file is replaced with macros and a special function appended at the end.
+            Execution returns to a line with a macro.
+            The macro sets the line number and file position to variables and redirects execution to the special function.
+            The function once again replaces the file content, adding a label and placeholders.
+            The function then redirects execution to the starting label.
+            The original content of the batch file is restored from the .tmp file.
+            The file pointer returns to its original position post the first step.
+        Limitations: This approach is not ideal for code blocks and doesn't work well with FOR loop one-liners.
+
+    dbenham's Feedback:
+        Feedback: dbenham appreciates the innovative technique but provides some critique.
+        Suggestions:
+            Use FINDSTR to compute both the line number and the offset.
+            Optimize performance by writing the first intermediate file only once at the beginning and swapping as needed.
+            Consider using FIND and/or FINDSTR for quicker length replacement.
+            The intermediate files should be deleted at the end for cleanup.
+        Idea for 2nd Replacement: Proposes a concept where the second intermediate file is prepared at the beginning. It will contain a pair of lines for each CALL point and additional spacing lines. MOVE can be used to swap files as needed, which could improve performance.
+
+    Aacini's Method:
+        Approach: Create a copy of the batch file with real line numbers placed appropriately. This copy will have 'LN' appended to its name.
+        Implementation: The method uses the :GetLineNumber subroutine. It employs findstr to get the actual line numbers and replaces them in the right places within the file.
+        Benefits: It's simpler, faster, and works universally in the batch file, including inside code blocks.
+
+Conclusion: Determining the current line number in a batch script is a non-trivial challenge, as batch scripting does not natively provide this capability. The techniques presented here are advanced solutions, each with its advantages and limitations. While jeb's method is more complex and involves self-modification of the script, Aacini provides a simpler alternative. The feedback and enhancements suggested by dbenham offer possible optimizations. The choice of method would depend on the specific requirements and constraints of the user.
+
+[remainder of the discussion posted ]
+
+The ongoing discussion appears to be about a batch script challenge or solution related to retrieving the current line number of the script as it is running. It's a clever way to introspect into the script's own content, which isn't normally possible without external tools or tricks. Let's break down the core aspects:
+
+    The Goal: The main objective is to get the current line number of the script while it's running. This could be useful for debugging, logging, or other purposes.
+
+    Single File Solution: One user prefers having everything in a single file, which would mean both the code and labels or identifiers indicating where the line numbers are would reside in the same batch file.
+
+    Performance: dbenham mentions that using MOVE within the same folder is fast. Thus, it might be an efficient way to achieve the goal.
+
+    Self-modifying Code: There's a question about the feasibility of moving the executing file while it's running. In general, self-modifying code can be tricky and potentially dangerous.
+
+    Macro as a Label: The challenge has been extended to find a macro that can also serve as a valid label. The example provided %,:$=47,123% is a clever play with batch scripting, using unconventional variables and label names.
+
+    Code Implementation: dbenham provides a comprehensive solution that involves creating temporary modifications of the script. This method works by preparing the script to include markers, then using another part of the script to retrieve and process those markers to determine the current line number.
+
+    External Tools: In a different approach, dbenham suggests using JREPL.BAT, an external tool for Java-based regular expression processing in batch files. The solution involves embedding the line numbers into the script and then updating them only if there's a change in the script content.
+
+Summary: This discussion revolves around the unique challenge of introspecting a batch script to determine its current line number while running. Various solutions are proposed, each with its own pros and cons. The use of unconventional scripting tricks, such as macros that double as labels and self-modifying code, make this a fascinating exploration of the boundaries of batch scripting.
