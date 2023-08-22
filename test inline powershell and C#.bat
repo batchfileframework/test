@@ -1,5 +1,61 @@
 @echo off
 
+GoTo :runps-DEMO
+
+
+::Usage Call :RunPowershellByRef ScriptContainingVariable Argument1 Argument2 ... ArgumentN 
+::Usage Call :RunPowershellByLabel :StartScriptLabel optional :EndScriptLabel optional ExternalFile Argument1 Argument2 ... ArgumentN
+::Usage Call :RunPowershell %ScriptContainingVariable% Argument1 Argument2 ... ArgumentN
+:RunPowershellByRef
+:RunPowershellByLabel
+:RunPowershell
+
+::Usage Call :RunCsharpByRef ScriptContainingVariable Argument1 Argument2 ... ArgumentN
+::Usage Call :RunCsharpByLabel :StartScriptLabel optional :EndScriptLabel optional ExternalFile Argument1 Argument2 ... ArgumentN
+::Usage Call :RunCsharp %ScriptContainingVariable% Argument1 Argument2 ... ArgumentN
+:RunCsharpByRef
+:RunCsharpByLabel
+:RunCsharp
+
+::Usage Call :RunVBnetByRef ScriptContainingVariable Argument1 Argument2 ... ArgumentN
+::Usage Call :RunVBnetByLabel :StartScriptLabel optional :EndScriptLabel optional ExternalFile Argument1 Argument2 ... ArgumentN
+::Usage Call :RunVBnet %ScriptContainingVariable% Argument1 Argument2 ... ArgumentN
+:RunVBnetByRef
+:RunVBnetByLabel
+:RunVBnet
+
+::Usage Call :RunCByRef ScriptContainingVariable Argument1 Argument2 ... ArgumentN
+::Usage Call :RunCByLabel :StartScriptLabel optional :EndScriptLabel optional ExternalFile Argument1 Argument2 ... ArgumentN
+::Usage Call :RunC %ScriptContainingVariable% Argument1 Argument2 ... ArgumentN
+:RunCByRef
+:RunCByLabel
+:RunC
+
+:RunVBscript
+
+:RunJscript
+:RunJavascript
+:RunECMAscript
+:RunJnetscript
+:RunWSHscript
+:RunWSFscript
+
+:ruby
+:python
+:c++
+TCC tiny c compiler
+TDM-GCC smallest c++ compiler
+lua 
+
+
+directives  
+
+compile only
+compile if needed
+compile if needed and run
+compile, run and wait
+
+
 :runps-DEMO
 
 call :SetLF
