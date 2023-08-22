@@ -142,7 +142,8 @@ GoTo :EOF
 
 :: Usage Call :ClearVariablesByPrefix myPrefix
 :ClearVariablesByPrefix
-for /f "tokens=1,2 delims==" %%a in ('set %~1') do set %%a=
+for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
+if "[%~1]" NEQ "[]" shift & GoTo :ClearVariablesByPrefix
 GoTo :EOF
 
 :GoToFolderOfBatchFile
@@ -447,7 +448,7 @@ REM echo isnumeric with a double quote empty
 REM call :isnumeric "" && echo is was not numeric || ( echo it was numeric & echo also you smell )
 REM echo isnumeric with no input 
 REM call :isnumeric && echo is was not numeric || ( echo it was numeric & echo also you smell )
-::IsNumeric-END
+::IsNumeric-END
 
 REM incomplete
 :: Call :InStB input search result

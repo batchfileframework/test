@@ -1,0 +1,8 @@
+toggleable logging using tee
+list and edit environement variables
+
+
+unixutil installer
+ffmpeg 
+mpv
+gstreamer

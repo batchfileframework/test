@@ -1,0 +1,31 @@
+if a script is run by double clicking (no arguments) it should end with a conditionnal pause
+
+scripts should attempt to load a "variables" script to have a single location 
+for all changing settings, especiially download links and install filenames
+builtin defaults
+overridden by variables file
+overridden by environement variables
+
+there should be an output log file
+temp folder and/or local folder can be overriden by variable file or env
+log all console output but still show it also, timestamp logs ?
+
+most files should work completely standalone
+
+arguments should be able to be specified on command line and in the filename itself
+
+concatenate scripts into super scripts that can be outputted as multiple pre-configured batch files
+
+
+
+
+move instead of delete script
+delete script should not need more permission than required 
+restore permissions if possible ?
+
+--------------
+
+script to list, remove or create scheduled tasks
+
+
+

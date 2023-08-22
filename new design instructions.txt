@@ -1,0 +1,139 @@
+
+ALL FUNCTION MUST HAVE PROPER END OF FUNCTION LABEL  And it should be :EndOf_FunctionName FunctionAliasName1 FunctionAliasName2 FunctionAliasNameN
+
+new function 
+IsFolderJunction
+ListAllRelatedFolderJunctions
+IsFileLink
+IsFileSymbolicLink
+IsFileHardLink
+ListAllRelatedFileHardLink
+IsFileDeletable (arguments,  single file, list of file in array, list of files in a text file)
+IsFileModifiable
+IsFileReadable
+is all file possibilities
+AddToPath
+AddToUsesrPath
+AddToSystemPath
+IsFolderInPath
+
+CreateFile.Manifest <folder>
+CreateMD5 CreateSHA1  every hash type
+CheckMD5 string+MD5  file+MD5string file+MD5file file(find your own MD5 file if exist, another function will auto create missing MD5 ? Create in same folder, or in mirror arborescence / folder tree)
+
+
+-----------------------
+Map out general struction functions
+
+function (no params)
+function (one param)
+function (one param) (two param)
+function (output) (input)
+function (string)
+function (defined variable)
+function (an array)
+inputs can be string, filename, arrayofstrings, arrayoffiles, string that contain space or comma separated items(CSV?), arrayofCSV, filesofCSV
+output can be a variable or exit value, executing another command or function, writing to an array or file
+function %macro call% 
+function (filename)
+function (filename1) (filename2) ... (filenameN)
+function (output) (filename)
+function (output) (filename1) (filename2) ... (filenameN)
+
+function item1 item2 itemN
+function item1 param1 item2 param2 itemN paramN
+function array1 array2 array3
+function definedvariable1 definedvariable2 definedvariableN
+function (item item+param array)
+
+function NAMEDPARAMETER arg1 arg2 argN
+function NAMEDPARAMETER arg1 DONTNAMEDPARAMETER arg2 argN
+function output NAMEDPARAMETER arg1 DONTNAMEDPARAMETER arg2 argN
+function output input1 input2 inputN
+where output could be variable/array/file/console?/serialport?/ip:port?
+
+function input output output output possible?
+
+function COMMAND input1 COMMAND2 input2 input3 inputN COMMAND3 InputN+1
+where input is value/variable/array/file/+?
+
+collection/dictionnaries/tuples array/FIFO LILO stacks buffers etc..
+
+function to just copy all arguments into an array
+_functionname.args[X] unquoted arguments
+_functionname.args.original[X] %~1
+_functionname.args.all %*
+
+
+
+-----------------------
+
+
+set function macro function1 function2 functionN
+
+create command folder in windows and user folder
+create links from user folder to windows folder for all commands
+add userfolder to path
+
+create batchfileframework installer one liner
+
+meditation is like sitting at the top of a sky scraper and feeling the building swaying and shaking on its foundations
+
+sysinsternals install with eula warning disabled
+
+
+regedit diffs function
+
+
+
+function description auto creating function
+
+
+
+function.bat structure
+
+setfunctionmacros
+
+default, execute external batch file by default when they are general commands
+execute internal labels if they are integral to the current function
+include function descriptor
+function to scan for all function call by number
+
+80 lines function delimiter for looking nice
+::---------------------------------------------------------------------------::
+
+default console dimensions 80x24, aussi 80x25 132x24 132x25  100x40 100x50  fullscreen widescreen 192x54
+
+ask chat gpt to create a writing style code based on existing code and then to self critique existing code for consistency
+create function descriptions 
+
+file to array should output with the line numbers already removed
+
+
+
+
+Internal / external function substitution
+
+if prefer external over internal function
+macro checks if function name exists in the path, if yes then macro set to call the external, if not, macro calls internal label
+
+if prefer internal over external function
+macro checks if internal function exists, if yes macro set to that, if not macro checks if external command exists, if not default to call the internal function anyway (maybe it was not detected correctly)
+
+function to find all external command calls
+
+functions to find all goto :eof and all exit /b
+
+There should be a macro for "echo.&" how about %newline%
+
+there should be constants always set like
+
+set "_LF=^
+
+(you need the space here)
+
+all the special values should just be there already
+
+
+
+

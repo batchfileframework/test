@@ -21,8 +21,9 @@ Set logging=true
 REM Set logfile=c:\mylogfile.txt
 REM Set errlogfile=c:\myerrlogfile.txt
 
+:Constants
 
-
+:Macros
 
 
 
@@ -233,6 +234,7 @@ GoTo :EOF
 :: Usage Call :ClearVariablesByPrefix myPrefix
 :ClearVariablesByPrefix
 for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
+if "[%~1]" NEQ "[]" shift & GoTo :ClearVariablesByPrefix
 GoTo :EOF
 
 :GoToFolderOfBatchFile
@@ -859,6 +861,8 @@ if %_CopyValuesFromArray_InputArray.index% LEQ %_CopyValuesFromArray_InputArray.
 Call :ClearVariablesByPrefix _CopyValuesFromArray
 GoTo :EOF
 
+
+
 REM Todo, this should check if the element exists, if it doesn't find the real ubound with set
 ::Usage Call :Ubound InputArray UboundOutput ' make this better, search "set" for the real ubound
 :Ubound
@@ -870,6 +874,7 @@ GoTo :EOF
 set %2=%~1.lbound
 GoTo :EOF
 
+REM todo rewrite with for loop on set var[   maybe set var[numeric only] ? what about collections 
 :: ClearArray InputArray optional start optional end
 :ClearArray
 set /a index=0 

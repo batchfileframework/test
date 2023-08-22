@@ -1,0 +1,43 @@
+batch functions
+hex to decimal
+decimal to hex
+:Ubound  (marche ?)
+:EchoArray (manque limit et starting point)
+
+streamer basic
+function to create server that launches bat
+streamer bat with command line parameters monitor grabbermode destination
+
+
+power scheme guid explore
+
+how to trunkate variable to 10 chars
+erase entire array 
+
+
+ FFmpeg desktop Streamer project
+ 
+ Optional systray application
+ script that creates customize Windows Service which keep ffmpeg alive
+ easily parametrable, change all parameters from systray application from command line
+ streamer input coordinate/monitornumber/application name following capture , changing TX/RX protocol , signal relevant changes to receiver
+          change codec, all ffmpeg tuning options, bitrate, framerate, downscaling, cropping
+ receiver same settings control from CLI, cropping of a larger stream, up/down scaling/ cropping		  
+ Receiver scripts  that keep ffplay/mpv alive on the receiving end
+ netcat or ssh to send control messages to services, ability to switch input of receiver and input of stream
+ ability to send message to router, open port for port forwarding, enable multicast to unicast stream (with multiple destinations)
+ ability to allow port forwarding from only one or several specific IPs and Hostnames (sender updates its IP via direct ssh or via ddns)
+ 
+ systray application
+ 
+ ability to create, delete, streamer and receiver services and see their current status  running, stopped, problem, waiting
+ ability to reconfigure existing service quickly to change parameters
+ the parameters, fixed streaming X/Y coordinate, possibly spanning multiple monitors, streaming whole monitor, streaming only an application windows
+ with or window borders, service can change X/Y/Width/Heith to match resizing and moving of the application windows
+ ability to stop streamer cleanly if a monitor disappears, ability to restart streamer automatically when monitor comes back
+ ability to create new indirect monitors and change their relative location
+ ability for receiver to switch to a new source if one source stops, ability to go back in waiting mode when stream stops (instead of staying stick on last frame)
+ ffmpeg output logged to file
+ log visible in systray application, with autoscroll if scrollbar it at bottom
+ performance characteristics visible per streamer (frames per second, transmit jitter between frames, show CPU & GPU usage, show latency to associated listenenrs), hear parameters back from active listeners via ncat or ssh or stunnel
+ 
