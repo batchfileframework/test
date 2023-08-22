@@ -8,11 +8,53 @@ REM call :GetIndexArray-simple-DEMO
 REM Call :GetIndexArray-DEMO
 GoTo :EOF
 
+
+
+:GetBatchFileStructure-DEMO
+
+Create an array representing all functions, preamble, postscript, cumulative of all previous work
+
+GoTo :EOF
+
+:GetFunctionStructure
+
+For specified function
+return preamble start and end line (not defined means no preamble)
+return function name including line number,   start line to end line of function
+return function postscript , return start line and endline of post script
+
+preamble and post script are all the lines containing text up until the first blank line, before the function start line and after the function end line
+
+interpret preamble function cards (name version description dependencivies last updated etc... ?)
+
+should be aware of function alias, overloaded functions
+
+should it be aware of function input parameters ?
+
+GoTo :EOF
+
+:GetFunctionLabels-DEMO
+
+Returns a cleaned list of all real functions, not the internal labels, not main functions, not broken functions without exits
+
+GoTo :EOF
+
+:GetFunctionCalls-DEMO
+
+Find every function call
+extract the name of every called function label
+there can be more than one call :label  per line, find all like EndOf_Function
+If possible, include awareness of the current function name
+It should be easy to ask a function name and return all function call dependencies 
+
+
+GoTo :EOF
+
 :GetFunctionExits-DEMO
 
 Call :GetFunctionExits ListEOfFunctionsExits batchsample.bat
 
-Call :EchoArray ListEndOfFunctions
+Call :EchoArray ListEOfFunctionsExits
 
 GoTo :EOF
 
@@ -468,6 +510,7 @@ GoTo :EOF
 
 ::Usage Call :GetFunctionExits OutputArray Filename
 :GetFunctionExits
+echo started
 for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N /I /C:"goto :EOF" /C:"exit /B" "%~2" ^| findstr /N "^"') do ( 
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%~1.ubound=%%f" & set %~1[%%f]=%%g
 	)
@@ -485,7 +528,7 @@ loop loop2 loop3 loop# end skip skip2 skipn test test1 testn cleanup argument pa
 
 in function name, treat _ - . the same
 
-also remove 
+also remove main labels setup main exit macro setmacro etc..
 
 
 GoTo :EOF
