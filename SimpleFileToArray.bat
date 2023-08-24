@@ -1,7 +1,7 @@
 @echo off
 
-Call :GetFunctionExits-DEMO
-REM call :GetEndOfFunction-DEMO
+REM Call :GetFunctionExits-DEMO
+call :GetEndOfFunction-DEMO
 REM call :GetLabels-DEMO
 REM call :GetEmptyLines-DEMO
 REM call :GetIndexArray-simple-DEMO
@@ -52,7 +52,7 @@ GoTo :EOF
 
 :GetFunctionExits-DEMO
 
-Call :GetFunctionExits ListEOfFunctionsExits batchsample.bat
+Call :GetFunctionExits batchsample.bat ListEOfFunctionsExits
 
 Call :EchoArray ListEOfFunctionsExits
 
@@ -60,7 +60,7 @@ GoTo :EOF
 
 :GetEndOfFunction-DEMO
 
-Call :GetEndOfFunction ListEndOfFunctions batchsample.bat
+Call :GetEndOfFunction batchsample.bat ListEndOfFunctions
 Call :EchoArray ListEndOfFunctions
 Call :EchoArray ListEndOfFunctions .name
 set ListEndOfFunctions
@@ -72,7 +72,7 @@ GoTo :EOF
 
 :GetLabels-DEMO
 
-Call :GetLabels ListOfLabels batchsample.bat
+Call :GetLabels batchsample.bat ListOfLabels
 echo.& echo Print all line numbers with a label
 Call :EchoArray ListOfLabels 
 echo.& echo Print all label names
@@ -86,7 +86,7 @@ GoTo :EOF
 
 :GetEmptyLines-DEMO
 
-Call :GetEmptyLines ListOfEmptyLines batchsample.bat
+Call :GetEmptyLines batchsample.bat ListOfEmptyLines
 echo.& echo List empty lines
 Call :EchoArray ListOfEmptyLines 
 echo.& echo List empty lines, show echoarray to show line numbers (printed number of lines)
@@ -111,7 +111,7 @@ set mytestindexarray[5]=5
 set mytestindexarray.lbound=3
 set mytestindexarray.ubound=5
 
-Call :GetEmptyLines ListOfEmptyLines batchsample.bat
+Call :GetEmptyLines batchsample.bat ListOfEmptyLines
 echo.& echo List empty lines with range limit ("1-3" "20,30-33,30" "99" "3-1" mytestindexarray)
 Call :EchoArray ListOfEmptyLines "1-3" "20,30-33,30" "99" "3-1" mytestindexarray
 echo.& echo List empty lines, show echoarray to show line numbers (printed number of lines) with range limit ("1-3" "20,30-33,30" "99" "3-1" mytestindexarray)
@@ -465,57 +465,67 @@ endlocal
 Call :ClearVariablesByPrefix _EchoArray
 GoTo :EOF
 
-::Usage Call :GetEmptyLines OutputArray Filename
+::Usage Call :GetEmptyLines Filename OutputArray optional OutputRows
 :GetEmptyLines
-for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^$" "%~2" ^| findstr /N "^"') do ( 
-	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set /a "%~1.ubound=%%f" & set %~1[%%f]=%%g
-	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set %~1.rows[%%g].type=EmptyLine
+set "_GetEmptyLines_output=%~2"
+if "[%~3]" NEQ "[]" ( set "_GetEmptyLines_output_rows=%~3.rows" ) else ( set "_GetEmptyLines_output_rows=%_GetEmptyLines_output%" )
+for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^$" "%~1" ^| findstr /N "^"') do ( 
+	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set /a "%_GetEmptyLines_output%.ubound=%%f" & set %_GetEmptyLines_output%[%%f]=%%g
+	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set %_GetEmptyLines_output_rows%[%%g].type=EmptyLine
 	)
-set /a "%~1.lbound=1
+set /a "%_GetEmptyLines_output%.lbound=1" & set "_GetEmptyLines_output=" & set "_GetEmptyLines_output_rows="
 GoTo :EOF
 
-::Usage Call :GetLabels OutputArray Filename
+::Usage Call :GetLabels Filename OutputArray optional OutputRows
 :GetLabels
-for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^:[^:]" "%~2" ^| findstr /N "^"') do ( 
-	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%~1.ubound=%%f" & set %~1[%%f]=%%g
-	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=1,2*" %%z in ("%%h") do set %~1[%%f].name=%%~z
-	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=1,2*" %%z in ("%%h") do set %~1[%%~z]=%%g
-	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=1,2*" %%z in ("%%h") do set %~1[%%g]=%%~z
+set "_GetLabels_output=%~2"
+if "[%~3]" NEQ "[]" ( set "_GetLabels_output_rows=%~3.rows" ) else ( set "_GetLabels_output_rows=%_GetLabels_output%" )
+for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^:[^:]" "%~1" ^| findstr /N "^"') do ( 
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%_GetLabels_output%.ubound=%%f" & set %_GetLabels_output%[%%f]=%%g
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set %_GetLabels_output_rows%[%%g].type=label
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=1,2*" %%z in ("%%h") do set %_GetLabels_output%[%%f].name=%%~z
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=1,2*" %%z in ("%%h") do set %_GetLabels_output%.name[%%~z]=%%g
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=1,2*" %%z in ("%%h") do set %_GetLabels_output_rows%[%%g]=%%~z
 	)
-set /a "%~1.lbound=1
-
+set /a "%_GetLabels_output%.lbound=1" & set "_GetLabels_output=" & set "_GetLabels_output_rows="
 GoTo :EOF
 
-::Usage Call :GetEndOfFunction OutputArray Filename
+::Usage Call :GetEndOfFunction Filename OutputArray optional OutputRows
 :GetEndOfFunction
-for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N /I /C:":EndOf_" "%~2" ^| findstr /N "^"') do ( 
-	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%~1.ubound=%%f" & set %~1[%%f]=%%g
-	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %~1[%%f].text=%%h
-	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %~1[%%g]=%%h
-	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %~1[%%g].type=EndOf_Function
-	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=*" %%z in ("%%h") do set %~1[%%f].name=%%~z
-	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=1,2*" %%z in ("%%h") do set %~1[%%~z]=%%g
+set "_GetEndOfFunction_output=%~2"
+if "[%~3]" NEQ "[]" ( set "_GetEndOfFunction_output_rows=%~3.rows" ) else ( set "_GetEndOfFunction_output_rows=%_GetEndOfFunction_output%" )
+for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N /I /C:":EndOf_" "%~1" ^| findstr /N "^"') do ( 
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%_GetEndOfFunction_output%.ubound=%%f" & set %_GetEndOfFunction_output%[%%f]=%%g
+	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %_GetEndOfFunction_output%[%%f].text=%%h
+	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %_GetEndOfFunction_output_rows%[%%g]=%%h
+	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %_GetEndOfFunction_output_rows%[%%g].type=EndOf_Function
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=*" %%z in ("%%h") do set %_GetEndOfFunction_output%[%%f].name=%%~z
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=1,2*" %%z in ("%%h") do set %_GetEndOfFunction_output%.name[%%~z]=%%g
 	for /f "tokens=2 delims=:" %%b in ("%%a") do for /f "tokens=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24 delims=:" %%c in ("%%a") do for %%A in (%%c %%d %%e %%f %%g %%h %%i %%j %%k %%l %%m %%n %%o %%p %%q %%r %%s %%t %%u %%v %%w %%x %%y %%z) do (
 											set _GetEndOfFunction_buffer=%%A
 											setlocal enabledelayedexpansion
 											if "[!_GetEndOfFunction_buffer:~,6!]" EQU "[EndOf_]" set _GetEndOfFunction_buffer2=!_GetEndOfFunction_buffer!
-											for %%Z in (!_GetEndOfFunction_buffer2!) do endlocal & set %~1[%%~Z]=%%b
+											for %%Z in (!_GetEndOfFunction_buffer2!) do endlocal & set %_GetEndOfFunction_output%.name[%%~Z]=%%b
 											endlocal 
 											)
 	)
-	set /a "%~1.lbound=1
+	set /a "%_GetEndOfFunction_output%.lbound=1" & set "_GetEndOfFunction_output=" & set "_GetEndOfFunction_output_rows="
 GoTo :EOF
 
 
 
 ::Usage Call :GetFunctionExits OutputArray Filename
 :GetFunctionExits
-echo started
-for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N /I /C:"goto :EOF" /C:"exit /B" "%~2" ^| findstr /N "^"') do ( 
-	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%~1.ubound=%%f" & set %~1[%%f]=%%g
+set "_GetFunctionExits_output=%~2"
+if "[%~3]" NEQ "[]" ( set "_GetFunctionExits_output_rows=%~3.rows" ) else ( set "_GetFunctionExits_output_rows=%_GetFunctionExits_output%" )
+for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N /I /C:"goto :EOF" /C:"exit /B" "%~1" ^| findstr /N "^"') do ( 
+	for /f "tokens=2,* delims=:" %%b in ("%%a") do echo %%c
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%_GetFunctionExits_output%.ubound=%%f" & set %_GetFunctionExits_output%[%%f]=%%g
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set %_GetFunctionExits_output_rows%[%%g].type=FunctionExit
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=2,* delims=:" %%b in ("%%a") do set %_GetFunctionExits_output%[%%f].text=%%c
+	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=2,* delims=:" %%b in ("%%a") do set %_GetFunctionExits_output_rows%[%%g].text=%%c
 	)
-REM findstr /R /C:"exit /b" /C:"goto :eof" filename.txt
-REM findstr /N /I /C:"goto :EOF" /C:"exit /B" test.txt
+	set /a "%_GetFunctionExits_output%.lbound=1" & set "_GetFunctionExits_output=" & set "_GetFunctionExits_output_rows="
 GoTo :EOF
 
 :GetFunctionsFromLabels OutputFunctionsArray InputLabels
