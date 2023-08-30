@@ -1,7 +1,8 @@
 @echo off
-
+Call :CopyArray-DEMO
+REM call :GetArrayIndex-DEMO
 REM Call :GetFunctionExits-DEMO
-call :GetEndOfFunction-DEMO
+REM call :GetEndOfFunction-DEMO
 REM call :GetLabels-DEMO
 REM call :GetEmptyLines-DEMO
 REM call :GetIndexArray-simple-DEMO
@@ -301,7 +302,7 @@ GoTo :EOF
 :SimpleFileToArray-DEMO
 Call :ClearVariablesByPrefix _FTA LinesArray
 echo start SimpleFileToArray %time%
-Call :SimpleFileToArray LinesArray batchsample.bat
+Call :SimpleFileToArray batchsample.bat LinesArray
 echo end SimpleFileToArray %time%
 GoTo :EOF
 
@@ -311,23 +312,23 @@ REM :SimpleFileToArray OutputArray array containing list of rows  Filename
 
 REM :ArrayToFile OutputFile list of rows (variable or array)
 
-::Usage Call :SimpleFileToArray OutputArray Filename
+::Usage Call :SimpleFileToArray Filename OutputArray
 :SimpleFileToArray
-set /a "%~1.lbound=%%f"
-for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr.exe /N "^" "%~2"') do ( 
-	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set /a "%~1.ubound=%%f" & set %~1[%%f]=%%a
+set /a "%~2.lbound=1"
+for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr.exe /N "^" "%~1"') do ( 
+	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set /a "%~2.ubound=%%f" & set %~2[%%f]=%%a
 	)
 set /a "_SFTA_index=1"
-call set /a "_SFTA_ubound=%%%~1.ubound%%"
+call set /a "_SFTA_ubound=%%%~2.ubound%%"
 :SimpleFileToArray-loop
-setlocal enabledelayedexpansion
+Setlocal enabledelayedexpansion
 set _SFTA_localscope=true
-set %~1[%_SFTA_index%]=!%~1[%_SFTA_index%]:*:=!
-for /f "delims=" %%a in ('set %~1[%_SFTA_index%] 2^>nul') do (
+set %~2[%_SFTA_index%]=!%~2[%_SFTA_index%]:*:=!
+for /f "delims=" %%a in ('set %~2[%_SFTA_index%] 2^>nul') do (
 		endlocal
 		set %%a
 	)
-if defined _SFTA_localscope endlocal & set %~1[%_SFTA_index%]=
+if defined _SFTA_localscope endlocal & set %~2[%_SFTA_index%]=
 set /a "_SFTA_index+=1"
 if %_SFTA_index% LEQ %_SFTA_ubound% GoTo :SimpleFileToArray-loop
 GoTo :EOF
@@ -468,7 +469,7 @@ GoTo :EOF
 ::Usage Call :GetEmptyLines Filename OutputArray optional OutputRows
 :GetEmptyLines
 set "_GetEmptyLines_output=%~2"
-if "[%~3]" NEQ "[]" ( set "_GetEmptyLines_output_rows=%~3.rows" ) else ( set "_GetEmptyLines_output_rows=%_GetEmptyLines_output%" )
+if "[%~3]" EQU "[]" ( set "_GetEmptyLines_output_rows=%_GetEmptyLines_output%.rows" ) else ( set "_GetEmptyLines_output_rows=%~3" )
 for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^$" "%~1" ^| findstr /N "^"') do ( 
 	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set /a "%_GetEmptyLines_output%.ubound=%%f" & set %_GetEmptyLines_output%[%%f]=%%g
 	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set %_GetEmptyLines_output_rows%[%%g].type=EmptyLine
@@ -479,7 +480,7 @@ GoTo :EOF
 ::Usage Call :GetLabels Filename OutputArray optional OutputRows
 :GetLabels
 set "_GetLabels_output=%~2"
-if "[%~3]" NEQ "[]" ( set "_GetLabels_output_rows=%~3.rows" ) else ( set "_GetLabels_output_rows=%_GetLabels_output%" )
+if "[%~3]" EQU "[]" ( set "_GetLabels_output_rows=%_GetLabels_output%.rows" ) else ( set "_GetLabels_output_rows=%~3" )
 for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^:[^:]" "%~1" ^| findstr /N "^"') do ( 
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%_GetLabels_output%.ubound=%%f" & set %_GetLabels_output%[%%f]=%%g
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set %_GetLabels_output_rows%[%%g].type=label
@@ -493,11 +494,11 @@ GoTo :EOF
 ::Usage Call :GetEndOfFunction Filename OutputArray optional OutputRows
 :GetEndOfFunction
 set "_GetEndOfFunction_output=%~2"
-if "[%~3]" NEQ "[]" ( set "_GetEndOfFunction_output_rows=%~3.rows" ) else ( set "_GetEndOfFunction_output_rows=%_GetEndOfFunction_output%" )
+if "[%~3]" EQU "[]" ( set "_GetEndOfFunction_output_rows=%_GetEndOfFunction_output%.rows" ) else ( set "_GetEndOfFunction_output_rows=%~3" )
 for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N /I /C:":EndOf_" "%~1" ^| findstr /N "^"') do ( 
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%_GetEndOfFunction_output%.ubound=%%f" & set %_GetEndOfFunction_output%[%%f]=%%g
-	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %_GetEndOfFunction_output%[%%f].text=%%h
-	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %_GetEndOfFunction_output_rows%[%%g]=%%h
+	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %_GetEndOfFunction_output%[%%f].text=:%%h
+	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %_GetEndOfFunction_output_rows%[%%g]=:%%h
 	for /f "tokens=1,2,* delims=:" %%f in ("%%a") do set %_GetEndOfFunction_output_rows%[%%g].type=EndOf_Function
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=*" %%z in ("%%h") do set %_GetEndOfFunction_output%[%%f].name=%%~z
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=1,2*" %%z in ("%%h") do set %_GetEndOfFunction_output%.name[%%~z]=%%g
@@ -512,12 +513,80 @@ for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N /I /C:":EndOf_"
 	set /a "%_GetEndOfFunction_output%.lbound=1" & set "_GetEndOfFunction_output=" & set "_GetEndOfFunction_output_rows="
 GoTo :EOF
 
+:CopyArray-DEMO
+
+Call :SimpleFileToArray batchsample.bat __CopyArray_sample
+
+Call :CopyArray __CopyArray_sample __CopyArray_output
+
+set __CopyArray_output
+
+Call :ClearVariablesByPrefix __CopyArray
+
+GoTo :EOF
+
+::Usage Call :CopyArray InputArray OutputArray
+:CopyArray
+
+for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f "tokens=2 delims=[]" %%b in ('set %%a 2^>nul') do for /f delims^=^ eol^= %%c in ('set %%a 2^>nul') do set %~2[%%b]=%%c
+
+GoTo :EOF
+
+
+REM ::Usage Call :SimpleFileToArray Filename OutputArray
+REM :SimpleFileToArray
+REM set /a "%~2.lbound=%%f"
+REM for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr.exe /N "^" "%~1"') do ( 
+	REM for /f "tokens=1,2* delims=:" %%f in ("%%a") do set /a "%~2.ubound=%%f" & set %~2[%%f]=%%a
+	REM )
+REM set /a "_SFTA_index=1"
+REM call set /a "_SFTA_ubound=%%%~2.ubound%%"
+REM :SimpleFileToArray-loop
+REM setlocal enabledelayedexpansion
+REM set _SFTA_localscope=true
+REM set %~2[%_SFTA_index%]=!%~2[%_SFTA_index%]:*:=!
+REM for /f "delims=" %%a in ('set %~2[%_SFTA_index%] 2^>nul') do (
+		REM endlocal
+		REM set %%a
+	REM )
+REM if defined _SFTA_localscope endlocal & set %~2[%_SFTA_index%]=
+REM set /a "_SFTA_index+=1"
+REM if %_SFTA_index% LEQ %_SFTA_ubound% GoTo :SimpleFileToArray-loop
+REM GoTo :EOF
+
+:GetArrayIndex-DEMO
+
+GoTo :EOF
+
+::Usage Call :GetArrayIndex InputArray ListOfIndexesArray (could be space separated string ? with ranges ?)
+:GetArrayIndex (create new array containing all indexes from an xyz.array[x].array)
+
+for /f delims^=^ eol^= %%a in ('set %~1')
+
+GoTo :EOF
+
+:SortArray (create new array from input array, array sorted alphanumerically based on the values inside the array elements) (forward/reverse) (numeric, alphanumeric, custom order maybe ?)
+:CompactArray (starting from lbound or ubound, (create new array or modify current) by moving array elements with empty index, so that indexes become contiguous) apply to abc.array[] , abc.array[].suffix and abc.array[].* depending on configuration)
+
+:compact array form one
+find lbound or ubound (lbound if not specificed, if no lbound specified either find lbound or shift array lbound to 0 or 1 ? so many choice)
+from starting position, check every index until opposite array bound
+form 2 
+get all array indexes from a set loop (sort numerically), for each element, copy single, single+suffix, all element to new array (with or without .oldindex in the new array)
+form 3
+destructive vs nondestructive (nondestructive starts with copying entire array)
+loopthrough set, find lowest value, copy over, erase that index, repeat, duration is factorial of the number of index elements
+
+array of index could be outputted as a series of numbers "1 2 3" and it could detect contiguous numbers and range them "1-3"
+
+
+hybrid any language program that goes from two labels inside the current batch file, to something that outputs to CommandToArray in one function
 
 
 ::Usage Call :GetFunctionExits OutputArray Filename
 :GetFunctionExits
 set "_GetFunctionExits_output=%~2"
-if "[%~3]" NEQ "[]" ( set "_GetFunctionExits_output_rows=%~3.rows" ) else ( set "_GetFunctionExits_output_rows=%_GetFunctionExits_output%" )
+if "[%~3]" EQU "[]" ( set "_GetFunctionExits_output_rows=%_GetFunctionExits_output%.rows" ) else ( set "_GetFunctionExits_output_rows=%~3" )
 for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N /I /C:"goto :EOF" /C:"exit /B" "%~1" ^| findstr /N "^"') do ( 
 	for /f "tokens=2,* delims=:" %%b in ("%%a") do echo %%c
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%_GetFunctionExits_output%.ubound=%%f" & set %_GetFunctionExits_output%[%%f]=%%g
