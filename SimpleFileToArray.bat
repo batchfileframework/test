@@ -1,6 +1,8 @@
 @echo off
-Call :CopyArray-DEMO
-REM call :GetArrayIndex-DEMO
+
+:main
+call :CopyArray-DEMO
+REM Call :GetBatchFileStructure-DEMO
 REM Call :GetFunctionExits-DEMO
 REM call :GetEndOfFunction-DEMO
 REM call :GetLabels-DEMO
@@ -9,11 +11,44 @@ REM call :GetIndexArray-simple-DEMO
 REM Call :GetIndexArray-DEMO
 GoTo :EOF
 
+:GetArrayIndex
+
+GoTo :EOF
+
+REM :GetArrayIndex
+REM create array containing all index from an array, as output by set, or sorted,  works with sub array var.array[1].suffix.myarray[]
+REM GoTo :EOF
+
+:SortArray
+sort an array, ordered by value content
+alphanumeric or numeric sort
+destructive or not
+
+for loop, find lowest value, copy ([] [].suffix or [].*), delete that value
+GoTo :EOF
+
+:CompactArray
+
+close up all gaps in an array's index numbers
+
+
+from lbound to ubound,when find an empty spot, remember that "next spot"  then continue looking until you find a populated array, copy and delete  [] [].suffix or [].*
+
+GoTo :EOF
+
+:lbound and :ubound method using GetArrayIndex
 
 
 :GetBatchFileStructure-DEMO
 
-Create an array representing all functions, preamble, postscript, cumulative of all previous work
+Call :GetLabels batchsample.bat ListOfLabels batch.rows
+Call :GetEmptyLines batchsample.bat ListOfEmptyLines batch.rows
+Call :GetFunctionExits batchsample.bat ListEOfFunctionsExits batch.rows
+Call :GetEndOfFunction batchsample.bat ListEndOfFunctions batch.rows
+REM Call :EchoArray batch.rows
+
+
+REM Create an array representing all functions, preamble, postscript, cumulative of all previous work
 
 GoTo :EOF
 
@@ -66,7 +101,7 @@ Call :EchoArray ListEndOfFunctions
 Call :EchoArray ListEndOfFunctions .name
 set ListEndOfFunctions
 
-Call :ClearVariablesByPrefix ListEndOfFunctions
+REM Call :ClearVariablesByPrefix ListEndOfFunctions
 
 
 GoTo :EOF
@@ -81,7 +116,7 @@ Call :EchoArray ListOfLabels .name
 echo.& echo showing actual values
 set ListOfLabels
 
-Call :ClearVariablesByPrefix ListOfLabels
+REM Call :ClearVariablesByPrefix ListOfLabels
 
 GoTo :EOF
 
@@ -102,7 +137,8 @@ echo.&echo.& echo List empty lines, show echoarray to print values in vertical d
 Call :EchoArray ListOfEmptyLines  VERTICALMODE LINENUMBERS
 echo.&echo.& echo List empty lines, show echoarray to print ' all dressed mode" 
 Call :EchoArray ListOfEmptyLines  VERTICALMODE SHOWVARNAME LINENUMBERS
-Call :ClearVariablesByPrefix ListOfEmptyLines
+REM Call :ClearVariablesByPrefix ListOfEmptyLines
+
 
 echo.& echo repeat previous exercise but with range "1-3" "20,30-33,30" "99" "3-1" mytestindexarray
 
@@ -302,7 +338,7 @@ GoTo :EOF
 :SimpleFileToArray-DEMO
 Call :ClearVariablesByPrefix _FTA LinesArray
 echo start SimpleFileToArray %time%
-Call :SimpleFileToArray batchsample.bat LinesArray
+Call :SimpleFileToArray LinesArray batchsample.bat
 echo end SimpleFileToArray %time%
 GoTo :EOF
 
@@ -469,7 +505,7 @@ GoTo :EOF
 ::Usage Call :GetEmptyLines Filename OutputArray optional OutputRows
 :GetEmptyLines
 set "_GetEmptyLines_output=%~2"
-if "[%~3]" EQU "[]" ( set "_GetEmptyLines_output_rows=%_GetEmptyLines_output%.rows" ) else ( set "_GetEmptyLines_output_rows=%~3" )
+if "[%~3]" EQU "[]" ( set "_GetEmptyLines_output_rows=%_GetEmptyLines_output%.rows" ) else ( set "_GetEmptyLines_output_rows=%_GetEmptyLines_output%" )
 for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^$" "%~1" ^| findstr /N "^"') do ( 
 	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set /a "%_GetEmptyLines_output%.ubound=%%f" & set %_GetEmptyLines_output%[%%f]=%%g
 	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set %_GetEmptyLines_output_rows%[%%g].type=EmptyLine
@@ -528,7 +564,12 @@ GoTo :EOF
 ::Usage Call :CopyArray InputArray OutputArray
 :CopyArray
 
-for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f "tokens=2 delims=[]" %%b in ('set %%a 2^>nul') do for /f delims^=^ eol^= %%c in ('set %%a 2^>nul') do set %~2[%%b]=%%c
+REM for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f "tokens=2 delims=[]" %%b in ('set %%a 2^>nul') do for /f delims^=^ eol^= %%c in ('set %%a 2^>nul') do set %~2[%%b]=%%c
+setlocal enabledelayedexpansion
+for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f delims^=^ eol^= %%b in ('set %%a 2^>nul') do for /f "tokens=2,3 delims=[]=" %%c in ('set %%a 2^>nul') do (
+																													 set %~2[%%b]=!%%a!
+																													)
+for /f delims^=^ eol^= %%c in ('set %%a 2^>nul') do set %~2[%%b]=%%c
 
 GoTo :EOF
 
@@ -588,7 +629,6 @@ hybrid any language program that goes from two labels inside the current batch f
 set "_GetFunctionExits_output=%~2"
 if "[%~3]" EQU "[]" ( set "_GetFunctionExits_output_rows=%_GetFunctionExits_output%.rows" ) else ( set "_GetFunctionExits_output_rows=%~3" )
 for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N /I /C:"goto :EOF" /C:"exit /B" "%~1" ^| findstr /N "^"') do ( 
-	for /f "tokens=2,* delims=:" %%b in ("%%a") do echo %%c
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%_GetFunctionExits_output%.ubound=%%f" & set %_GetFunctionExits_output%[%%f]=%%g
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set %_GetFunctionExits_output_rows%[%%g].type=FunctionExit
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=2,* delims=:" %%b in ("%%a") do set %_GetFunctionExits_output%[%%f].text=%%c
