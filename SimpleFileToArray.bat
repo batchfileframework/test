@@ -1,7 +1,8 @@
 @echo off
 
 :main
-call :ArrayToFile-DEMO
+Call :FileToArrayToFile-DEMO
+REM call :ArrayToFile-DEMO
 REM call :CopyArrayAdv-DEMO
 REM call :EchoArray-DEMO
 REM call :CopyObject-DEMO
@@ -16,6 +17,26 @@ REM call :GetEmptyLines-DEMO
 REM call :GetIndexArray-simple-DEMO
 REM Call :GetIndexArray-DEMO
 GoTo :EOF
+
+:FileToArrayToFile-DEMO
+
+del FileToArrayToFile-DEMO.txt 2>nul
+
+echo FileToArrayToFile start SimpleFileToArray %time%
+
+Call :SimpleFileToArray CreateRandomFile-DEMO.txt ArrayOfLines
+
+echo FileToArrayToFile mid SimpleFileToArray %time%
+
+Call :ArrayToFile ArrayOfLines FileToArrayToFile-DEMO.txt
+
+echo FileToArrayToFile end SimpleFileToArray %time%
+
+fc /n CreateRandomFile-DEMO.txt FileToArrayToFile-DEMO.txt
+
+GoTo :EOF
+
+
 
 :SortArray-DEMO
 
@@ -732,11 +753,6 @@ call set /a "_ArrayToFile_ubound=%%%~1.ubound"
 set /a "_ArrayToFile_index=%_ArrayToFile_lbound%"
 shift
 set "_ArrayToFile_output=%~1"
-REM call set /a "_CopyArrayAdv_output_lbound=%%%~1.lbound" 2>nul
-REM if "[%_CopyArrayAdv_output_lbound%]" EQU "[]" set /a "_CopyArrayAdv_output_lbound=0"
-REM call set /a "_CopyArrayAdv_output_ubound=%%%~1.ubound%%" 2>nul
-REM if "[%_CopyArrayAdv_output_ubound%]" EQU "[]" set /a "_CopyArrayAdv_output_ubound=-1"
-REM set /a "_CopyArrayAdv_output_index=%_CopyArrayAdv_output_lbound%"
 shift
 :ArrayToFile-arguments
 set "_ArrayToFile_buffer=%~1"
@@ -745,7 +761,6 @@ if "[%_ArrayToFile_buffer:~,1%]" EQU "[.]" ( set "_ArrayToFile_suffix=%_ArrayToF
 if "[%_ArrayToFile_buffer%]" EQU "[LINENUMBERS]" ( set "_ArrayToFile_showlinenumbers=true" & shift & GoTo :ArrayToFile-arguments )
 if "[%_ArrayToFile_buffer%]" EQU "[SHOWVARNAME]" ( set "_ArrayToFile_showvariablename=true" & shift & GoTo :ArrayToFile-arguments )
 if "[%_ArrayToFile_buffer%]" EQU "[VERTICALMODE]" ( set "_ArrayToFile_verticalmode=true" & shift & GoTo :ArrayToFile-arguments )
-REM if "[%~1]" NEQ "[]" if not defined _ArrayToFile_IndexList.lbound set /a "_ArrayToFile_IndexList.lbound=1"
 if "[%~1]" NEQ "[]" ( Call :GetIndexArray _ArrayToFile_IndexList "%~1" & shift & GoTo :ArrayToFile-arguments )
 :ArrayToFile-arguments-end
 if defined _ArrayToFile_IndexList.ubound set /a "_ArrayToFile_ubound=%_ArrayToFile_IndexList.ubound%"
