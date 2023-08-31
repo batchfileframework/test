@@ -1,7 +1,11 @@
 @echo off
 
 :main
-call :SortArray-DEMO
+call :ArrayToFile-DEMO
+REM call :CopyArrayAdv-DEMO
+REM call :EchoArray-DEMO
+REM call :CopyObject-DEMO
+REM call :SortArray-DEMO
 REM call :GetArrayIndex-DEMO
 REM call :CopyArray-DEMO
 REM Call :GetBatchFileStructure-DEMO
@@ -24,9 +28,7 @@ set mytestarray[28]=text28
 set mytestarray[2]=text2
 
 Call :GetArrayIndex mytestarray myindexarray
-echo no
 Call :SortArray myindexarray mysortedarray
-echo yes
 Call :EchoArray mysortedarray LINENUMBERS
 
 GoTo :EOF
@@ -55,15 +57,6 @@ if "[%_GetArrayIndex_ubound%]" EQU "[]" set /a "_GetArrayIndex_ubound=-1"
 set /a "_GetArrayIndex_index=%_GetArrayIndex_ubound%"
 for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f "tokens=2 delims=[]" %%b in ('set %%a 2^>nul') do call set /a "_GetArrayIndex_index+=1" & call set "%_GetArrayIndex_output%[%%_GetArrayIndex_index%%]=%%b"
 set /a "%_GetArrayIndex_output%.ubound=%_GetArrayIndex_index%"
-REM do for /f "tokens=2 delims=]" %%c in ('set %%a 2^>nul') do set %~2[%%b]%%c
-
-REM for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr.exe /N "^" "%~1"') do ( 
-	REM for /f "tokens=1,2* delims=:" %%f in ("%%a") do set /a "%~2.ubound=%%f" & set %~2[%%f]=%%a
-	REM )
-REM set /a "_SFTA_index=1"
-REM call set /a "_SFTA_ubound=%%%~2.ubound%%"
-
-
 GoTo :EOF
 
 :: Usage Call :IsArrayDefinedBySet Variable OutputValue
@@ -73,7 +66,6 @@ for /f "tokens=1* delims=" %%a in ('set %~1[ 2^>^&1') do ( call set _IsArrayDefi
 if not "[%_IsArrayDefinedBySet[0]%]"=="[%_IsArrayDefinedBySet[0]:Environment variable=%]" ( 
 	if not "[%_IsArrayDefinedBySet[0]%]"=="[%_IsArrayDefinedBySet[0]:not defined=%]" 	set "_IsArrayDefinedBySet.IsDefined=false" ) else ( set "_IsArrayDefinedBySet.IsDefined=true" )
 if not "[%~2]"=="[]" set "%~2=%_IsArrayDefinedBySet.IsDefined%"
-echo is defined %_IsArrayDefinedBySet.IsDefined%
 Call :ClearVariablesByPrefix _IsArrayDefinedBySet & if "[%_IsArrayDefinedBySet.IsDefined%]"=="[true]" ( exit /b 0 ) else ( exit /b 1 )
 GoTo :EOF
 
@@ -81,44 +73,31 @@ REM :GetArrayIndex
 REM create array containing all index from an array, as output by set, or sorted,  works with sub array var.array[1].suffix.myarray[]
 REM GoTo :EOF
 
+:: This does not handle copying or even the presence of any suffixes in the array
 ::Usage Call :SortArray InputArray optional SortedArray
 :SortArray
 set "_SortArray_input=%~1"
 set "_SortArray_output=%~2"
 if "[%_SortArray_output%]" EQU "[]" set "_SortArray_output=%_SortArray_input%"
-
 Call :CopyArray %_SortArray_input% _SortArray_buffer
 setlocal enabledelayedexpansion
 set _SortArray_localscope=true
-set /a "_SortArray_sorted_ubound=-1"
-set _SortArray_buffer[
+set /a "_SortArray_sorted.ubound=-1"
 :SortArray-loop
-echo looped
-set /a "_SortArray_smallest=2147483647"
 set "_SortArray_current_index="
-set _SortArray_buffer[
-for /f "tokens=1,2,3 delims=[]=" %%a in ('set _SortArray_buffer[ 2^>^&1') do if %%c LSS !_SortArray_smallest! echo b%%b c%%c & set /a "_SortArray_current_index=%%b" & set /a "_SortArray_smallest=%%c"
-if "[%_SortArray_smallest%]" EQU "[!_SortArray_sorted[%_SortArray_sorted_ubound%]!]" echo set "_SortArray_buffer[%_SortArray_current_index%]=" ^& set "_SortArray_current_index=" 
-if "[%_SortArray_smallest%]" EQU "[!_SortArray_sorted[%_SortArray_sorted_ubound%]!]" set "_SortArray_buffer[%_SortArray_current_index%]=" & set "_SortArray_current_index=" 
-if "[%_SortArray_current_index%]" NEQ "[]" echo set /a "_SortArray_sorted_ubound+=1" 
-if "[%_SortArray_current_index%]" NEQ "[]" set /a "_SortArray_sorted_ubound+=1" 
-if "[%_SortArray_current_index%]" NEQ "[]" echo set /a "_SortArray_sorted[%_SortArray_sorted_ubound%]=%_SortArray_smallest%" ^& set "_SortArray_buffer[%_SortArray_current_index%]="
-if "[%_SortArray_current_index%]" NEQ "[]" set /a "_SortArray_sorted[%_SortArray_sorted_ubound%]=%_SortArray_smallest%" & set "_SortArray_buffer[%_SortArray_current_index%]="
-echo _SortArray_current_index %_SortArray_current_index%
-
-Call :IsArrayDefinedBySet _SortArray_sorted && GoTo :SortArray-loop
-
-echo what  ?
-
-set _SortArray_sorted
-
+set /a "_SortArray_smallest=2147483647"
+for /f "tokens=1,2,3 delims=[]=" %%a in ('set _SortArray_buffer[ 2^>^&1') do if %%c LSS !_SortArray_smallest! set /a "_SortArray_current_index=%%b" & set /a "_SortArray_smallest=%%c"
+if "[%_SortArray_smallest%]" EQU "[!_SortArray_sorted[%_SortArray_sorted.ubound%]!]" set "_SortArray_buffer[%_SortArray_current_index%]=" & set "_SortArray_current_index=" 
+if "[%_SortArray_current_index%]" NEQ "[]" set /a "_SortArray_sorted.ubound+=1" 
+if "[%_SortArray_current_index%]" NEQ "[]" set /a "_SortArray_sorted[%_SortArray_sorted.ubound%]=%_SortArray_smallest%" & set "_SortArray_buffer[%_SortArray_current_index%]="
+Call :IsArrayDefinedBySet _SortArray_buffer && GoTo :SortArray-loop
 for /f "delims=" %%a in ('set _SortArray_sorted 2^>nul') do (
 		endlocal
 		set %%a
 	)
 if defined _SortArray_localscope endlocal
-
 Call :CopyArray _SortArray_sorted %_SortArray_output%
+Call :CopyObject _SortArray_sorted %_SortArray_output%
 Call :ClearVariablesByPrefix _SortArray
 REM copy the array
 REM create sorted index array from the copy based on the value stored inside the array elements of the copy
@@ -128,7 +107,6 @@ REM sort an array, ordered by value content
 REM alphanumeric or numeric sort
 REM destructive or not
 REM for loop, find lowest value, copy ([] [].suffix or [].*), delete that value
-
 GoTo :EOF
 
 :CompactArray
@@ -271,6 +249,151 @@ Call :ClearVariablesByPrefix ListOfEmptyLines
 
 GoTo :EOF
 
+:CopyArrayAdv-DEMO
+set mytestarray[-11]=text-11
+set mytestarray[-10]=text-10
+set mytestarray[-9]=text-9
+set mytestarray[-8]=text-8
+set mytestarray[-7]=text-7
+set mytestarray[-6]=text-6
+set mytestarray[-5]=text-5
+set mytestarray[-4]=text-4
+set mytestarray[-3]=text-3
+set mytestarray[-2]=text-2
+set mytestarray[-1]=text-1
+set mytestarray[0]=text0
+set mytestarray[1]=text1
+set mytestarray[2]=text2
+set mytestarray[3]=text3
+set mytestarray[4]=text4
+set mytestarray[5]=text5
+set mytestarray[6]=text6
+set mytestarray[7]=text7
+set mytestarray[8]=text8
+set mytestarray[9]=text9
+set mytestarray[10]=text10
+set mytestarray[11]=text11
+
+echo.&echo contents of mytestarray
+set mytestarray
+
+echo.&echo copyarray mytestarray myoutputarray 3-6
+Call :CopyArrayAdv mytestarray myoutputarray 3-6
+set myoutputarray & Call :ClearVariablesByPrefix myoutputarray
+echo.&echo copyarray mytestarray myoutputarray 6-3
+Call :CopyArrayAdv mytestarray myoutputarray 6-3
+set myoutputarray & Call :ClearVariablesByPrefix myoutputarray
+echo.&echo copyarray mytestarray myoutputarray 1,3,5
+Call :CopyArrayAdv mytestarray myoutputarray 1,3,5
+set myoutputarray & Call :ClearVariablesByPrefix myoutputarray
+echo.&echo copyarray mytestarray myoutputarray 1,3,5-7
+Call :CopyArrayAdv mytestarray myoutputarray 1,3,5-7
+set myoutputarray & Call :ClearVariablesByPrefix myoutputarray
+echo.&echo copyarray mytestarray myoutputarray 1-3,10,9,5-7
+Call :CopyArrayAdv mytestarray myoutputarray 1-3,10,9,5-7
+set myoutputarray & Call :ClearVariablesByPrefix myoutputarray
+echo.&echo copyarray mytestarray myoutputarray 1-2-2-5,3,2,1,3-1-3,9
+Call :CopyArrayAdv mytestarray myoutputarray 1-2-2-5,3,2,1,3-1-3,9
+set myoutputarray & Call :ClearVariablesByPrefix myoutputarray
+echo.&echo copyarray mytestarray myoutputarray VERTICALMODE 1-2-2-5,3,2,1,3-1-3,9
+Call :CopyArrayAdv mytestarray myoutputarray VERTICALMODE 1-2-2-5,3,2,1,3-1-3,9
+set myoutputarray & Call :ClearVariablesByPrefix myoutputarray
+GoTo :EOF
+
+
+:EchoArray-DEMO
+set mytestarray[-11]=text-11
+set mytestarray[-10]=text-10
+set mytestarray[-9]=text-9
+set mytestarray[-8]=text-8
+set mytestarray[-7]=text-7
+set mytestarray[-6]=text-6
+set mytestarray[-5]=text-5
+set mytestarray[-4]=text-4
+set mytestarray[-3]=text-3
+set mytestarray[-2]=text-2
+set mytestarray[-1]=text-1
+set mytestarray[0]=text0
+set mytestarray[1]=text1
+set mytestarray[2]=text2
+set mytestarray[3]=text3
+set mytestarray[4]=text4
+set mytestarray[5]=text5
+set mytestarray[6]=text6
+set mytestarray[7]=text7
+set mytestarray[8]=text8
+set mytestarray[9]=text9
+set mytestarray[10]=text10
+set mytestarray[11]=text11
+
+echo.&echo contents of mytestarray
+set mytestarray
+
+echo.&echo echo mytestarray 3-6
+Call :EchoArray mytestarray 3-6
+echo.&echo echo mytestarray 6-3
+Call :EchoArray mytestarray 6-3
+echo.&echo echo mytestarray 1,3,5
+Call :EchoArray mytestarray 1,3,5
+echo.&echo echo mytestarray 1,3,5-7
+Call :EchoArray mytestarray 1,3,5-7
+echo.&echo echo mytestarray 1-3,10,9,5-7
+Call :EchoArray mytestarray 1-3,10,9,5-7
+echo.&echo echo mytestarray 1-2-2-5,3,2,1,3-1-3,9
+Call :EchoArray mytestarray 1-2-2-5,3,2,1,3-1-3,9
+echo.&echo echo mytestarray VERTICALMODE 1-2-2-5,3,2,1,3-1-3,9
+Call :EchoArray mytestarray VERTICALMODE 1-2-2-5,3,2,1,3-1-3,9
+GoTo :EOF
+
+:ArrayToFile-DEMO
+set mytestarray[-11]=text-11
+set mytestarray[-10]=text-10
+set mytestarray[-9]=text-9
+set mytestarray[-8]=text-8
+set mytestarray[-7]=text-7
+set mytestarray[-6]=text-6
+set mytestarray[-5]=text-5
+set mytestarray[-4]=text-4
+set mytestarray[-3]=text-3
+set mytestarray[-2]=text-2
+set mytestarray[-1]=text-1
+set mytestarray[0]=text0
+set mytestarray[1]=text1
+set mytestarray[2]=text2
+set mytestarray[3]=text3
+set mytestarray[4]=text4
+set mytestarray[5]=text5
+set mytestarray[6]=text6
+set mytestarray[7]=text7
+set mytestarray[8]=text8
+set mytestarray[9]=text9
+set mytestarray[10]=text10
+set mytestarray[11]=text11
+
+echo.&echo contents of mytestarray
+set mytestarray
+
+set "mytestfile=ArrayToFile-DEMO.txt"
+
+echo.&echo echo mytestarray "%mytestfile%" 3-6
+Call :ArrayToFile mytestarray "%mytestfile%" 3-6
+echo.&echo echo mytestarray "%mytestfile%" 6-3
+Call :ArrayToFile mytestarray "%mytestfile%" 6-3
+echo.&echo echo mytestarray "%mytestfile%" 1,3,5
+Call :ArrayToFile mytestarray "%mytestfile%" 1,3,5
+echo.&echo echo mytestarray "%mytestfile%" 1,3,5-7
+Call :ArrayToFile mytestarray "%mytestfile%" 1,3,5-7
+echo.&echo echo mytestarray "%mytestfile%" 1-3,10,9,5-7
+Call :ArrayToFile mytestarray "%mytestfile%" 1-3,10,9,5-7
+echo.&echo echo mytestarray "%mytestfile%" 1-2-2-5,3,2,1,3-1-3,9
+Call :ArrayToFile mytestarray "%mytestfile%" 1-2-2-5,3,2,1,3-1-3,9
+echo.&echo echo mytestarray "%mytestfile%" VERTICALMODE 1-2-2-5,3,2,1,3-1-3,9
+Call :ArrayToFile mytestarray "%mytestfile%" VERTICALMODE 1-2-2-5,3,2,1,3-1-3,9
+
+echo results of %ArrayToFile%
+type %ArrayToFile%
+
+GoTo :EOF
 
 :GetIndexArray-simple-DEMO
 
@@ -576,22 +699,16 @@ if "[%_EchoArray_buffer:~,1%]" EQU "[.]" ( set "_EchoArray_suffix=%_EchoArray_bu
 if "[%_EchoArray_buffer%]" EQU "[LINENUMBERS]" ( set "_EchoArray_showlinenumbers=true" & shift & GoTo :EchoArray-arguments )
 if "[%_EchoArray_buffer%]" EQU "[SHOWVARNAME]" ( set "_EchoArray_showvariablename=true" & shift & GoTo :EchoArray-arguments )
 if "[%_EchoArray_buffer%]" EQU "[VERTICALMODE]" ( set "_EchoArray_verticalmode=true" & shift & GoTo :EchoArray-arguments )
-if "[%~1]" NEQ "[]" if not defined _EchoArray_IndexList.lbound set /a "_EchoArray_IndexList.lbound=1"
-REM if "[%~1]" NEQ "[]" echo about to call GetIndexArray on %~1
+REM if "[%~1]" NEQ "[]" if not defined _EchoArray_IndexList.lbound set /a "_EchoArray_IndexList.lbound=1"
 if "[%~1]" NEQ "[]" ( Call :GetIndexArray _EchoArray_IndexList "%~1" & shift & GoTo :EchoArray-arguments )
 :EchoArray-arguments-end
-REM if defined _EchoArray_IndexList.ubound set _EchoArray_IndexList
 if defined _EchoArray_IndexList.ubound set /a "_EchoArray_ubound=%_EchoArray_IndexList.ubound%"
 setlocal enabledelayedexpansion
 :EchoArray-loop
-REM if defined _EchoArray_IndexList.ubound echo it is defined    echo %_EchoArray_IndexList.ubound%  %_EchoArray_ubound%   _EchoArray_index %_EchoArray_index%  
-REM if defined _EchoArray_IndexList.ubound if not defined _EchoArray_IndexList.ubound ( set "_EchoArray_index_actual=%_EchoArray_index%" ) else ( set "_EchoArray_index_actual=!_EchoArray_IndexList[%_EchoArray_index%]!" & if "%_EchoArray_index%" GTR "%_EchoArray_IndexList.ubound%" ( GoTo :EchoArray-loop-end ) )
 if not defined _EchoArray_IndexList.ubound ( set "_EchoArray_index_actual=%_EchoArray_index%" ) else ( set "_EchoArray_index_actual=!_EchoArray_IndexList[%_EchoArray_index%]!" )
-REM if defined _EchoArray_IndexList.ubound echo im HERE
 if defined _EchoArray_showlinenumbers set _EchoArray_prefix=%_EchoArray_index%:
 if defined _EchoArray_showvariablename set _EchoArray_prefix=%_EchoArray_input%[%_EchoArray_index_actual%]:
 if defined _EchoArray_showvariablename if defined _EchoArray_showlinenumbers set _EchoArray_prefix=%_EchoArray_index%:%_EchoArray_input%[%_EchoArray_index_actual%]:
-REM if defined _EchoArray_IndexList.ubound echo it is defined  before verti %_EchoArray_index% echo %_EchoArray_IndexList.ubound%  %_EchoArray_ubound%      
 if not defined _EchoArray_verticalmode GoTo :EchoArray-normalmode-loop-next
 <nul set /p =%_EchoArray_prefix%!%_EchoArray_input%[%_EchoArray_index_actual%]%_EchoArray_suffix%! 
 GoTo :EchoArray-loop-next
@@ -599,12 +716,116 @@ GoTo :EchoArray-loop-next
 echo(%_EchoArray_prefix%!%_EchoArray_input%[%_EchoArray_index_actual%]%_EchoArray_suffix%!
 :EchoArray-loop-next
 set /a "_EchoArray_index+=1"
-REM echo if %_EchoArray_index% LEQ %_EchoArray_ubound% GoTo :EchoArray-loop
 if %_EchoArray_index% LEQ %_EchoArray_ubound% GoTo :EchoArray-loop
 :EchoArray-loop-end
 endlocal
 Call :ClearVariablesByPrefix _EchoArray
 GoTo :EOF
+
+REM add echo array "verticalmode" (no LF between array elements)
+::Usage Call :ArrayToFile InputArray OutputFile optional LINENUMBERS optional SHOWVARNAME optional .Suffix optional IndexRange
+:ArrayToFile
+set "_ArrayToFile_input=%~1"
+call set /a "_ArrayToFile_lbound=%%%~1.lbound" 2>nul
+if "[%_ArrayToFile_lbound%]" EQU "[]" set /a "_ArrayToFile_lbound=0"
+call set /a "_ArrayToFile_ubound=%%%~1.ubound"
+set /a "_ArrayToFile_index=%_ArrayToFile_lbound%"
+shift
+set "_ArrayToFile_output=%~1"
+REM call set /a "_CopyArrayAdv_output_lbound=%%%~1.lbound" 2>nul
+REM if "[%_CopyArrayAdv_output_lbound%]" EQU "[]" set /a "_CopyArrayAdv_output_lbound=0"
+REM call set /a "_CopyArrayAdv_output_ubound=%%%~1.ubound%%" 2>nul
+REM if "[%_CopyArrayAdv_output_ubound%]" EQU "[]" set /a "_CopyArrayAdv_output_ubound=-1"
+REM set /a "_CopyArrayAdv_output_index=%_CopyArrayAdv_output_lbound%"
+shift
+:ArrayToFile-arguments
+set "_ArrayToFile_buffer=%~1"
+if not defined _ArrayToFile_buffer GoTo :ArrayToFile-arguments-end
+if "[%_ArrayToFile_buffer:~,1%]" EQU "[.]" ( set "_ArrayToFile_suffix=%_ArrayToFile_buffer%" & shift & GoTo :ArrayToFile-arguments )
+if "[%_ArrayToFile_buffer%]" EQU "[LINENUMBERS]" ( set "_ArrayToFile_showlinenumbers=true" & shift & GoTo :ArrayToFile-arguments )
+if "[%_ArrayToFile_buffer%]" EQU "[SHOWVARNAME]" ( set "_ArrayToFile_showvariablename=true" & shift & GoTo :ArrayToFile-arguments )
+if "[%_ArrayToFile_buffer%]" EQU "[VERTICALMODE]" ( set "_ArrayToFile_verticalmode=true" & shift & GoTo :ArrayToFile-arguments )
+REM if "[%~1]" NEQ "[]" if not defined _ArrayToFile_IndexList.lbound set /a "_ArrayToFile_IndexList.lbound=1"
+if "[%~1]" NEQ "[]" ( Call :GetIndexArray _ArrayToFile_IndexList "%~1" & shift & GoTo :ArrayToFile-arguments )
+:ArrayToFile-arguments-end
+if defined _ArrayToFile_IndexList.ubound set /a "_ArrayToFile_ubound=%_ArrayToFile_IndexList.ubound%"
+setlocal enabledelayedexpansion
+:ArrayToFile-loop
+if not defined _ArrayToFile_IndexList.ubound ( set "_ArrayToFile_index_actual=%_ArrayToFile_index%" ) else ( set "_ArrayToFile_index_actual=!_ArrayToFile_IndexList[%_ArrayToFile_index%]!" )
+if defined _ArrayToFile_showlinenumbers set _ArrayToFile_prefix=%_ArrayToFile_index%:
+if defined _ArrayToFile_showvariablename set _ArrayToFile_prefix=%_ArrayToFile_input%[%_ArrayToFile_index_actual%]:
+if defined _ArrayToFile_showvariablename if defined _ArrayToFile_showlinenumbers set _ArrayToFile_prefix=%_ArrayToFile_index%:%_ArrayToFile_input%[%_ArrayToFile_index_actual%]:
+if not defined _ArrayToFile_verticalmode GoTo :ArrayToFile-normalmode-loop-next
+<nul set /p =%_ArrayToFile_prefix%!%_ArrayToFile_input%[%_ArrayToFile_index_actual%]%_ArrayToFile_suffix%!>>%_ArrayToFile_output%
+GoTo :ArrayToFile-loop-next
+:ArrayToFile-normalmode-loop-next
+echo(%_ArrayToFile_prefix%!%_ArrayToFile_input%[%_ArrayToFile_index_actual%]%_ArrayToFile_suffix%!>>%_ArrayToFile_output%
+:ArrayToFile-loop-next
+set /a "_ArrayToFile_index+=1"
+if %_ArrayToFile_index% LEQ %_ArrayToFile_ubound% GoTo :ArrayToFile-loop
+:ArrayToFile-loop-end
+endlocal
+Call :ClearVariablesByPrefix _ArrayToFile
+GoTo :EOF
+
+REM functional
+REM add echo array "verticalmode" (no LF between array elements)
+::Usage Call :CopyArrayAdv InputArray OutputArray optional LINENUMBERS optional SHOWVARNAME optional VERTICALMODE optional .Suffix optional IndexRange
+:CopyArrayAdv
+set "_CopyArrayAdv_input=%~1"
+call set /a "_CopyArrayAdv_lbound=%%%~1.lbound" 2>nul
+if "[%_CopyArrayAdv_lbound%]" EQU "[]" set /a "_CopyArrayAdv_lbound=0"
+call set /a "_CopyArrayAdv_ubound=%%%~1.ubound"
+set /a "_CopyArrayAdv_index=%_CopyArrayAdv_lbound%"
+shift
+set "_CopyArrayAdv_output=%~1"
+call set /a "_CopyArrayAdv_output_lbound=%%%~1.lbound" 2>nul
+if "[%_CopyArrayAdv_output_lbound%]" EQU "[]" set /a "_CopyArrayAdv_output_lbound=0"
+call set /a "_CopyArrayAdv_output_ubound=%%%~1.ubound%%" 2>nul
+if "[%_CopyArrayAdv_output_ubound%]" EQU "[]" set /a "_CopyArrayAdv_output_ubound=-1"
+set /a "_CopyArrayAdv_output_index=%_CopyArrayAdv_output_lbound%"
+shift
+:CopyArrayAdv-arguments
+set "_CopyArrayAdv_buffer=%~1"
+if not defined _CopyArrayAdv_buffer GoTo :CopyArrayAdv-arguments-end
+if "[%_CopyArrayAdv_buffer:~,1%]" EQU "[.]" ( set "_CopyArrayAdv_suffix=%_CopyArrayAdv_buffer%" & shift & GoTo :CopyArrayAdv-arguments )
+if "[%_CopyArrayAdv_buffer%]" EQU "[LINENUMBERS]" ( set "_CopyArrayAdv_showlinenumbers=true" & shift & GoTo :CopyArrayAdv-arguments )
+if "[%_CopyArrayAdv_buffer%]" EQU "[SHOWVARNAME]" ( set "_CopyArrayAdv_showvariablename=true" & shift & GoTo :CopyArrayAdv-arguments )
+if "[%_CopyArrayAdv_buffer%]" EQU "[VERTICALMODE]" ( set "_CopyArrayAdv_verticalmode=true" & shift & GoTo :CopyArrayAdv-arguments )
+REM if "[%~1]" NEQ "[]" if not defined _CopyArrayAdv_IndexList.lbound set /a "_CopyArrayAdv_IndexList.lbound=1"
+if "[%~1]" NEQ "[]" ( Call :GetIndexArray _CopyArrayAdv_IndexList "%~1" & shift & GoTo :CopyArrayAdv-arguments )
+:CopyArrayAdv-arguments-end
+if defined _CopyArrayAdv_IndexList.ubound set /a "_CopyArrayAdv_ubound=%_CopyArrayAdv_IndexList.ubound%"
+setlocal enabledelayedexpansion
+set _CopyArrayAdv_localscope=true
+:CopyArrayAdv-loop
+if not defined _CopyArrayAdv_IndexList.ubound ( set "_CopyArrayAdv_index_actual=%_CopyArrayAdv_index%" ) else ( set "_CopyArrayAdv_index_actual=!_CopyArrayAdv_IndexList[%_CopyArrayAdv_index%]!" )
+if defined _CopyArrayAdv_showlinenumbers set _CopyArrayAdv_prefix=%_CopyArrayAdv_index%:
+if defined _CopyArrayAdv_showvariablename set _CopyArrayAdv_prefix=%_CopyArrayAdv_input%[%_CopyArrayAdv_index_actual%]:
+if defined _CopyArrayAdv_showvariablename if defined _CopyArrayAdv_showlinenumbers set _CopyArrayAdv_prefix=%_CopyArrayAdv_index%:%_CopyArrayAdv_input%[%_CopyArrayAdv_index_actual%]:
+if not defined _CopyArrayAdv_verticalmode GoTo :CopyArrayAdv-normalmode-loop-next
+REM <nul set /p =%_CopyArrayAdv_prefix%!%_CopyArrayAdv_input%[%_CopyArrayAdv_index_actual%]%_CopyArrayAdv_suffix%! 
+set %_CopyArrayAdv_output%=!%_CopyArrayAdv_output%! %_CopyArrayAdv_prefix%!%_CopyArrayAdv_input%[%_CopyArrayAdv_index_actual%]%_CopyArrayAdv_suffix%!
+GoTo :CopyArrayAdv-loop-next
+:CopyArrayAdv-normalmode-loop-next
+REM echo(%_CopyArrayAdv_prefix%!%_CopyArrayAdv_input%[%_CopyArrayAdv_index_actual%]%_CopyArrayAdv_suffix%!
+set /a "_CopyArrayAdv_output_ubound+=1"
+set %_CopyArrayAdv_output%[%_CopyArrayAdv_output_ubound%]=%_CopyArrayAdv_prefix%!%_CopyArrayAdv_input%[%_CopyArrayAdv_index_actual%]%_CopyArrayAdv_suffix%!
+:CopyArrayAdv-loop-next
+set /a "_CopyArrayAdv_index+=1"
+if %_CopyArrayAdv_index% LEQ %_CopyArrayAdv_ubound% GoTo :CopyArrayAdv-loop
+:CopyArrayAdv-loop-end
+REM if defined _CopyArrayAdv_verticalmode TRIM FIRST SPACE FROM OUTPUT
+if not defined _CopyArrayAdv_verticalmode set /a "%_CopyArrayAdv_output%.lbound=%_CopyArrayAdv_output_lbound%"
+if not defined _CopyArrayAdv_verticalmode set /a "%_CopyArrayAdv_output%.ubound=%_CopyArrayAdv_output_ubound%"
+for /f "delims=" %%a in ('set %_CopyArrayAdv_output% 2^>nul') do (
+		endlocal
+		set %%a
+	)
+if defined _CopyArrayAdv_localscope endlocal
+Call :ClearVariablesByPrefix _CopyArrayAdv
+GoTo :EOF
+
 
 ::Usage Call :GetEmptyLines Filename OutputArray optional OutputRows
 :GetEmptyLines
@@ -664,6 +885,29 @@ set __CopyArray_output
 REM Call :ClearVariablesByPrefix __CopyArray
 
 GoTo :EOF
+
+:CopyObject-DEMO
+
+set "myobject.suffixa=bla"
+set "myobject.suffixb=bli"
+set "myobject.suffixc=blou"
+
+echo.&echo we are going to copy myobject to myother object
+echo.&echo contents of myobject
+set myobject
+Call :CopyObject myobject myotherobject
+echo.&echo after copying, contents of myotherobject
+set myotherobject
+
+GoTo :EOF
+
+::Usage Call :CopyObject oldroot newroot
+:: Will copy oldroot.suffixes=? to newroot.suffixes=?
+::This function will lose any trailling "=" at the beginning of a variable
+:CopyObject 
+for /f "tokens=1 delims==" %%a in ('set %~1. 2^>nul') do for /f "tokens=2 eol== delims=.=" %%b in ('set %%a 2^>nul') do for /f "tokens=2* delims==" %%c in ('set %%a 2^>nul') do set %~2.%%b=%%c
+GoTo :EOF
+
 
 ::Usage Call :CopyArray InputArray OutputArray
 :CopyArray
