@@ -1,7 +1,9 @@
 @echo off
 
 :main
-call :CopyArray-DEMO
+call :SortArray-DEMO
+REM call :GetArrayIndex-DEMO
+REM call :CopyArray-DEMO
 REM Call :GetBatchFileStructure-DEMO
 REM Call :GetFunctionExits-DEMO
 REM call :GetEndOfFunction-DEMO
@@ -11,20 +13,122 @@ REM call :GetIndexArray-simple-DEMO
 REM Call :GetIndexArray-DEMO
 GoTo :EOF
 
-:GetArrayIndex
+:SortArray-DEMO
 
+set mytestarray[1]=text1
+set mytestarray[3]=text3
+set mytestarray[4]=text4
+set mytestarray[6]=text6
+set mytestarray[12]=text12
+set mytestarray[28]=text28
+set mytestarray[2]=text2
+
+Call :GetArrayIndex mytestarray myindexarray
+echo no
+Call :SortArray myindexarray mysortedarray
+echo yes
+Call :EchoArray mysortedarray LINENUMBERS
+
+GoTo :EOF
+
+:GetArrayIndex-DEMO
+
+set mytestarray[1]=text1
+set mytestarray[3]=text3
+set mytestarray[4]=text4
+set mytestarray[6]=text6
+set mytestarray[12]=text12
+set mytestarray[28]=text28
+set mytestarray[2]=text2
+
+Call :GetArrayIndex mytestarray myindexarray
+
+Call :EchoArray myindexarray LINENUMBERS
+
+GoTo :EOF
+
+::Usage Call :GetArrayIndex InputArray IndexArray
+:GetArrayIndex
+set "_GetArrayIndex_output=%~2"
+call set "_GetArrayIndex_ubound=%%%~2.ubound%%"
+if "[%_GetArrayIndex_ubound%]" EQU "[]" set /a "_GetArrayIndex_ubound=-1"
+set /a "_GetArrayIndex_index=%_GetArrayIndex_ubound%"
+for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f "tokens=2 delims=[]" %%b in ('set %%a 2^>nul') do call set /a "_GetArrayIndex_index+=1" & call set "%_GetArrayIndex_output%[%%_GetArrayIndex_index%%]=%%b"
+set /a "%_GetArrayIndex_output%.ubound=%_GetArrayIndex_index%"
+REM do for /f "tokens=2 delims=]" %%c in ('set %%a 2^>nul') do set %~2[%%b]%%c
+
+REM for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr.exe /N "^" "%~1"') do ( 
+	REM for /f "tokens=1,2* delims=:" %%f in ("%%a") do set /a "%~2.ubound=%%f" & set %~2[%%f]=%%a
+	REM )
+REM set /a "_SFTA_index=1"
+REM call set /a "_SFTA_ubound=%%%~2.ubound%%"
+
+
+GoTo :EOF
+
+:: Usage Call :IsArrayDefinedBySet Variable OutputValue
+:IsArrayDefinedBySet
+set /a _IsArrayDefinedBySet.index=0
+for /f "tokens=1* delims=" %%a in ('set %~1[ 2^>^&1') do ( call set _IsArrayDefinedBySet[%%_IsArrayDefinedBySet.index%%]=%%a & call set /a _IsArrayDefinedBySet.index+=1 )
+if not "[%_IsArrayDefinedBySet[0]%]"=="[%_IsArrayDefinedBySet[0]:Environment variable=%]" ( 
+	if not "[%_IsArrayDefinedBySet[0]%]"=="[%_IsArrayDefinedBySet[0]:not defined=%]" 	set "_IsArrayDefinedBySet.IsDefined=false" ) else ( set "_IsArrayDefinedBySet.IsDefined=true" )
+if not "[%~2]"=="[]" set "%~2=%_IsArrayDefinedBySet.IsDefined%"
+echo is defined %_IsArrayDefinedBySet.IsDefined%
+Call :ClearVariablesByPrefix _IsArrayDefinedBySet & if "[%_IsArrayDefinedBySet.IsDefined%]"=="[true]" ( exit /b 0 ) else ( exit /b 1 )
 GoTo :EOF
 
 REM :GetArrayIndex
 REM create array containing all index from an array, as output by set, or sorted,  works with sub array var.array[1].suffix.myarray[]
 REM GoTo :EOF
 
+::Usage Call :SortArray InputArray optional SortedArray
 :SortArray
-sort an array, ordered by value content
-alphanumeric or numeric sort
-destructive or not
+set "_SortArray_input=%~1"
+set "_SortArray_output=%~2"
+if "[%_SortArray_output%]" EQU "[]" set "_SortArray_output=%_SortArray_input%"
 
-for loop, find lowest value, copy ([] [].suffix or [].*), delete that value
+Call :CopyArray %_SortArray_input% _SortArray_buffer
+setlocal enabledelayedexpansion
+set _SortArray_localscope=true
+set /a "_SortArray_sorted_ubound=-1"
+set _SortArray_buffer[
+:SortArray-loop
+echo looped
+set /a "_SortArray_smallest=2147483647"
+set "_SortArray_current_index="
+set _SortArray_buffer[
+for /f "tokens=1,2,3 delims=[]=" %%a in ('set _SortArray_buffer[ 2^>^&1') do if %%c LSS !_SortArray_smallest! echo b%%b c%%c & set /a "_SortArray_current_index=%%b" & set /a "_SortArray_smallest=%%c"
+if "[%_SortArray_smallest%]" EQU "[!_SortArray_sorted[%_SortArray_sorted_ubound%]!]" echo set "_SortArray_buffer[%_SortArray_current_index%]=" ^& set "_SortArray_current_index=" 
+if "[%_SortArray_smallest%]" EQU "[!_SortArray_sorted[%_SortArray_sorted_ubound%]!]" set "_SortArray_buffer[%_SortArray_current_index%]=" & set "_SortArray_current_index=" 
+if "[%_SortArray_current_index%]" NEQ "[]" echo set /a "_SortArray_sorted_ubound+=1" 
+if "[%_SortArray_current_index%]" NEQ "[]" set /a "_SortArray_sorted_ubound+=1" 
+if "[%_SortArray_current_index%]" NEQ "[]" echo set /a "_SortArray_sorted[%_SortArray_sorted_ubound%]=%_SortArray_smallest%" ^& set "_SortArray_buffer[%_SortArray_current_index%]="
+if "[%_SortArray_current_index%]" NEQ "[]" set /a "_SortArray_sorted[%_SortArray_sorted_ubound%]=%_SortArray_smallest%" & set "_SortArray_buffer[%_SortArray_current_index%]="
+echo _SortArray_current_index %_SortArray_current_index%
+
+Call :IsArrayDefinedBySet _SortArray_sorted && GoTo :SortArray-loop
+
+echo what  ?
+
+set _SortArray_sorted
+
+for /f "delims=" %%a in ('set _SortArray_sorted 2^>nul') do (
+		endlocal
+		set %%a
+	)
+if defined _SortArray_localscope endlocal
+
+Call :CopyArray _SortArray_sorted %_SortArray_output%
+Call :ClearVariablesByPrefix _SortArray
+REM copy the array
+REM create sorted index array from the copy based on the value stored inside the array elements of the copy
+REM copy array element, in the order of the sorted index array to the specified destination
+REM sorting algorithm, using for(set) loop, find the element with the lowest value, copy it into the next element of the sorted index array then delete it from the buffer array
+REM sort an array, ordered by value content
+REM alphanumeric or numeric sort
+REM destructive or not
+REM for loop, find lowest value, copy ([] [].suffix or [].*), delete that value
+
 GoTo :EOF
 
 :CompactArray
@@ -552,25 +656,18 @@ GoTo :EOF
 :CopyArray-DEMO
 
 Call :SimpleFileToArray batchsample.bat __CopyArray_sample
-
+Call :ClearVariablesByPrefix __CopyArray_output
 Call :CopyArray __CopyArray_sample __CopyArray_output
 
 set __CopyArray_output
 
-Call :ClearVariablesByPrefix __CopyArray
+REM Call :ClearVariablesByPrefix __CopyArray
 
 GoTo :EOF
 
 ::Usage Call :CopyArray InputArray OutputArray
 :CopyArray
-
-REM for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f "tokens=2 delims=[]" %%b in ('set %%a 2^>nul') do for /f delims^=^ eol^= %%c in ('set %%a 2^>nul') do set %~2[%%b]=%%c
-setlocal enabledelayedexpansion
-for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f delims^=^ eol^= %%b in ('set %%a 2^>nul') do for /f "tokens=2,3 delims=[]=" %%c in ('set %%a 2^>nul') do (
-																													 set %~2[%%b]=!%%a!
-																													)
-for /f delims^=^ eol^= %%c in ('set %%a 2^>nul') do set %~2[%%b]=%%c
-
+for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f "tokens=2 delims=[]" %%b in ('set %%a 2^>nul') do for /f "tokens=2 delims=]" %%c in ('set %%a 2^>nul') do set %~2[%%b]%%c
 GoTo :EOF
 
 
@@ -595,9 +692,6 @@ REM set /a "_SFTA_index+=1"
 REM if %_SFTA_index% LEQ %_SFTA_ubound% GoTo :SimpleFileToArray-loop
 REM GoTo :EOF
 
-:GetArrayIndex-DEMO
-
-GoTo :EOF
 
 ::Usage Call :GetArrayIndex InputArray ListOfIndexesArray (could be space separated string ? with ranges ?)
 :GetArrayIndex (create new array containing all indexes from an xyz.array[x].array)
@@ -606,7 +700,7 @@ for /f delims^=^ eol^= %%a in ('set %~1')
 
 GoTo :EOF
 
-:SortArray (create new array from input array, array sorted alphanumerically based on the values inside the array elements) (forward/reverse) (numeric, alphanumeric, custom order maybe ?)
+::SortArray (create new array from input array, array sorted alphanumerically based on the values inside the array elements) (forward/reverse) (numeric, alphanumeric, custom order maybe ?)
 :CompactArray (starting from lbound or ubound, (create new array or modify current) by moving array elements with empty index, so that indexes become contiguous) apply to abc.array[] , abc.array[].suffix and abc.array[].* depending on configuration)
 
 :compact array form one
