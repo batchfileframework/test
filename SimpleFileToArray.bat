@@ -1,7 +1,8 @@
 @echo off
 
 :main
-Call :FileToArrayToFile-DEMO
+Call :GetBatchFileStructure-DEMO
+REM Call :FileToArrayToFile-DEMO
 REM call :ArrayToFile-DEMO
 REM call :CopyArrayAdv-DEMO
 REM call :EchoArray-DEMO
@@ -107,10 +108,14 @@ set /a "_SortArray_sorted.ubound=-1"
 :SortArray-loop
 set "_SortArray_current_index="
 set /a "_SortArray_smallest=2147483647"
-for /f "tokens=1,2,3 delims=[]=" %%a in ('set _SortArray_buffer[ 2^>^&1') do if %%c LSS !_SortArray_smallest! set /a "_SortArray_current_index=%%b" & set /a "_SortArray_smallest=%%c"
-if "[%_SortArray_smallest%]" EQU "[!_SortArray_sorted[%_SortArray_sorted.ubound%]!]" set "_SortArray_buffer[%_SortArray_current_index%]=" & set "_SortArray_current_index=" 
+for /f "tokens=1,2,3 delims=[]=" %%a in ('set _SortArray_buffer[ 2^>^&1') do if %%c LSS !_SortArray_smallest! ( set /a "_SortArray_current_index=%%b" & set /a "_SortArray_smallest=%%c" )
+REM if "[%_SortArray_smallest%]" EQU "[!_SortArray_sorted[%_SortArray_sorted.ubound%]!]" echo this should be deleted _SortArray_buffer[%_SortArray_current_index%] and _SortArray_current_index cleared
+if "[%_SortArray_smallest%]" EQU "[!_SortArray_sorted[%_SortArray_sorted.ubound%]!]" ( set "_SortArray_buffer[%_SortArray_current_index%]=" & set "_SortArray_current_index=" )
 if "[%_SortArray_current_index%]" NEQ "[]" set /a "_SortArray_sorted.ubound+=1" 
+REM echo _SortArray_current_index %_SortArray_current_index% _SortArray_sorted.ubound %_SortArray_sorted.ubound% _SortArray_smallest %_SortArray_smallest%
+REM if "[%_SortArray_current_index%]" NEQ "[]" echo set /a "_SortArray_sorted[%_SortArray_sorted.ubound%]=%_SortArray_smallest%" ^& set "_SortArray_buffer[%_SortArray_current_index%]="
 if "[%_SortArray_current_index%]" NEQ "[]" set /a "_SortArray_sorted[%_SortArray_sorted.ubound%]=%_SortArray_smallest%" & set "_SortArray_buffer[%_SortArray_current_index%]="
+REM if "[%_SortArray_current_index%]" NEQ "[]" set _SortArray_sorted
 Call :IsArrayDefinedBySet _SortArray_buffer && GoTo :SortArray-loop
 for /f "delims=" %%a in ('set _SortArray_sorted 2^>nul') do (
 		endlocal
@@ -150,9 +155,27 @@ Call :GetFunctionExits batchsample.bat ListEOfFunctionsExits batch.rows
 Call :GetEndOfFunction batchsample.bat ListEndOfFunctions batch.rows
 REM Call :EchoArray batch.rows
 
+Call :PrintBatchFileStructure batch.rows
 
 REM Create an array representing all functions, preamble, postscript, cumulative of all previous work
 
+GoTo :EOF
+
+::Usage Call :PrintBatchFileStructure RowsArrays
+:PrintBatchFileStructure
+Call :GetArrayIndex "%~1" _PBFS_index
+echo got the array's indexes
+call :echoarray _PBFS_index 1-10
+echo [...]
+set /a "_PBFS_index_min10=%_PBFS_index.ubound%-10"
+call :echoarray _PBFS_index %_PBFS_index_min10%-%_PBFS_index.ubound%
+Call :SortArray _PBFS_index _PBFS_sorted
+echo this is the sorted array
+call :echoarray _PBFS_sorted 1-10
+echo [...]
+set /a "_PBFS_sorted_min10=%_PBFS_index.ubound%-10"
+echo call :echoarray _PBFS_sorted %_PBFS_sorted_min10%-%_PBFS_sorted.ubound%
+call :echoarray _PBFS_sorted %_PBFS_sorted_min10%-%_PBFS_sorted.ubound%
 GoTo :EOF
 
 :GetFunctionStructure
@@ -953,11 +976,11 @@ REM GoTo :EOF
 
 
 ::Usage Call :GetArrayIndex InputArray ListOfIndexesArray (could be space separated string ? with ranges ?)
-:GetArrayIndex (create new array containing all indexes from an xyz.array[x].array)
+REM :GetArrayIndex (create new array containing all indexes from an xyz.array[x].array)
 
-for /f delims^=^ eol^= %%a in ('set %~1')
+REM for /f delims^=^ eol^= %%a in ('set %~1')
 
-GoTo :EOF
+REM GoTo :EOF
 
 ::SortArray (create new array from input array, array sorted alphanumerically based on the values inside the array elements) (forward/reverse) (numeric, alphanumeric, custom order maybe ?)
 :CompactArray (starting from lbound or ubound, (create new array or modify current) by moving array elements with empty index, so that indexes become contiguous) apply to abc.array[] , abc.array[].suffix and abc.array[].* depending on configuration)
