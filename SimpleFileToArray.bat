@@ -2,6 +2,7 @@
 
 :main
 Call :GetBatchFileStructure-DEMO
+REM Call :PrintBatchFileStructure batch.rows
 REM Call :FileToArrayToFile-DEMO
 REM call :ArrayToFile-DEMO
 REM call :CopyArrayAdv-DEMO
@@ -164,18 +165,22 @@ GoTo :EOF
 ::Usage Call :PrintBatchFileStructure RowsArrays
 :PrintBatchFileStructure
 Call :GetArrayIndex "%~1" _PBFS_index
-echo got the array's indexes
+echo got the array's indexes, print first 10 and last 10 element of the array
 call :echoarray _PBFS_index 1-10
 echo [...]
 set /a "_PBFS_index_min10=%_PBFS_index.ubound%-10"
 call :echoarray _PBFS_index %_PBFS_index_min10%-%_PBFS_index.ubound%
 Call :SortArray _PBFS_index _PBFS_sorted
-echo this is the sorted array
+REM 'ed' is not recognized as an internal or external command,
+REM operable program or batch file.
+echo this is the sorted array, print first 10 and last 10 element of the array
 call :echoarray _PBFS_sorted 1-10
 echo [...]
-set /a "_PBFS_sorted_min10=%_PBFS_index.ubound%-10"
+set /a "_PBFS_sorted_min10=%_PBFS_sorted.ubound%-10"
 echo call :echoarray _PBFS_sorted %_PBFS_sorted_min10%-%_PBFS_sorted.ubound%
 call :echoarray _PBFS_sorted %_PBFS_sorted_min10%-%_PBFS_sorted.ubound%
+REM 'ws' is not recognized as an internal or external command,
+REM operable program or batch file.
 GoTo :EOF
 
 :GetFunctionStructure
@@ -757,6 +762,7 @@ if not defined _EchoArray_verticalmode GoTo :EchoArray-normalmode-loop-next
 <nul set /p =%_EchoArray_prefix%!%_EchoArray_input%[%_EchoArray_index_actual%]%_EchoArray_suffix%! 
 GoTo :EchoArray-loop-next
 :EchoArray-normalmode-loop-next
+echo(%_EchoArray_prefix%%_EchoArray_input%[%_EchoArray_index_actual%]%_EchoArray_suffix%
 echo(%_EchoArray_prefix%!%_EchoArray_input%[%_EchoArray_index_actual%]%_EchoArray_suffix%!
 :EchoArray-loop-next
 set /a "_EchoArray_index+=1"
