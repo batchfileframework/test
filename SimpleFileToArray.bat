@@ -2,6 +2,8 @@
 
 :main
 Call :GetBatchFileStructure-DEMO
+REM Call :SearchArray-DEMO
+REM call :CopySelectedArrayObjects-DEMO
 REM Call :PrintBatchFileStructure batch.rows
 REM Call :FileToArrayToFile-DEMO
 REM call :ArrayToFile-DEMO
@@ -154,10 +156,18 @@ Call :GetLabels batchsample.bat ListOfLabels batch.rows
 Call :GetEmptyLines batchsample.bat ListOfEmptyLines batch.rows
 Call :GetFunctionExits batchsample.bat ListEOfFunctionsExits batch.rows
 Call :GetEndOfFunction batchsample.bat ListEndOfFunctions batch.rows
-REM Call :EchoArray batch.rows
 
-Call :PrintBatchFileStructure batch.rows
+Call :GetArrayIndex "batch.rows" batch.rows.raw.indexes
+Call :SortArray batch.rows.raw.indexes batch.rows.indexes
+Call :ClearVariablesByPrefix batch.rows.raw
 
+call :CopySelectedArrayObjects batch.rows batch.structure batch.rows.indexes
+
+echo.&echo Batch structure acquired, printing first 30 elements
+
+call :echoarray batch.structure 1-30
+
+REM Call :PrintBatchFileStructure batch.rows
 REM Create an array representing all functions, preamble, postscript, cumulative of all previous work
 
 GoTo :EOF
@@ -181,6 +191,222 @@ echo call :echoarray _PBFS_sorted %_PBFS_sorted_min10%-%_PBFS_sorted.ubound%
 call :echoarray _PBFS_sorted %_PBFS_sorted_min10%-%_PBFS_sorted.ubound%
 REM 'ws' is not recognized as an internal or external command,
 REM operable program or batch file.
+GoTo :EOF
+
+
+
+:CopySelectedArrayObjects-DEMO
+
+set myarray[0]=test0
+set myarray[1]=test1
+set myarray[2]=test2
+set myarray[3]=test3
+set myarray[4]=test4
+set myarray[5]=test5
+set myarray[6]=test6
+set myarray[7]=test7
+set myarray[8]=test8
+set myarray[9]=test9
+set myarray.ubound=9
+echo Printing test array
+call :echoarray myarray
+echo.&echo Copying test array with CopySelectedArrayElements range 3-7
+call :CopySelectedArrayElements myarray mynewarray 3-7
+echo.&echo Printing new test array
+call :echoarray mynewarray
+
+echo.&echo Adding .suffix to test array
+set myarray[0].suffixA=test.sufA.0
+set myarray[1].suffixA=test.sufA.1
+set myarray[2].suffixA=test.sufA.2
+set myarray[3].suffixA=test.sufA.3
+set myarray[4].suffixA=test.sufA.4
+set myarray[5].suffixA=test.sufA.5
+set myarray[6].suffixA=test.sufA.6
+set myarray[7].suffixA=test.sufA.7
+set myarray[8].suffixA=test.sufA.8
+set myarray[9].suffixA=test.sufA.9
+
+echo.&echo Printing test array's .suffixA
+call :echoarray myarray .suffixA
+echo.&echo Copying test array with CopySelectedArrayObjects range 3-7
+call :CopySelectedArrayObjects myarray mynewarray2 3-7
+echo.&echo Printing new test array
+call :echoarray mynewarray2
+call :echoarray mynewarray2 .suffixA
+
+
+Call :ClearVariablesByPrefix myarray mynewarray
+GoTo :EOF
+
+
+:SearchArray-DEMO
+
+set myarray[0]=Open Source, light and extremely simple,
+set myarray[1]=It is a single executable file with no dependencies.
+set myarray[2]=Just download it and add it to your PATH
+set myarray[3]=Create, edit, copy, move, download your files easily,
+set myarray[4]=everywhere, every time. Use it as your personal cloud.
+set myarray.ubound=4
+
+echo.&echo Printing test array
+REM call :echoarray LINENUMBERS myarray    *TODO* shit's broken yo
+REM call :echoarray SHOWVARS myarray   ALSO broken !?!?!
+call :echoarray myarray
+echo.&echo Searching for the word "Create" 
+Call :SearchArray myarray myresults "Create"
+echo.&echo Printing search results
+call :echoarray myresults
+set myresults
+
+Call :ClearVariablesByPrefix myresults
+echo.&echo Searching for the word "Create" and "edit" 
+Call :SearchArray myarray myresults "Create" "edit" 
+echo.&echo Printing search results
+call :echoarray myresults
+set myresults
+
+Call :ClearVariablesByPrefix myresults
+echo.&echo Searching for the word "it"
+Call :SearchArray myarray myresults "it"
+echo.&echo Printing search results
+call :echoarray myresults
+set myresults
+
+Call :ClearVariablesByPrefix myresults
+echo.&echo Searching for the word "Pangalactic Gargleblaster"
+Call :SearchArray myarray myresults "Pangalactic Gargleblaster"
+echo.&echo Printing search results
+call :echoarray myresults
+set myresults
+
+set myarray[0].suffixA=DOS - Script Snippets 	DOS Batch Script Snippets.
+set myarray[1].suffixA=DOS - String Manipulation 	Basic string manipulation in batch like you are used to from other programming languages.
+set myarray[2].suffixA=DOS - String Operations 	Basic string operations in batch like you are used to from other programming languages.
+set myarray[3].suffixA=DOS - XCopy Copy Tips 	Use XCopy for more than copy. I.e. check if a file is open and more...
+set myarray[4].suffixA=DOS Batch - Date and Time 	Using date and time functions in DOS.
+
+echo.&echo A second text was added to the test array inside a .suffix (.suffixA)
+echo.&echo Printing test array without suffix
+call :echoarray myarray
+echo.&echo Printing test array with suffix
+call :echoarray myarray .suffixA
+echo.&echo Running search for "Create" on test array's .suffixA
+Call :SearchArray .suffixA myarray myresults "Create"
+echo.&echo Printing Results
+call :echoarray myresults
+set myresults
+
+Call :ClearVariablesByPrefix myresults
+echo.&echo Running search for "String" on test array's .suffixA
+Call :SearchArray .suffixA myarray myresults "String"
+echo.&echo Printing Results
+call :echoarray myresults
+set myresults
+
+Call :ClearVariablesByPrefix myresults
+echo.&echo Running search for "dos" on test array's .suffixA
+Call :SearchArray .suffixA myarray myresults "dos"
+echo.&echo Printing Results
+call :echoarray myresults
+set myresults
+
+Call :ClearVariablesByPrefix myresults
+echo.&echo Running search for "string" and "copy" on test array's .suffixA
+Call :SearchArray .suffixA myarray myresults "string" "copy"
+echo.&echo Printing Results
+call :echoarray myresults
+set myresults
+
+Call :ClearVariablesByPrefix myresults
+echo.&echo Running search for "string" and "dos" on test array's .suffixA
+Call :SearchArray .suffixA myarray myresults "string" "dos"
+echo.&echo Printing Results
+call :echoarray myresults
+set myresults
+
+Call :ClearVariablesByPrefix myarray myresults
+
+GoTo :EOF
+
+:: future, specify multiple .suffix ? search all objects [] and [].suffix ?  constrain search with IndexArray ?
+::Usage Call :SearchArray optional .suffix InputArray ResultsArray SearchTerm1 SearchTerm2 SearchTermN
+:SearchArray
+set "_SearchArray_prefix=_SA"
+set "_SA_arg1=%~1"
+if "[%_SA_arg1:~,1%]" EQU "[.]" ( set "_SA_suffix=%_SA_arg1%" & shift & GoTo :SearchArray )
+set "_SA_Input=%~1"
+call set "_SA_Input_lbound=%%%~1.lbound%%"
+call set "_SA_Input_ubound=%%%~1.ubound%%"
+if "[%_SA_Input_lbound%]" EQU "[]" set /a "_SA_Input_lbound=0"
+set "_SA_Output=%~2"
+call set "_SA_Output_ubound=%%%~2.ubound%%"
+if "[%_SA_Output_ubound%]" EQU "[]" set /a "_SA_Output_ubound=-1"
+set "_SA_Search.ubound=-1"
+:SearchArray-args
+if "[%~3]" NEQ "[]" set /a "_SA_Search.ubound+=1"
+if "[%~3]" NEQ "[]" ( set "_SA_Search[%_SA_Search.ubound%]=%~3" & shift & GoTo :SearchArray-args )
+setlocal enabledelayedexpansion
+set "_SA_localscope=true"
+set /a "_SA_Index=%_SA_Input_lbound%"
+:SearchArray-loop
+set /a "_SA_Search.index=0"
+:SearchArray-searchterms-loop
+set "_SA_Search.current=!_SA_Search[%_SA_Search.index%]!"
+if "[!%_SA_Input%[%_SA_Index%]%_SA_suffix%!]" NEQ "[!%_SA_Input%[%_SA_Index%]%_SA_suffix%:%_SA_Search.current%=!]" set /a "_SA_Output_ubound+=1"
+if "[!%_SA_Input%[%_SA_Index%]%_SA_suffix%!]" NEQ "[!%_SA_Input%[%_SA_Index%]%_SA_suffix%:%_SA_Search.current%=!]" ( 	set "%_SA_Output%[%_SA_Output_ubound%]=%_SA_Index%"
+																														set %_SA_Output%[%_SA_Output_ubound%].text=!%_SA_Input%[%_SA_Index%]%_SA_suffix%!
+																														if %_SA_Search.ubound% GTR 0 set "%_SA_Output%[%_SA_Output_ubound%].searchindex=%_SA_Search.index%"
+																													)
+set /a "_SA_Search.index+=1"
+if %_SA_Search.index% LEQ %_SA_Search.ubound% GoTo :SearchArray-searchterms-loop
+set /a "_SA_Index+=1"
+if %_SA_Index% LEQ %_SA_Input_ubound% GoTo :SearchArray-loop
+set %_SA_Output%.ubound=%_SA_Output_ubound%
+for /f "delims=" %%a in ('set %_SA_Output% 2^>nul') do (
+		endlocal
+		set %%a
+		)
+if defined _SA_localscope endlocal
+
+Call :ClearVariablesByPrefix %_SearchArray_prefix% _SearchArray
+GoTo :EOF
+
+:: When copying elements, if the element index does not exist in the source, leave the gap or no gap ?
+:: Usage Call :CopySelectedArrayObjects optional NOGAPS/WITHGAPS SourceArray OutputArray IndexArray
+:CopySelectedArrayElements
+set "_CSAO_mode=elements"
+:CopySelectedArrayObjects
+set "_CopySelectedArrayObjects_prefix=_CSAO"
+if "[%~1]"=="[NOGAPS]" ( set "_CSAO_NoGaps=true" & shift & GoTo :CopySelectedArrayObjects )
+if "[%~1]"=="[WITHGAPS]" ( set "_CSAO_NoGaps=false" & shift & GoTo :CopySelectedArrayObjects )
+set "_CSAO_Source=%~1"
+set "_CSAO_Output=%~2"
+call set "_CSAO_Output_lbound=%%%~2.lbound%%"
+call set "_CSAO_Output_ubound=%%%~2.ubound%%"
+if "[%_CSAO_Output_lbound%]" EQU "[]" set /a "_CSAO_Output_lbound=0"
+if "[%_CSAO_Output_ubound%]" EQU "[]" set /a "_CSAO_Output_ubound=-1"
+:CopySelectedArrayObjects-arguments
+if "[%~3]" NEQ "[]" ( Call :GetIndexArray _CSAO_IndexList "%~3" & shift & GoTo :CopySelectedArrayObjects-arguments )
+set /a "_CSAO_Index=%_CSAO_IndexList.lbound%" 2>nul
+if "[%_CSAO_Index%]" EQU "[]" set /a "_CSAO_Index=0"
+:CopySelectedArrayObjects-loop
+call set "_CSAO_CurrentElementIndex=%%_CSAO_IndexList[%_CSAO_Index%]%%"
+if "[%_CSAO_NoGaps%]" EQU "[false]" (
+	set /a "_CSAO_Output_ubound+=1"
+	) else (
+	if defined %_CSAO_Source%[%_CSAO_CurrentElementIndex%] ( set /a "_CSAO_Output_ubound+=1" ) else ( GoTo :CopySelectedArrayObjects-next )
+	)
+if "[%_CSAO_mode%]" EQU "[elements]" (
+	Call set %_CSAO_Output%[%_CSAO_Output_ubound%]=%%%_CSAO_Source%[%_CSAO_CurrentElementIndex%]%%
+	) else (
+	Call :CopyObject "%_CSAO_Source%[%_CSAO_CurrentElementIndex%]" "%_CSAO_Output%[%_CSAO_Output_ubound%]"
+	)
+:CopySelectedArrayObjects-next
+set /a "_CSAO_Index+=1"
+if %_CSAO_Index% LEQ %_CSAO_IndexList.ubound% GoTo :CopySelectedArrayObjects-loop
+set /a "%_CSAO_Output%.ubound=%_CSAO_Output_ubound%"
+Call :ClearVariablesByPrefix %_CopySelectedArrayObjects_prefix% _CopySelectedArrayObjects
 GoTo :EOF
 
 :GetFunctionStructure
@@ -626,6 +852,7 @@ REM :ArrayToFile OutputFile list of rows (variable or array)
 
 ::Usage Call :SimpleFileToArray Filename OutputArray
 :SimpleFileToArray
+set "_SimpleFileToArray_prefix=_SFTA"
 set /a "%~2.lbound=1"
 for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr.exe /N "^" "%~1"') do ( 
 	for /f "tokens=1,2* delims=:" %%f in ("%%a") do set /a "%~2.ubound=%%f" & set %~2[%%f]=%%a
@@ -643,6 +870,7 @@ for /f "delims=" %%a in ('set %~2[%_SFTA_index%] 2^>nul') do (
 if defined _SFTA_localscope endlocal & set %~2[%_SFTA_index%]=
 set /a "_SFTA_index+=1"
 if %_SFTA_index% LEQ %_SFTA_ubound% GoTo :SimpleFileToArray-loop
+Call :ClearVariablesByPrefix %_SimpleFileToArray_prefix% _SimpleFileToArray
 GoTo :EOF
 
 ::Usage Call :SimpleArrayToFile 
@@ -762,7 +990,7 @@ if not defined _EchoArray_verticalmode GoTo :EchoArray-normalmode-loop-next
 <nul set /p =%_EchoArray_prefix%!%_EchoArray_input%[%_EchoArray_index_actual%]%_EchoArray_suffix%! 
 GoTo :EchoArray-loop-next
 :EchoArray-normalmode-loop-next
-echo(%_EchoArray_prefix%%_EchoArray_input%[%_EchoArray_index_actual%]%_EchoArray_suffix%
+REM echo(%_EchoArray_prefix%%_EchoArray_input%[%_EchoArray_index_actual%]%_EchoArray_suffix%
 echo(%_EchoArray_prefix%!%_EchoArray_input%[%_EchoArray_index_actual%]%_EchoArray_suffix%!
 :EchoArray-loop-next
 set /a "_EchoArray_index+=1"
@@ -949,6 +1177,7 @@ GoTo :EOF
 :: Will copy oldroot.suffixes=? to newroot.suffixes=?
 ::This function will lose any trailling "=" at the beginning of a variable
 :CopyObject 
+for /f "tokens=1,2* delims==" %%a in ('set %~1 2^>nul') do if "[%%a]" EQU "[%~1]" set %~2=%%b
 for /f "tokens=1 delims==" %%a in ('set %~1. 2^>nul') do for /f "tokens=2 eol== delims=.=" %%b in ('set %%a 2^>nul') do for /f "tokens=2* delims==" %%c in ('set %%a 2^>nul') do set %~2.%%b=%%c
 GoTo :EOF
 
