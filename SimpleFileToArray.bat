@@ -2,6 +2,8 @@
 
 :main
 Call :GetBatchFileStructure-DEMO
+REM Call :SaveAndLoadVariablesToFile-DEMO
+REM Call :GetBatchFileStructure-DEMO
 REM Call :SearchArray-DEMO
 REM call :CopySelectedArrayObjects-DEMO
 REM Call :PrintBatchFileStructure batch.rows
@@ -84,6 +86,7 @@ for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f "tokens=2 delims
 set /a "%_GetArrayIndex_output%.ubound=%_GetArrayIndex_index%"
 GoTo :EOF
 
+REM this function is sub-optimal, it should exit with success if the first loop is not "not defined"
 :: Usage Call :IsArrayDefinedBySet Variable OutputValue
 :IsArrayDefinedBySet
 set /a _IsArrayDefinedBySet.index=0
@@ -98,6 +101,7 @@ REM :GetArrayIndex
 REM create array containing all index from an array, as output by set, or sorted,  works with sub array var.array[1].suffix.myarray[]
 REM GoTo :EOF
 
+REM This function is missing the ability to specify sort, numeric, alphanumeric, reverse ? 
 :: This does not handle copying or even the presence of any suffixes in the array
 ::Usage Call :SortArray InputArray optional SortedArray
 :SortArray
@@ -112,30 +116,19 @@ set /a "_SortArray_sorted.ubound=-1"
 set "_SortArray_current_index="
 set /a "_SortArray_smallest=2147483647"
 for /f "tokens=1,2,3 delims=[]=" %%a in ('set _SortArray_buffer[ 2^>^&1') do if %%c LSS !_SortArray_smallest! ( set /a "_SortArray_current_index=%%b" & set /a "_SortArray_smallest=%%c" )
-REM if "[%_SortArray_smallest%]" EQU "[!_SortArray_sorted[%_SortArray_sorted.ubound%]!]" echo this should be deleted _SortArray_buffer[%_SortArray_current_index%] and _SortArray_current_index cleared
 if "[%_SortArray_smallest%]" EQU "[!_SortArray_sorted[%_SortArray_sorted.ubound%]!]" ( set "_SortArray_buffer[%_SortArray_current_index%]=" & set "_SortArray_current_index=" )
 if "[%_SortArray_current_index%]" NEQ "[]" set /a "_SortArray_sorted.ubound+=1" 
-REM echo _SortArray_current_index %_SortArray_current_index% _SortArray_sorted.ubound %_SortArray_sorted.ubound% _SortArray_smallest %_SortArray_smallest%
-REM if "[%_SortArray_current_index%]" NEQ "[]" echo set /a "_SortArray_sorted[%_SortArray_sorted.ubound%]=%_SortArray_smallest%" ^& set "_SortArray_buffer[%_SortArray_current_index%]="
 if "[%_SortArray_current_index%]" NEQ "[]" set /a "_SortArray_sorted[%_SortArray_sorted.ubound%]=%_SortArray_smallest%" & set "_SortArray_buffer[%_SortArray_current_index%]="
-REM if "[%_SortArray_current_index%]" NEQ "[]" set _SortArray_sorted
 Call :IsArrayDefinedBySet _SortArray_buffer && GoTo :SortArray-loop
 for /f "delims=" %%a in ('set _SortArray_sorted 2^>nul') do (
 		endlocal
 		set %%a
 	)
 if defined _SortArray_localscope endlocal
+REM CopyArray call may be superfluous, CHECK
 Call :CopyArray _SortArray_sorted %_SortArray_output%
 Call :CopyObject _SortArray_sorted %_SortArray_output%
 Call :ClearVariablesByPrefix _SortArray
-REM copy the array
-REM create sorted index array from the copy based on the value stored inside the array elements of the copy
-REM copy array element, in the order of the sorted index array to the specified destination
-REM sorting algorithm, using for(set) loop, find the element with the lowest value, copy it into the next element of the sorted index array then delete it from the buffer array
-REM sort an array, ordered by value content
-REM alphanumeric or numeric sort
-REM destructive or not
-REM for loop, find lowest value, copy ([] [].suffix or [].*), delete that value
 GoTo :EOF
 
 :CompactArray
@@ -149,28 +142,56 @@ GoTo :EOF
 
 :lbound and :ubound method using GetArrayIndex
 
-
 :GetBatchFileStructure-DEMO
 
-Call :GetLabels batchsample.bat ListOfLabels batch.rows
-Call :GetEmptyLines batchsample.bat ListOfEmptyLines batch.rows
-Call :GetFunctionExits batchsample.bat ListEOfFunctionsExits batch.rows
-Call :GetEndOfFunction batchsample.bat ListEndOfFunctions batch.rows
+set "__GBFSD_file=batchsample.bat"
+set "__GBFSD_array=batch"
 
-Call :GetArrayIndex "batch.rows" batch.rows.raw.indexes
-Call :SortArray batch.rows.raw.indexes batch.rows.indexes
-Call :ClearVariablesByPrefix batch.rows.raw
+REM Call :LoadVariablesFromFile GetBatchFileStructure-DEMO.rawstructure.txt
+REM Call :LoadVariablesFromFile GetBatchFileStructure-DEMO.raw.indexes.txt
+REM Call :LoadVariablesFromFile GetBatchFileStructure-DEMO.rows.indexes.txt
+REM Call :LoadVariablesFromFile GetBatchFileStructure-DEMO.rawstructure.txt
 
-call :CopySelectedArrayObjects batch.rows batch.structure batch.rows.indexes
+
+
+Call :GetBatchFileStructure %__GBFSD_file% %__GBFSD_array%
+Call :SaveVariablesToFile GetBatchFileStructure-DEMO.rawstructure.txt %__GBFSD_array%
+Call :GetArrayIndex %__GBFSD_array%.rows %__GBFSD_array%.rows.raw.indexes
+Call :SaveVariablesToFile GetBatchFileStructure-DEMO.raw.indexes.txt %__GBFSD_array%.rows.raw.indexes
+Call :SortArray %__GBFSD_array%.rows.raw.indexes %__GBFSD_array%.rows.indexes
+Call :SaveVariablesToFile GetBatchFileStructure-DEMO.rows.indexes.txt %__GBFSD_array%.rows.indexes
+Call :ClearVariablesByPrefix %__GBFSD_array%.rows.raw
+Call :SaveVariablesToFile GetBatchFileStructure-DEMO.%__GBFSD_array%.txt %__GBFSD_array%
+call :CopySelectedArrayObjects %__GBFSD_array%.rows %__GBFSD_array%.structure %__GBFSD_array%.rows.indexes
+Call :SaveVariablesToFile GetBatchFileStructure-DEMO.%__GBFSD_array%.structure.txt %__GBFSD_array%.structure
 
 echo.&echo Batch structure acquired, printing first 30 elements
 
-call :echoarray batch.structure 1-30
+call :echoarray %__GBFSD_array%.structure 1-30
 
 REM Call :PrintBatchFileStructure batch.rows
 REM Create an array representing all functions, preamble, postscript, cumulative of all previous work
 
 GoTo :EOF
+
+REM Add arguments to specify any of the 8 output arrays ?
+::Usage Call :GetBatchFileStructure BatchFile optional StructureArray=batch
+:GetBatchFileStructure
+set "_GBFS_File=%~1"
+set "_GBFS_Output=%~2"
+if "[%_GBFS_Output%]" EQU "[]" set "_GBFS_Output=batch"
+echo Call :GetLabels %_GBFS_File% %_GBFS_Output%.ListOfLabels %_GBFS_Output%.rows
+Call :GetLabels %_GBFS_File% %_GBFS_Output%.ListOfLabels %_GBFS_Output%.rows
+echo Call :GetEmptyLines %_GBFS_File% %_GBFS_Output%.ListOfEmptyLines %_GBFS_Output%.rows
+Call :GetEmptyLines %_GBFS_File% %_GBFS_Output%.ListOfEmptyLines %_GBFS_Output%.rows
+echo Call :GetFunctionExits %_GBFS_File% %_GBFS_Output%.ListEOfFunctionsExits %_GBFS_Output%.rows
+Call :GetFunctionExits %_GBFS_File% %_GBFS_Output%.ListEOfFunctionsExits %_GBFS_Output%.rows
+echo Call :GetEndOfFunction %_GBFS_File% %_GBFS_Output%.ListEndOfFunctions %_GBFS_Output%.rows
+Call :GetEndOfFunction %_GBFS_File% %_GBFS_Output%.ListEndOfFunctions %_GBFS_Output%.rows
+Call :ClearVariablesByPrefix _GBFS
+GoTo :EOF
+
+
 
 ::Usage Call :PrintBatchFileStructure RowsArrays
 :PrintBatchFileStructure
@@ -1000,6 +1021,7 @@ endlocal
 Call :ClearVariablesByPrefix _EchoArray
 GoTo :EOF
 
+REM NOTE the echo line was modified to put the redirect in front, but this has not been verified to work  NOTE
 REM add echo array "verticalmode" (no LF between array elements)
 ::Usage Call :ArrayToFile InputArray OutputFile optional LINENUMBERS optional SHOWVARNAME optional .Suffix optional IndexRange
 :ArrayToFile
@@ -1031,7 +1053,7 @@ if not defined _ArrayToFile_verticalmode GoTo :ArrayToFile-normalmode-loop-next
 <nul set /p =%_ArrayToFile_prefix%!%_ArrayToFile_input%[%_ArrayToFile_index_actual%]%_ArrayToFile_suffix%!>>%_ArrayToFile_output%
 GoTo :ArrayToFile-loop-next
 :ArrayToFile-normalmode-loop-next
-echo(%_ArrayToFile_prefix%!%_ArrayToFile_input%[%_ArrayToFile_index_actual%]%_ArrayToFile_suffix%!>>%_ArrayToFile_output%
+>>%_ArrayToFile_output% echo(%_ArrayToFile_prefix%!%_ArrayToFile_input%[%_ArrayToFile_index_actual%]%_ArrayToFile_suffix%!
 :ArrayToFile-loop-next
 set /a "_ArrayToFile_index+=1"
 if %_ArrayToFile_index% LEQ %_ArrayToFile_ubound% GoTo :ArrayToFile-loop
@@ -1110,6 +1132,67 @@ for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^$" "%~1" ^| f
 set /a "%_GetEmptyLines_output%.lbound=1" & set "_GetEmptyLines_output=" & set "_GetEmptyLines_output_rows="
 GoTo :EOF
 
+
+:SaveAndLoadVariablesToFile-DEMO
+
+set myarray[0]=Open Source, light and extremely simple,
+set myarray[1]=It is a single executable file with no dependencies.
+set myarray[2]=Just download it and add it to your PATH
+set myarray[3]=Create, edit, copy, move, download your files easily,
+set myarray[4]=everywhere, every time. Use it as your personal cloud.
+set myarray.ubound=4
+
+echo.&echo Using the following test array "myarray" &echo.
+call :echoarray myarray
+
+echo.&echo Saving myarray to file &echo.
+del SaveAndLoadVariablesToFile-DEMO.txt 2>nul
+Call :SaveVariablesToFile SaveAndLoadVariablesToFile-DEMO.txt myarray
+echo.&echo Contents of the savefile &echo.
+type SaveAndLoadVariablesToFile-DEMO.txt
+
+echo.&echo Saving myarray to file a second time (testing append functionality)&echo.
+Call :SaveVariablesToFile SaveAndLoadVariablesToFile-DEMO.txt myarray
+echo.&echo Contents of the savefile &echo.
+type SaveAndLoadVariablesToFile-DEMO.txt
+
+echo.&echo Saving myarray[ to file &echo.
+del SaveAndLoadVariablesToFile-DEMO.txt 2>nul
+Call :SaveVariablesToFile SaveAndLoadVariablesToFile-DEMO.txt myarray[
+echo.&echo Contents of the savefile &echo.
+type SaveAndLoadVariablesToFile-DEMO.txt
+
+echo.&echo Saving myarray to file, clearing the array, and then re-loading it&echo.
+del SaveAndLoadVariablesToFile-DEMO.txt 2>nul
+Call :SaveVariablesToFile SaveAndLoadVariablesToFile-DEMO.txt myarray
+Call :ClearVariablesByPrefix myarray
+echo.&echo verifying that myarray no longer exists&echo.
+call :echoarray myarray
+echo There should not have been anything there, except one empty line
+echo Loading the variables back from savefiles
+Call :LoadVariablesFromFile SaveAndLoadVariablesToFile-DEMO.txt
+echo.&echo Displaying the contents of myarray again&echo.
+call :echoarray myarray
+
+Call :ClearVariablesByPrefix myarray
+GoTo :EOF
+
+
+::Usage Call :SaveVariablesToFile OutputFile Variable1 Variable2 VariableN
+:SaveVariablesToFile
+for /f "tokens=*" %%a in ('set %~2 2^>nul') do (
+	>>%~1 echo.%%a
+	)
+if "[%~3]" NEQ "[]" ( shift & GoTo :SaveVariablesToFile )
+GoTo :EOF
+
+REM missing ability to only load specified variables from file
+:: Options DONTOVERWRITE NOENVIRONEMENTVARIABLES 
+::Usage Call :LoadVariablesFromFile InputFile optional Variable1 Variable2 VariableN
+:LoadVariablesFromFile
+for /f "tokens=*" %%a in (%~1) do set %%a
+GoTo :EOF
+
 ::Usage Call :RemoveNonFunctionLabels (ListOfLabels or .rows arrays)
 :RemoveNonFunctionLabels
 set "_RemoveNonFunctionLabels_prefix=_RNFL"
@@ -1183,7 +1266,7 @@ GoTo :EOF / exit /b answer
 :GetLabels
 set "_GetLabels_output=%~2"
 if "[%~3]" EQU "[]" ( set "_GetLabels_output_rows=%_GetLabels_output%.rows" ) else ( set "_GetLabels_output_rows=%~3" )
-for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^:[^:]" "%~1" ^| findstr /N "^"') do ( 
+for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^:[^:]" "%~1" ^| findstr /N "^"') do (
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set /a "%_GetLabels_output%.ubound=%%f" & set %_GetLabels_output%[%%f]=%%g
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do set %_GetLabels_output_rows%[%%g].type=label
 	for /f "tokens=1,2,3* delims=:" %%f in ("%%a") do for /f "tokens=1,2*" %%z in ("%%h") do set %_GetLabels_output%[%%f].name=%%~z
@@ -1257,6 +1340,8 @@ GoTo :EOF
 :AddArray* arrayname value .suffix othervalue .othersuffix othervalue
 :AddArrayElement
 :AddArrayObject
+:MoveObject
+:MoveArrayElement
 :InsertArrayElement
 :InsertArrayObject
 :RemoveArrayElement
