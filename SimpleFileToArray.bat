@@ -1110,6 +1110,75 @@ for /f delims^=^ eol^= %%a in ('%SystemRoot%\System32\findstr /N "^$" "%~1" ^| f
 set /a "%_GetEmptyLines_output%.lbound=1" & set "_GetEmptyLines_output=" & set "_GetEmptyLines_output_rows="
 GoTo :EOF
 
+::Usage Call :RemoveNonFunctionLabels (ListOfLabels or .rows arrays)
+:RemoveNonFunctionLabels
+set "_RemoveNonFunctionLabels_prefix=_RNFL"
+set "_RNFL_Input=%~1"
+call set "_RNFL_Input_lbound=%%%~1.lbound%%"
+call set "_RNFL_Input_ubound=%%%~1.ubound%%"
+if "[%_RNFL_Input_lbound%]" EQU "[]" set /a "_RNFL_Input_lbound=0"
+set /a "_RNFL_Index=%_RNFL_Input_lbound%"
+:RemoveNonFunctionLabels-loop
+set "_RNFL_LabelName="
+call set _RNFL_RowsType=%%%_RNFL_Input%[%_RNFL_Index%].type%%
+if "[%_RNFL_RowsType%]" EQU "[label]" ( call set "_RNFL_LabelName=%%%_RNFL_Input%[%_RNFL_Index%]%%" ) else (
+										call set "_RNFL_LabelName=%%%_RNFL_Input%[%_RNFL_Index%].name%%" )
+
+if "[%_RNFL_LabelName%]" EQU "[]"  skip
+
+REM call set "_RNFL_CurrentLabel=%%%_RNFL_Input%[].name%%"
+
+
+REM if defined %_RNFL_Input%[%_RNFL_Index%].type(
+	
+	REM Call :IsFunctionLabelExcluded FunctionLabel
+
+	REM )
+
+REM if defined %_RNFL_Input%[%_RNFL_Index%].name (
+
+
+	REM )
+
+
+
+REM %%%_RNFL_Input%[%_RNFL_Index%].type%%
+
+REM %%%_RNFL_Input%[%_RNFL_Index%].name%%
+
+
+REM Call :IsFunctionLabelExcluded FunctionLabel
+
+
+set /a "_RNFL_Index+=1"
+if %_RNFL_Index% LEQ %_RNFL_Input_ubound% GoTo :EOF
+
+
+
+if batch.rows[994].type=label
+check function for excluded words
+if excluded, delete object
+
+check listoflabels for excluded words
+ListOfLabels[111].name=GetSleepStates-contents-loop-for-skip
+ListOfLabels.name[GetCirclePoint-DEMO-loop-1]=1590
+if excluded delete object and delete object ListOfLabels.name[$$$$]
+
+
+Call :ClearVariablesByPrefix %_RemoveNonFunctionLabels_prefix% _RemoveNonFunctionLabels
+GoTo :EOF
+
+::Usage Call :IsFunctionLabelExcluded FunctionLabel
+:IsFunctionLabelExcluded
+set "_IsFunctionLabelExcluded_input=%~1"
+set "_IsFunctionLabelExcluded_input=%_IsFunctionLabelExcluded_input:-= %"
+set "_IsFunctionLabelExcluded_input=%_IsFunctionLabelExcluded_input::= %"
+echo _IsFunctionLabelExcluded_input %_IsFunctionLabelExcluded_input%
+for %%a in (%_IsFunctionLabelExcluded_input%) do ( echo %%a )
+
+GoTo :EOF / exit /b answer
+
+
 ::Usage Call :GetLabels Filename OutputArray optional OutputRows
 :GetLabels
 set "_GetLabels_output=%~2"
@@ -1178,9 +1247,23 @@ GoTo :EOF
 ::This function will lose any trailling "=" at the beginning of a variable
 :CopyObject 
 for /f "tokens=1,2* delims==" %%a in ('set %~1 2^>nul') do if "[%%a]" EQU "[%~1]" set %~2=%%b
+:CopyObjectOnly
 for /f "tokens=1 delims==" %%a in ('set %~1. 2^>nul') do for /f "tokens=2 eol== delims=.=" %%b in ('set %%a 2^>nul') do for /f "tokens=2* delims==" %%c in ('set %%a 2^>nul') do set %~2.%%b=%%c
 GoTo :EOF
 
+:CreateObject objectname value .suffix value  .othersuffix othervalue
+:CreateArray optional lbound ### arrayname value1 value2 valueN
+:AddArray* arrayname value
+:AddArray* arrayname value .suffix othervalue .othersuffix othervalue
+:AddArrayElement
+:AddArrayObject
+:InsertArrayElement
+:InsertArrayObject
+:RemoveArrayElement
+:DeleteArrayElement
+:DeleteArrayElementWithouGap
+:DeleteObject
+:DeleteObjectOnly
 
 ::Usage Call :CopyArray InputArray OutputArray
 :CopyArray
