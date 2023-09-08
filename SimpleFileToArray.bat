@@ -1,7 +1,8 @@
 @echo off
 
 :main
-Call :GetBatchFileStructure-DEMO
+Call :MoveObject-DEMO
+REM Call :GetBatchFileStructure-DEMO
 REM Call :SaveAndLoadVariablesToFile-DEMO
 REM Call :GetBatchFileStructure-DEMO
 REM Call :SearchArray-DEMO
@@ -101,6 +102,8 @@ REM :GetArrayIndex
 REM create array containing all index from an array, as output by set, or sorted,  works with sub array var.array[1].suffix.myarray[]
 REM GoTo :EOF
 
+
+REM ::SortArray (create new array from input array, array sorted alphanumerically based on the values inside the array elements) (forward/reverse) (numeric, alphanumeric, custom order maybe ?)
 REM This function is missing the ability to specify sort, numeric, alphanumeric, reverse ? 
 :: This does not handle copying or even the presence of any suffixes in the array
 ::Usage Call :SortArray InputArray optional SortedArray
@@ -131,14 +134,6 @@ Call :CopyObject _SortArray_sorted %_SortArray_output%
 Call :ClearVariablesByPrefix _SortArray
 GoTo :EOF
 
-:CompactArray
-
-close up all gaps in an array's index numbers
-
-
-from lbound to ubound,when find an empty spot, remember that "next spot"  then continue looking until you find a populated array, copy and delete  [] [].suffix or [].*
-
-GoTo :EOF
 
 :lbound and :ubound method using GetArrayIndex
 
@@ -155,7 +150,11 @@ REM Call :LoadVariablesFromFile GetBatchFileStructure-DEMO.rawstructure.txt
 
 
 Call :GetBatchFileStructure %__GBFSD_file% %__GBFSD_array%
-Call :SaveVariablesToFile GetBatchFileStructure-DEMO.rawstructure.txt %__GBFSD_array%
+REM Call :SaveVariablesToFile GetBatchFileStructure-DEMO.rawstructure.txt %__GBFSD_array%
+Call :RemoveNonFunctionLabels %__GBFSD_array%.labels %__GBFSD_array%.rows
+
+goto :eof
+
 Call :GetArrayIndex %__GBFSD_array%.rows %__GBFSD_array%.rows.raw.indexes
 Call :SaveVariablesToFile GetBatchFileStructure-DEMO.raw.indexes.txt %__GBFSD_array%.rows.raw.indexes
 Call :SortArray %__GBFSD_array%.rows.raw.indexes %__GBFSD_array%.rows.indexes
@@ -180,14 +179,10 @@ REM Add arguments to specify any of the 8 output arrays ?
 set "_GBFS_File=%~1"
 set "_GBFS_Output=%~2"
 if "[%_GBFS_Output%]" EQU "[]" set "_GBFS_Output=batch"
-echo Call :GetLabels %_GBFS_File% %_GBFS_Output%.ListOfLabels %_GBFS_Output%.rows
-Call :GetLabels %_GBFS_File% %_GBFS_Output%.ListOfLabels %_GBFS_Output%.rows
-echo Call :GetEmptyLines %_GBFS_File% %_GBFS_Output%.ListOfEmptyLines %_GBFS_Output%.rows
-Call :GetEmptyLines %_GBFS_File% %_GBFS_Output%.ListOfEmptyLines %_GBFS_Output%.rows
-echo Call :GetFunctionExits %_GBFS_File% %_GBFS_Output%.ListEOfFunctionsExits %_GBFS_Output%.rows
-Call :GetFunctionExits %_GBFS_File% %_GBFS_Output%.ListEOfFunctionsExits %_GBFS_Output%.rows
-echo Call :GetEndOfFunction %_GBFS_File% %_GBFS_Output%.ListEndOfFunctions %_GBFS_Output%.rows
-Call :GetEndOfFunction %_GBFS_File% %_GBFS_Output%.ListEndOfFunctions %_GBFS_Output%.rows
+Call :GetLabels %_GBFS_File% %_GBFS_Output%.Labels %_GBFS_Output%.rows
+Call :GetEmptyLines %_GBFS_File% %_GBFS_Output%.Empty %_GBFS_Output%.rows
+Call :GetFunctionExits %_GBFS_File% %_GBFS_Output%.Exits %_GBFS_Output%.rows
+Call :GetEndOfFunction %_GBFS_File% %_GBFS_Output%.EndOf %_GBFS_Output%.rows
 Call :ClearVariablesByPrefix _GBFS
 GoTo :EOF
 
@@ -1193,73 +1188,36 @@ REM missing ability to only load specified variables from file
 for /f "tokens=*" %%a in (%~1) do set %%a
 GoTo :EOF
 
-::Usage Call :RemoveNonFunctionLabels (ListOfLabels or .rows arrays)
+::Usage Call :RemoveNonFunctionLabels ListOfLabels .rowsArray
 :RemoveNonFunctionLabels
 set "_RemoveNonFunctionLabels_prefix=_RNFL"
-set "_RNFL_Input=%~1"
-call set "_RNFL_Input_lbound=%%%~1.lbound%%"
-call set "_RNFL_Input_ubound=%%%~1.ubound%%"
-if "[%_RNFL_Input_lbound%]" EQU "[]" set /a "_RNFL_Input_lbound=0"
-set /a "_RNFL_Index=%_RNFL_Input_lbound%"
+set "_RNFL_Labels=%~1"
+call set "_RNFL_Labels_lbound=%%%~1.lbound%%"
+call set "_RNFL_Labels_ubound=%%%~1.ubound%%"
+if "[%_RNFL_Labels_lbound%]" EQU "[]" set /a "_RNFL_Labels_lbound=0"
+set "_RNFL_Rows=%~2"
+call set "_RNFL_Rows_lbound=%%%~2.lbound%%"
+call set "_RNFL_Rows_ubound=%%%~2.ubound%%"
+if "[%_RNFL_Rows_lbound%]" EQU "[]" set /a "_RNFL_Rows_lbound=0"
+set /a "_RNFL_Index=%_RNFL_Labels_lbound%"
 :RemoveNonFunctionLabels-loop
-set "_RNFL_LabelName="
-call set _RNFL_RowsType=%%%_RNFL_Input%[%_RNFL_Index%].type%%
-if "[%_RNFL_RowsType%]" EQU "[label]" ( call set "_RNFL_LabelName=%%%_RNFL_Input%[%_RNFL_Index%]%%" ) else (
-										call set "_RNFL_LabelName=%%%_RNFL_Input%[%_RNFL_Index%].name%%" )
-
-if "[%_RNFL_LabelName%]" EQU "[]"  skip
-
-REM call set "_RNFL_CurrentLabel=%%%_RNFL_Input%[].name%%"
-
-
-REM if defined %_RNFL_Input%[%_RNFL_Index%].type(
-	
-	REM Call :IsFunctionLabelExcluded FunctionLabel
-
-	REM )
-
-REM if defined %_RNFL_Input%[%_RNFL_Index%].name (
-
-
-	REM )
-
-
-
-REM %%%_RNFL_Input%[%_RNFL_Index%].type%%
-
-REM %%%_RNFL_Input%[%_RNFL_Index%].name%%
-
-
-REM Call :IsFunctionLabelExcluded FunctionLabel
-
-
+Call set "_RNFL_CurrentLabel=%%%_RNFL_Labels%[%_RNFL_Index%].name%%" & call set "_RNFL_CurrentRow=%%%_RNFL_Labels%[%_RNFL_Index%]%%" 
+Call :IsFunctionLabelExcluded %_RNFL_CurrentLabel% && ( set %_RNFL_Rows%[%_RNFL_CurrentRow%]=" & set %_RNFL_Rows%[%_RNFL_CurrentRow%].type=" & set "%_RNFL_Labels%[%_RNFL_Index%]=" & set "%_RNFL_Labels%[%_RNFL_Index%].name=" & set "%_RNFL_Labels%.name[%_RNFL_CurrentLabel%].name=" )
 set /a "_RNFL_Index+=1"
-if %_RNFL_Index% LEQ %_RNFL_Input_ubound% GoTo :EOF
-
-
-
-if batch.rows[994].type=label
-check function for excluded words
-if excluded, delete object
-
-check listoflabels for excluded words
-ListOfLabels[111].name=GetSleepStates-contents-loop-for-skip
-ListOfLabels.name[GetCirclePoint-DEMO-loop-1]=1590
-if excluded delete object and delete object ListOfLabels.name[$$$$]
-
-
+if %_RNFL_Index% LEQ %_RNFL_Labels_ubound% GoTo :RemoveNonFunctionLabels-loop
 Call :ClearVariablesByPrefix %_RemoveNonFunctionLabels_prefix% _RemoveNonFunctionLabels
 GoTo :EOF
 
-::Usage Call :IsFunctionLabelExcluded FunctionLabel
+::Usage Call :IsFunctionLabelExcluded FunctionLabel ExclusionList
 :IsFunctionLabelExcluded
-set "_IsFunctionLabelExcluded_input=%~1"
-set "_IsFunctionLabelExcluded_input=%_IsFunctionLabelExcluded_input:-= %"
-set "_IsFunctionLabelExcluded_input=%_IsFunctionLabelExcluded_input::= %"
-echo _IsFunctionLabelExcluded_input %_IsFunctionLabelExcluded_input%
-for %%a in (%_IsFunctionLabelExcluded_input%) do ( echo %%a )
+set "_IFLE_input=%~1"
+set "_IFLE_input=%_IFLE_input:-= %"
+set "_IFLE_input=%_IFLE_input::= %"
+set "_IFLE_ExclusionList=%~2"
+if "[%_IFLE_ExclusionList%]" EQU "[]" set "_IFLE_ExclusionList=loop loop2 loop3 loop# end skip skip2 skipn test test1 testn cleanup argument params args next prev iteration pre post 0 1 2 3 4 5 6 7 8 9"
+for %%a in (%_IFLE_input%) do for %%b in (%_IFLE_ExclusionList%) do if %%a EQU %%b exit /b 0
+exit /b 1
 
-GoTo :EOF / exit /b answer
 
 
 ::Usage Call :GetLabels Filename OutputArray optional OutputRows
@@ -1340,7 +1298,53 @@ GoTo :EOF
 :AddArray* arrayname value .suffix othervalue .othersuffix othervalue
 :AddArrayElement
 :AddArrayObject
+
+
+:MoveObject-DEMO
+set myarray[0]=Open Source, light and extremely simple,
+set myarray[1]=It is a single executable file with no dependencies.
+set myarray[2]=Just download it and add it to your PATH
+set myarray[6]=Create, edit, copy, move, download your files easily,
+set myarray[7]=everywhere, every time. Use it as your personal cloud.
+set myarray[0].suffixA=test.sufA.0
+set myarray[1].suffixA=test.sufA.1
+set myarray[2].suffixA=test.sufA.2
+set myarray[6].suffixA=test.sufA.6
+set myarray[7].suffixA=test.sufA.7
+set myarray.ubound=7
+
+echo.&echo Printing myarray&echo.
+call :echoarray myarray LINENUMBERS
+
+echo.&echo Moving object [6] to [4]&echo.
+call :moveobject myarray[6] myarray[4]
+
+echo.&echo Printing myarray&echo.
+call :echoarray myarray LINENUMBERS
+
+echo.&echo Moving object [4] to [3]&echo.
+call :moveobject myarray[4] myarray[3]
+
+echo.&echo Printing myarray&echo.
+call :echoarray myarray LINENUMBERS
+
+echo.&echo Moving objects [1][2][3] to [4][5][6]&echo.
+call :moveobject myarray[1] myarray[4]
+call :moveobject myarray[2] myarray[5]
+call :moveobject myarray[3] myarray[6]
+
+echo.&echo Printing myarray&echo.
+call :echoarray myarray LINENUMBERS
+
+GoTo :EOF
+
+
 :MoveObject
+for /f "tokens=1,2* delims==" %%a in ('set %~1 2^>nul') do if "[%%a]" EQU "[%~1]" set %~2=%%b
+for /f "tokens=1 delims==" %%a in ('set %~1. 2^>nul') do for /f "tokens=2 eol== delims=.=" %%b in ('set %%a 2^>nul') do for /f "tokens=2* delims==" %%c in ('set %%a 2^>nul') do set %~2.%%b=%%c
+if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
+GoTo :EOF
+
 :MoveArrayElement
 :InsertArrayElement
 :InsertArrayObject
@@ -1385,7 +1389,36 @@ REM for /f delims^=^ eol^= %%a in ('set %~1')
 
 REM GoTo :EOF
 
-::SortArray (create new array from input array, array sorted alphanumerically based on the values inside the array elements) (forward/reverse) (numeric, alphanumeric, custom order maybe ?)
+
+::Usage Call :CompactArray InputArray
+:CompactArray
+set "_CompactArray_prefix=_CA
+set "_CA_Input="
+call set "_CA_Input_lbound=%%%_CA_Input%.lbound%%"
+call set "_CA_Input_ubound=%%%_CA_Input%.ubound%%"
+set /a "_CA_LastEmptyElement=%_CA_Input_lbound%+1"
+set /a "_CA_Index=%_CA_Input_lbound%"
+set /a "_CA_Previous=%_CA_Index%-1"
+:CompactArray-loop
+if defined %_CA_Input%[%_CA_Index%] if %_CA_LastEmptyElement% LSS %_CA_Previous% ( Call :MoveObject %_CA_Input%[%_CA_Index%] %_CA_Input%[%_CA_LastEmptyElement%] & set /a "_CA_LastEmptyElement+=1" )
+if defined %_CA_Input%[%_CA_Index%] set /a "_CA_LastEmptyElement=%_CA_Index%+1"
+REM if not defined %_CA_Input%[%_CA_Index%]
+
+set /a "_CA_Previous+=1" & set /a "_CA_Index+=1"
+if %_CA_Index% LEQ %_CA_Input_ubound% GoTo :CompactArray-loop
+
+Call :ClearVariablesByPrefix %_CompactArray_prefix% _CompactArray
+GoTo :EOF
+
+close up all gaps in an array's index numbers
+
+
+from lbound to ubound,when find an empty spot, remember that "next spot"  then continue looking until you find a populated array, copy and delete  [] [].suffix or [].*
+
+GoTo :EOF
+
+
+
 :CompactArray (starting from lbound or ubound, (create new array or modify current) by moving array elements with empty index, so that indexes become contiguous) apply to abc.array[] , abc.array[].suffix and abc.array[].* depending on configuration)
 
 :compact array form one
