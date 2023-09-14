@@ -1,8 +1,9 @@
 @echo off
 
 :main
-Call :MoveObject-DEMO
-REM Call :GetBatchFileStructure-DEMO
+Call :GetBatchFileStructure-DEMO
+REM Call :CompactArray-DEMO
+REM Call :MoveObject-DEMO
 REM Call :SaveAndLoadVariablesToFile-DEMO
 REM Call :GetBatchFileStructure-DEMO
 REM Call :SearchArray-DEMO
@@ -16,7 +17,6 @@ REM call :CopyObject-DEMO
 REM call :SortArray-DEMO
 REM call :GetArrayIndex-DEMO
 REM call :CopyArray-DEMO
-REM Call :GetBatchFileStructure-DEMO
 REM Call :GetFunctionExits-DEMO
 REM call :GetEndOfFunction-DEMO
 REM call :GetLabels-DEMO
@@ -152,6 +152,9 @@ REM Call :LoadVariablesFromFile GetBatchFileStructure-DEMO.rawstructure.txt
 Call :GetBatchFileStructure %__GBFSD_file% %__GBFSD_array%
 REM Call :SaveVariablesToFile GetBatchFileStructure-DEMO.rawstructure.txt %__GBFSD_array%
 Call :RemoveNonFunctionLabels %__GBFSD_array%.labels %__GBFSD_array%.rows
+REM Call :CompactArray %__GBFSD_array%.labels
+
+call :echoarray %__GBFSD_array%.labels 1-30
 
 goto :eof
 
@@ -167,6 +170,7 @@ Call :SaveVariablesToFile GetBatchFileStructure-DEMO.%__GBFSD_array%.structure.t
 echo.&echo Batch structure acquired, printing first 30 elements
 
 call :echoarray %__GBFSD_array%.structure 1-30
+
 
 REM Call :PrintBatchFileStructure batch.rows
 REM Create an array representing all functions, preamble, postscript, cumulative of all previous work
@@ -186,7 +190,9 @@ Call :GetEndOfFunction %_GBFS_File% %_GBFS_Output%.EndOf %_GBFS_Output%.rows
 Call :ClearVariablesByPrefix _GBFS
 GoTo :EOF
 
+:GetFunctionDefinitions
 
+GoTo :EOF
 
 ::Usage Call :PrintBatchFileStructure RowsArrays
 :PrintBatchFileStructure
@@ -1214,7 +1220,8 @@ set "_IFLE_input=%_IFLE_input:-= %"
 set "_IFLE_input=%_IFLE_input::= %"
 set "_IFLE_ExclusionList=%~2"
 if "[%_IFLE_ExclusionList%]" EQU "[]" set "_IFLE_ExclusionList=loop loop2 loop3 loop# end skip skip2 skipn test test1 testn cleanup argument params args next prev iteration pre post 0 1 2 3 4 5 6 7 8 9"
-for %%a in (%_IFLE_input%) do for %%b in (%_IFLE_ExclusionList%) do if %%a EQU %%b exit /b 0
+for %%a in (%_IFLE_input%) do set _IFLE_last_token=%%a
+for %%a in (%_IFLE_ExclusionList%) do if %%a EQU %_IFLE_last_token% exit /b 0
 exit /b 1
 
 
@@ -1350,8 +1357,18 @@ GoTo :EOF
 :RemoveArrayElement
 :DeleteArrayElement
 :DeleteArrayElementWithouGap
+check ubound
+check for [#] in input
+check if next element is an IndexArray
+run compact array
+GoTo :EOF
 :DeleteObject
+if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
+GoTo :EOF
 :DeleteObjectOnly
+if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1. 2^>nul') do set %%a=
+if "[%~2]" NEQ "[]" shift & GoTo :DeleteObjectOnly
+GoTo :EOF
 
 ::Usage Call :CopyArray InputArray OutputArray
 :CopyArray
@@ -1390,6 +1407,8 @@ REM GoTo :EOF
 
 :CompactArray-DEMO
 
+Call :ClearVariablesByPrefix %_CompactArray_prefix% _CompactArray
+
 set myarray[0].suffixA=DOS - Script Snippets 	DOS Batch Script Snippets.
 set myarray[1].suffixA=DOS - String Manipulation 	Basic string manipulation in batch like you are used to from other programming languages.
 set myarray[2].suffixA=DOS - String Operations 	Basic string operations in batch like you are used to from other programming languages.
@@ -1406,15 +1425,15 @@ set myarray[2]=Just download it and add it to your PATH
 set myarray[3]=Create, edit, copy, move, download your files easily,
 set myarray[4]=everywhere, every time. Use it as your personal cloud.
 set myarray[5]=I have done the following Steps:
-set myarray[6]=set myarray[4]=1 - Import the Barcodes Fonts to the Memory off the Printer
+set myarray[6]=1 - Import the Barcodes Fonts to the Memory off the Printer
 set myarray[7]=2- Configured the Device type in SAP, According to the Xerox Document, for version 4.0 (I'm using ECC 5.0).
 set myarray[8]=3 - Print the Production Order. But no barcodes appears. I'm i'm using barcodes CD__00 e CD__01 in the Sapscript.
 set myarray[9]=Does any one know way the barcodes are no Printed.
 set myarray.ubound=9
 
-set /a "__CompactArray-step+=1"
+set /a "__CompactArray_step+=1"
 
-GoTo :CompactArray-DEMO-%__CompactArray%
+GoTo :CompactArray-DEMO-%__CompactArray_step%
 
 :CompactArray-DEMO-1
 
@@ -1429,63 +1448,137 @@ GoTo :CompactArray-DEMO
 echo.&echo Delete Object 5, print array, then run compact array&echo.
 Call :DeleteObject myarray[5]
 Call :EchoArray myarray LINENUMBERS
-echo.
-Call :EchoArray myarray .suffixA LINENUMBERS
-echo.&echo Running compact array&echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+echo.&echo Running compact array
 Call :CompactArray myarray
+echo.
 Call :EchoArray myarray LINENUMBERS
 echo.
-Call :EchoArray myarray .suffixA LINENUMBERS
+REM Call :EchoArray myarray .suffixA LINENUMBERS
 
 GoTo :CompactArray-DEMO
 :CompactArray-DEMO-3
 
+echo.&echo Delete Object 5+6, print array, then run compact array&echo.
+Call :DeleteObject myarray[5]
+Call :DeleteObject myarray[6]
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+echo.&echo Running compact array
+Call :CompactArray myarray
+echo.
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+
 GoTo :CompactArray-DEMO
 :CompactArray-DEMO-4
+
+REM echo.&echo Delete Object 5+6, print array, then run compact array&echo.
+REM Call :DeleteObject myarray[5]
+REM Call :DeleteObject myarray[6]
+REM Call :EchoArray myarray LINENUMBERS
+REM echo.
+REM REM Call :EchoArray myarray .suffixA LINENUMBERS
+REM echo.&echo Running compact array
+REM Call :CompactArray myarray
+REM echo.
+REM Call :EchoArray myarray LINENUMBERS
+REM echo.
+REM REM Call :EchoArray myarray .suffixA LINENUMBERS
+
 
 GoTo :CompactArray-DEMO
 :CompactArray-DEMO-5
 
-GoTo :CompactArray-DEMO
-:CompactArray-DEMO-6
+echo.&echo Delete Object 3,5+6, print array, then run compact array&echo.
+Call :DeleteObject myarray[3]
+Call :DeleteObject myarray[5]
+Call :DeleteObject myarray[6]
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+echo.&echo Running compact array
+Call :CompactArray myarray
+echo.
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
 
 GoTo :CompactArray-DEMO
 :CompactArray-DEMO-6
 
+echo.&echo Delete Object 0, print array, then run compact array&echo.
+Call :DeleteObject myarray[0]
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+echo.&echo Running compact array
+Call :CompactArray myarray
+echo.
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+
+GoTo :CompactArray-DEMO
+:CompactArray-DEMO-7
+
+echo.&echo Delete Object 9, print array, then run compact array&echo.
+Call :DeleteObject myarray[9]
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+echo.&echo Running compact array
+Call :CompactArray myarray
+echo.
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+GoTo :CompactArray-DEMO
+:CompactArray-DEMO-8
+
+echo.&echo Array with no gaps&echo.
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+echo.&echo Running compact array
+Call :CompactArray myarray
+echo.
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+
+Call :ClearVariablesByPrefix myarray __CompactArray_step
+
 GoTo :EOF
 
-
-
-Call :ClearVariablesByPrefix myarray
-
-GoTo :EOF
-
+REM ToDo add range limits, at least lbound, if ubound, then ubound adjuster at the end will need work
+REM maybe arr[] arr[].suffix or arr[].* ?
+REM maybe add ability to output to a new compacted array, instead of moving elements of current array ?
+REM tentative ::Usage Call :CompactArray InputArray optional OutputArray
+REM tentative ::Usage Call :CompactArray InputArray optional OutputArray optional lbound=X optional ubound=Y
+REM tentative ::Usage Call :CompactArray InputArray[].mysuffix optional OutputArray optional lbound=X optional ubound=Y
 ::Usage Call :CompactArray InputArray
 :CompactArray
 set "_CompactArray_prefix=_CA
-set "_CA_Input="
+set "_CA_Input=%~1"
 call set "_CA_Input_lbound=%%%_CA_Input%.lbound%%"
 call set "_CA_Input_ubound=%%%_CA_Input%.ubound%%"
-set /a "_CA_LastEmptyElement=%_CA_Input_lbound%+1"
+if "[%_CA_Input_lbound%]" EQU "[]" set "_CA_Input_lbound=0"
 set /a "_CA_Index=%_CA_Input_lbound%"
 set /a "_CA_Previous=%_CA_Index%-1"
+if defined %_CA_Input%[%_CA_Index%] ( set /a "_CA_LastEmptyElement=%_CA_Index%+1" ) else ( set /a "_CA_LastEmptyElement=%_CA_Index%" )
 :CompactArray-loop
-if defined %_CA_Input%[%_CA_Index%] if %_CA_LastEmptyElement% LSS %_CA_Previous% ( Call :MoveObject %_CA_Input%[%_CA_Index%] %_CA_Input%[%_CA_LastEmptyElement%] & set /a "_CA_LastEmptyElement+=1" )
+if defined %_CA_Input%[%_CA_Index%] if %_CA_LastEmptyElement% LEQ %_CA_Previous% ( Call :MoveObject %_CA_Input%[%_CA_Index%] %_CA_Input%[%_CA_LastEmptyElement%] & set /a "_CA_LastEmptyElement+=1" )
 if defined %_CA_Input%[%_CA_Index%] set /a "_CA_LastEmptyElement=%_CA_Index%+1"
-REM if not defined %_CA_Input%[%_CA_Index%]
-
 set /a "_CA_Previous+=1" & set /a "_CA_Index+=1"
 if %_CA_Index% LEQ %_CA_Input_ubound% GoTo :CompactArray-loop
-
+set /a "%_CA_Input%.ubound=%_CA_LastEmptyElement%-1"
 Call :ClearVariablesByPrefix %_CompactArray_prefix% _CompactArray
 GoTo :EOF
 
-close up all gaps in an array's index numbers
 
-
-from lbound to ubound,when find an empty spot, remember that "next spot"  then continue looking until you find a populated array, copy and delete  [] [].suffix or [].*
-
-GoTo :EOF
 
 
 
