@@ -153,7 +153,7 @@ Call :GetBatchFileStructure %__GBFSD_file% %__GBFSD_array%
 REM Call :SaveVariablesToFile GetBatchFileStructure-DEMO.rawstructure.txt %__GBFSD_array%
 Call :RemoveNonFunctionLabels %__GBFSD_array%.labels %__GBFSD_array%.rows
 REM Call :CompactArray %__GBFSD_array%.labels
-
+call :compactarray %__GBFSD_array%.labels
 call :echoarray %__GBFSD_array%.labels 1-30
 
 goto :eof
@@ -1344,10 +1344,13 @@ call :echoarray myarray LINENUMBERS
 
 GoTo :EOF
 
-
+REM bugged?
 :MoveObject
+echo for /f "tokens=1,2* delims==" %%a in ('set %~1 2^>nul') do if "[%%a]" EQU "[%~1]" set %~2=%%b
 for /f "tokens=1,2* delims==" %%a in ('set %~1 2^>nul') do if "[%%a]" EQU "[%~1]" set %~2=%%b
+echo for /f "tokens=1 delims==" %%a in ('set %~1. 2^>nul') do for /f "tokens=2 eol== delims=.=" %%b in ('set %%a 2^>nul') do for /f "tokens=2* delims==" %%c in ('set %%a 2^>nul') do set %~2.%%b=%%c
 for /f "tokens=1 delims==" %%a in ('set %~1. 2^>nul') do for /f "tokens=2 eol== delims=.=" %%b in ('set %%a 2^>nul') do for /f "tokens=2* delims==" %%c in ('set %%a 2^>nul') do set %~2.%%b=%%c
+echo if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
 if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
 GoTo :EOF
 
@@ -1362,9 +1365,12 @@ check for [#] in input
 check if next element is an IndexArray
 run compact array
 GoTo :EOF
+
+
 :DeleteObject
 if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
 GoTo :EOF
+
 :DeleteObjectOnly
 if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1. 2^>nul') do set %%a=
 if "[%~2]" NEQ "[]" shift & GoTo :DeleteObjectOnly
@@ -1475,18 +1481,18 @@ REM Call :EchoArray myarray .suffixA LINENUMBERS
 GoTo :CompactArray-DEMO
 :CompactArray-DEMO-4
 
-REM echo.&echo Delete Object 5+6, print array, then run compact array&echo.
-REM Call :DeleteObject myarray[5]
-REM Call :DeleteObject myarray[6]
-REM Call :EchoArray myarray LINENUMBERS
-REM echo.
-REM REM Call :EchoArray myarray .suffixA LINENUMBERS
-REM echo.&echo Running compact array
-REM Call :CompactArray myarray
-REM echo.
-REM Call :EchoArray myarray LINENUMBERS
-REM echo.
-REM REM Call :EchoArray myarray .suffixA LINENUMBERS
+echo.&echo Delete Object 5+6, print array, then run compact array&echo.
+Call :DeleteObject myarray[5]
+Call :DeleteObject myarray[6]
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
+echo.&echo Running compact array
+Call :CompactArray myarray
+echo.
+Call :EchoArray myarray LINENUMBERS
+echo.
+REM Call :EchoArray myarray .suffixA LINENUMBERS
 
 
 GoTo :CompactArray-DEMO
@@ -1570,6 +1576,7 @@ set /a "_CA_Index=%_CA_Input_lbound%"
 set /a "_CA_Previous=%_CA_Index%-1"
 if defined %_CA_Input%[%_CA_Index%] ( set /a "_CA_LastEmptyElement=%_CA_Index%+1" ) else ( set /a "_CA_LastEmptyElement=%_CA_Index%" )
 :CompactArray-loop
+if defined %_CA_Input%[%_CA_Index%] if %_CA_LastEmptyElement% LEQ %_CA_Previous% ( echo :MoveObject %_CA_Input%[%_CA_Index%] %_CA_Input%[%_CA_LastEmptyElement%] "_CA_LastEmptyElement+=1 %_CA_LastEmptyElement%" )
 if defined %_CA_Input%[%_CA_Index%] if %_CA_LastEmptyElement% LEQ %_CA_Previous% ( Call :MoveObject %_CA_Input%[%_CA_Index%] %_CA_Input%[%_CA_LastEmptyElement%] & set /a "_CA_LastEmptyElement+=1" )
 if defined %_CA_Input%[%_CA_Index%] set /a "_CA_LastEmptyElement=%_CA_Index%+1"
 set /a "_CA_Previous+=1" & set /a "_CA_Index+=1"
@@ -1582,7 +1589,7 @@ GoTo :EOF
 
 
 
-:CompactArray (starting from lbound or ubound, (create new array or modify current) by moving array elements with empty index, so that indexes become contiguous) apply to abc.array[] , abc.array[].suffix and abc.array[].* depending on configuration)
+REM :CompactArray (starting from lbound or ubound, (create new array or modify current) by moving array elements with empty index, so that indexes become contiguous) apply to abc.array[] , abc.array[].suffix and abc.array[].* depending on configuration)
 
 :compact array form one
 find lbound or ubound (lbound if not specificed, if no lbound specified either find lbound or shift array lbound to 0 or 1 ? so many choice)
