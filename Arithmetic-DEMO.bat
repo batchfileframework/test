@@ -89,7 +89,6 @@ set /a "_Arithmetic_operation_index+=1"
 if %_Arithmetic_operation_index% LEQ %_Arithmetic_operation_ubound% GoTo :Arithmetic-loop
 set /a "%_Arithmetic_output%.ubound=%_Arithmetic_output_ubound%"
 :Arithmetic-end
-
 REM if %~3 %~4 clear and goto start
 exit /b %_Arithmetic_result%
 

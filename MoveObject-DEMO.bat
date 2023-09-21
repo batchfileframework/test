@@ -1190,7 +1190,6 @@ GoTo :EOF
 set "_MoveObject_prefix=_MO"
 set _MO_Input=%~1
 set _MO_Output=%~2
-
 REM this should copy all variable suffix to the new destination
 for /f "tokens=1,2* delims==" %%a in ('set %_MO_Input% 2^>nul') do  (
 	setlocal enabledelayedexpansion

@@ -1344,27 +1344,44 @@ call :echoarray myarray LINENUMBERS
 
 GoTo :EOF
 
-REM bugged?
 :MoveObject
-echo for /f "tokens=1,2* delims==" %%a in ('set %~1 2^>nul') do if "[%%a]" EQU "[%~1]" set %~2=%%b
+set "_MoveObject_prefix=_MO"
+set _MO_Input=%~1
+set _MO_Output=%~2
+REM this should copy all variable suffix to the new destination
+for /f "tokens=1,2* delims==" %%a in ('set %_MO_Input% 2^>nul') do  (
+	setlocal enabledelayedexpansion
+	set "_MO_localscope=true"
+	set _MO_Suffix_buffer_input=%%a
+	set _MO_Suffix_buffer_output=%_MO_Output%!_MO_Suffix_buffer_input:%_MO_Input%=!
+	for /f "tokens=*" %%Z in ('echo.!_MO_Suffix_buffer_output!') do (
+																endlocal
+																set %%Z=%%b
+																)
+	)
+if defined _MO_localscope endlocal
+
+REM bugged? Can't have dots in the base name, might be faster than the other, more complex :MoveObject
+:MoveObjectBasic
+REM echo for /f "tokens=1,2* delims==" %%a in ('set %~1 2^>nul') do if "[%%a]" EQU "[%~1]" set %~2=%%b
 for /f "tokens=1,2* delims==" %%a in ('set %~1 2^>nul') do if "[%%a]" EQU "[%~1]" set %~2=%%b
-echo for /f "tokens=1 delims==" %%a in ('set %~1. 2^>nul') do for /f "tokens=2 eol== delims=.=" %%b in ('set %%a 2^>nul') do for /f "tokens=2* delims==" %%c in ('set %%a 2^>nul') do set %~2.%%b=%%c
+REM echo for /f "tokens=1 delims==" %%a in ('set %~1. 2^>nul') do for /f "tokens=2 eol== delims=.=" %%b in ('set %%a 2^>nul') do for /f "tokens=2* delims==" %%c in ('set %%a 2^>nul') do set %~2.%%b=%%c
 for /f "tokens=1 delims==" %%a in ('set %~1. 2^>nul') do for /f "tokens=2 eol== delims=.=" %%b in ('set %%a 2^>nul') do for /f "tokens=2* delims==" %%c in ('set %%a 2^>nul') do set %~2.%%b=%%c
-echo if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
+REM echo if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
 if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1 2^>nul') do set %%a=
 GoTo :EOF
 
-:MoveArrayElement
-:InsertArrayElement
-:InsertArrayObject
-:RemoveArrayElement
-:DeleteArrayElement
-:DeleteArrayElementWithouGap
-check ubound
-check for [#] in input
-check if next element is an IndexArray
-run compact array
-GoTo :EOF
+REM :MoveArrayElement
+REM :InsertArrayElement
+REM :InsertArrayObject
+REM :RemoveArrayElement
+REM :DeleteArrayElement
+REM :DeleteArrayElementWithouGap
+REM check ubound
+REM check for [#] in input
+REM check if next element is an IndexArray
+REM run compact array
+REM GoTo :EOF
 
 
 :DeleteObject
