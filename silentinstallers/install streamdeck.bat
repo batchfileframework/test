@@ -1,0 +1,1 @@
+MsiExec.exe /i "%~dp0Stream_Deck_6.3.0.18948.msi" /qn
