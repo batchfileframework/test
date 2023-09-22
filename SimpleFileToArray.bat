@@ -153,29 +153,33 @@ Call :GetBatchFileStructure %__GBFSD_file% %__GBFSD_array%
 REM Call :SaveVariablesToFile GetBatchFileStructure-DEMO.rawstructure.txt %__GBFSD_array%
 Call :RemoveNonFunctionLabels %__GBFSD_array%.labels %__GBFSD_array%.rows
 REM Call :CompactArray %__GBFSD_array%.labels
+
+REM Goto :EOF
+call :echoarray %__GBFSD_array%.labels 1-30
 call :compactarray %__GBFSD_array%.labels
 call :echoarray %__GBFSD_array%.labels 1-30
+call :echoarray %__GBFSD_array%.labels .name 1-30
 
-goto :eof
 
-Call :GetArrayIndex %__GBFSD_array%.rows %__GBFSD_array%.rows.raw.indexes
-Call :SaveVariablesToFile GetBatchFileStructure-DEMO.raw.indexes.txt %__GBFSD_array%.rows.raw.indexes
-Call :SortArray %__GBFSD_array%.rows.raw.indexes %__GBFSD_array%.rows.indexes
-Call :SaveVariablesToFile GetBatchFileStructure-DEMO.rows.indexes.txt %__GBFSD_array%.rows.indexes
-Call :ClearVariablesByPrefix %__GBFSD_array%.rows.raw
-Call :SaveVariablesToFile GetBatchFileStructure-DEMO.%__GBFSD_array%.txt %__GBFSD_array%
-call :CopySelectedArrayObjects %__GBFSD_array%.rows %__GBFSD_array%.structure %__GBFSD_array%.rows.indexes
-Call :SaveVariablesToFile GetBatchFileStructure-DEMO.%__GBFSD_array%.structure.txt %__GBFSD_array%.structure
-
-echo.&echo Batch structure acquired, printing first 30 elements
-
-call :echoarray %__GBFSD_array%.structure 1-30
 
 
 REM Call :PrintBatchFileStructure batch.rows
 REM Create an array representing all functions, preamble, postscript, cumulative of all previous work
 
 GoTo :EOF
+
+:FindFunctionPreamble
+:FindFunctionEnd
+:FindFunctionPostscript
+
+:FindFunctionRows _myrows
+_myrows.preamble.start
+_myrows.preamble.end
+_myrows.function.start
+_myrows.function.end
+_myrows.postscript.start
+_myrows.postscript.end
+
 
 REM Add arguments to specify any of the 8 output arrays ?
 ::Usage Call :GetBatchFileStructure BatchFile optional StructureArray=batch
@@ -1207,7 +1211,8 @@ if "[%_RNFL_Rows_lbound%]" EQU "[]" set /a "_RNFL_Rows_lbound=0"
 set /a "_RNFL_Index=%_RNFL_Labels_lbound%"
 :RemoveNonFunctionLabels-loop
 Call set "_RNFL_CurrentLabel=%%%_RNFL_Labels%[%_RNFL_Index%].name%%" & call set "_RNFL_CurrentRow=%%%_RNFL_Labels%[%_RNFL_Index%]%%" 
-Call :IsFunctionLabelExcluded %_RNFL_CurrentLabel% && ( set %_RNFL_Rows%[%_RNFL_CurrentRow%]=" & set %_RNFL_Rows%[%_RNFL_CurrentRow%].type=" & set "%_RNFL_Labels%[%_RNFL_Index%]=" & set "%_RNFL_Labels%[%_RNFL_Index%].name=" & set "%_RNFL_Labels%.name[%_RNFL_CurrentLabel%].name=" )
+Call :IsFunctionLabelExcluded %_RNFL_CurrentLabel% && echo ( set "%_RNFL_Rows%[%_RNFL_CurrentRow%]=" ^& set %_RNFL_Rows%[%_RNFL_CurrentRow%].type=" ^& set "%_RNFL_Labels%[%_RNFL_Index%]=" ^& set "%_RNFL_Labels%[%_RNFL_Index%].name=" ^& set "%_RNFL_Labels%.name[%_RNFL_CurrentLabel%]=" )
+Call :IsFunctionLabelExcluded %_RNFL_CurrentLabel% && ( echo 1 & set "%_RNFL_Rows%[%_RNFL_CurrentRow%]=" & echo 2 & set "%_RNFL_Rows%[%_RNFL_CurrentRow%].type=" & echo 3 &  set "%_RNFL_Labels%[%_RNFL_Index%]=" & echo 4 & set "%_RNFL_Labels%[%_RNFL_Index%].name=" & echo 5 & set "%_RNFL_Labels%.name[%_RNFL_CurrentLabel%]=" )
 set /a "_RNFL_Index+=1"
 if %_RNFL_Index% LEQ %_RNFL_Labels_ubound% GoTo :RemoveNonFunctionLabels-loop
 Call :ClearVariablesByPrefix %_RemoveNonFunctionLabels_prefix% _RemoveNonFunctionLabels
@@ -1593,7 +1598,7 @@ set /a "_CA_Index=%_CA_Input_lbound%"
 set /a "_CA_Previous=%_CA_Index%-1"
 if defined %_CA_Input%[%_CA_Index%] ( set /a "_CA_LastEmptyElement=%_CA_Index%+1" ) else ( set /a "_CA_LastEmptyElement=%_CA_Index%" )
 :CompactArray-loop
-if defined %_CA_Input%[%_CA_Index%] if %_CA_LastEmptyElement% LEQ %_CA_Previous% ( echo :MoveObject %_CA_Input%[%_CA_Index%] %_CA_Input%[%_CA_LastEmptyElement%] "_CA_LastEmptyElement+=1 %_CA_LastEmptyElement%" )
+REM if defined %_CA_Input%[%_CA_Index%] if %_CA_LastEmptyElement% LEQ %_CA_Previous% ( echo :MoveObject %_CA_Input%[%_CA_Index%] %_CA_Input%[%_CA_LastEmptyElement%] "_CA_LastEmptyElement+=1 %_CA_LastEmptyElement%" )
 if defined %_CA_Input%[%_CA_Index%] if %_CA_LastEmptyElement% LEQ %_CA_Previous% ( Call :MoveObject %_CA_Input%[%_CA_Index%] %_CA_Input%[%_CA_LastEmptyElement%] & set /a "_CA_LastEmptyElement+=1" )
 if defined %_CA_Input%[%_CA_Index%] set /a "_CA_LastEmptyElement=%_CA_Index%+1"
 set /a "_CA_Previous+=1" & set /a "_CA_Index+=1"
