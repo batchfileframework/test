@@ -16,18 +16,18 @@ hardlink all relevant files to userfolder
 ::Usage Call :GetSoftwareDetails softwarename Details.object
 :GetSoftwareDetails softwarename
 
-software name
-description
-latest.version
-latest.sourceURL[]
-latest.signature
-latest.signature.type
-knownversions[].versions
-knownversions[].signature
-knownversions[].signature.type
+REM software name
+REM description
+REM latest.version
+REM latest.sourceURL[]
+REM latest.signature
+REM latest.signature.type
+REM knownversions[].versions
+REM knownversions[].signature
+REM knownversions[].signature.type
 
 if "[%~1]" EQU "[ffmpeg-essentials-by-gyan.dev]"
-if "[%~1]" EQU "[ffmpeg-full-by-gyan.dev]"
+if "[%~1]" EQU "[ffmpeg-full-by-gyan.dev]" (
 
 
 set "%~2[0].name=FFmpeg"
@@ -53,7 +53,15 @@ set "%~2.sourceURLs[]
 set "%~2.installcommands[]
 set "%~2.signature
 set "%~2.signature.type
+)
 
-if "[%~1]" EQU "[ffmpeg-essentials-by-BtbN]"
 
-if "[%~1]" EQU "[ffmpeg-full-by-BtbN]"
+if "[%~1]" EQU "[ffmpeg-essentials-by-BtbN]" ( )
+
+if "[%~1]" EQU "[ffmpeg-full-by-BtbN]" ( )
+
+if "[%~1]" EQU "[TCC]" (
+
+
+
+)

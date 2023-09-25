@@ -1202,7 +1202,6 @@ for /f "tokens=1,2* delims==" %%a in ('set %_MO_Input% 2^>nul') do  (
 																)
 	)
 if defined _MO_localscope endlocal
-
 REM this clears the old base variable
 if "[%_MO_Input%]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %_MO_Input% 2^>nul') do set %%a=
 Call :ClearVariablesByPrefix %_MoveObject_prefix% _MoveObject 

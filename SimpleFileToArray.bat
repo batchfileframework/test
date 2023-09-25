@@ -148,24 +148,20 @@ REM Call :LoadVariablesFromFile GetBatchFileStructure-DEMO.rows.indexes.txt
 REM Call :LoadVariablesFromFile GetBatchFileStructure-DEMO.rawstructure.txt
 
 
-echo 1
+
 Call :GetBatchFileStructure %__GBFSD_file% %__GBFSD_array%
-echo 2
 REM Call :SaveVariablesToFile GetBatchFileStructure-DEMO.rawstructure.txt %__GBFSD_array%
-Call :CopyArray %__GBFSD_array%.labels %__GBFSD_array%.functions
-echo 3
-Call :RemoveNonFunctionLabels %__GBFSD_array%.functions %__GBFSD_array%.rows
-echo 4
+Call :RemoveNonFunctionLabels %__GBFSD_array%.labels %__GBFSD_array%.rows
 REM Call :CompactArray %__GBFSD_array%.labels
 
 REM Goto :EOF
-call :echoarray %__GBFSD_array%.functions 1-30
-call :compactarray %__GBFSD_array%.functions
-call :echoarray %__GBFSD_array%.functions 1-30
-call :echoarray %__GBFSD_array%.functions .name 1-30
+call :echoarray %__GBFSD_array%.labels 1-30
+call :compactarray %__GBFSD_array%.labels
+call :echoarray %__GBFSD_array%.labels 1-30
+call :echoarray %__GBFSD_array%.labels .name 1-30
 
-Call :CopyArrayAdv %__GBFSD_array%.functions %__GBFSD_array%.functionnames
-Call :EchoArray %__GBFSD_array%.functionnames
+
+
 
 REM Call :PrintBatchFileStructure batch.rows
 REM Create an array representing all functions, preamble, postscript, cumulative of all previous work
@@ -1213,9 +1209,7 @@ call set "_RNFL_Rows_lbound=%%%~2.lbound%%"
 call set "_RNFL_Rows_ubound=%%%~2.ubound%%"
 if "[%_RNFL_Rows_lbound%]" EQU "[]" set /a "_RNFL_Rows_lbound=0"
 set /a "_RNFL_Index=%_RNFL_Labels_lbound%"
-set _RNFL
 :RemoveNonFunctionLabels-loop
-call echo set "_RNFL_CurrentLabel=%%%_RNFL_Labels%[%_RNFL_Index%].name%%" ^& call set "_RNFL_CurrentRow=%%%_RNFL_Labels%[%_RNFL_Index%]%%" 
 Call set "_RNFL_CurrentLabel=%%%_RNFL_Labels%[%_RNFL_Index%].name%%" & call set "_RNFL_CurrentRow=%%%_RNFL_Labels%[%_RNFL_Index%]%%" 
 Call :IsFunctionLabelExcluded %_RNFL_CurrentLabel% && echo ( set "%_RNFL_Rows%[%_RNFL_CurrentRow%]=" ^& set %_RNFL_Rows%[%_RNFL_CurrentRow%].type=" ^& set "%_RNFL_Labels%[%_RNFL_Index%]=" ^& set "%_RNFL_Labels%[%_RNFL_Index%].name=" ^& set "%_RNFL_Labels%.name[%_RNFL_CurrentLabel%]=" )
 Call :IsFunctionLabelExcluded %_RNFL_CurrentLabel% && ( echo 1 & set "%_RNFL_Rows%[%_RNFL_CurrentRow%]=" & echo 2 & set "%_RNFL_Rows%[%_RNFL_CurrentRow%].type=" & echo 3 &  set "%_RNFL_Labels%[%_RNFL_Index%]=" & echo 4 & set "%_RNFL_Labels%[%_RNFL_Index%].name=" & echo 5 & set "%_RNFL_Labels%.name[%_RNFL_CurrentLabel%]=" )
@@ -1404,8 +1398,6 @@ if "[%~1]" NEQ "[]" for /f "tokens=1,2 delims==" %%a in ('set %~1. 2^>nul') do s
 if "[%~2]" NEQ "[]" shift & GoTo :DeleteObjectOnly
 GoTo :EOF
 
-REM this is "copyobjectarray"
-REM doesn't work for array inside array example first[x].second[y]
 ::Usage Call :CopyArray InputArray OutputArray
 :CopyArray
 for /f "tokens=1 delims==" %%a in ('set %~1[ 2^>nul') do for /f "tokens=2 delims=[]" %%b in ('set %%a 2^>nul') do for /f "tokens=2 delims=]" %%c in ('set %%a 2^>nul') do set %~2[%%b]%%c
