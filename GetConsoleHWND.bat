@@ -7,9 +7,11 @@ REM Call :PrintWindowClientRectFromHWND-DEMO
 REM call :PrintWindowRectangleFromHWND-DEMO
 REM Call :IfInStr-DEMO
 REM Call :Concatenate-DEMO
-call :Concatenate-mini-DEMO
-REM Call :SetEllipseWindow-DEMO
-
+REM call :Concatenate-mini-DEMO
+Call :SetEllipseWindow-DEMO
+REM Call :DrawOnConsole-test
+REM Call :PSReadFromEnvironementVariable
+REM call :EscapeSequenceTest
 GoTo :EOF
 
 :GetConsoleAndPrintTitle-quick-DEMO
@@ -49,6 +51,145 @@ Call :GetConsolehWND
 Call :PrintWindowClientRectFromHWND %errorlevel%
 
 GoTo :EOF
+
+
+
+for /f "tokens=*" %%a in ('powershell -command "Add-Type -TypeDefinition '
+using System; 
+using System.Runtime.InteropServices; 
+public class ConsoleWnd { [DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow();
+ }'; 
+ [ConsoleWnd]::GetConsoleWindow()
+ "'
+ 
+ ) do if "[%~1]" NEQ "[]" ( set "%~1=%%a" & exit /b %%a ) else ( exit /b %%a )
+
+
+'powershell -command "Add-Type -TypeDefinition '
+using System;
+using System.Runtime.InteropServices;
+public class NativeMethods {
+[DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow();
+[DllImport("user32.dll", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd);
+[DllImport("user32.dll")] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+[DllImport("gdi32.dll")] public static extern IntPtr CreateSolidBrush(int crColor);
+[DllImport("gdi32.dll")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
+[DllImport("gdi32.dll")] public static extern IntPtr SelectObject(IntPtr hdc, IntPtr h);
+[DllImport("gdi32.dll", SetLastError = true)] public static extern bool DeleteObject(IntPtr ho);
+}';
+$hWndConsole = [NativeMethods]::GetConsoleWindow();
+$hDC = [NativeMethods]::GetDC($hWndConsole);
+$redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF);
+$oldBrush = [NativeMethods]::SelectObject($hDC, $redBrush);
+[NativeMethods]::Ellipse($hDC, 0, 0, 100, 100);
+[NativeMethods]::SelectObject($hDC, $oldBrush);
+[NativeMethods]::DeleteObject($redBrush);
+[NativeMethods]::ReleaseDC([IntPtr]::Zero, $hDC);
+"'
+
+:DrawOnConsole-test
+for /f "tokens=*" %%a in ('powershell -command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class NativeMethods { [DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow(); [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd); [DllImport(\"user32.dll\")] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC); [DllImport(\"gdi32.dll\")] public static extern IntPtr CreateSolidBrush(int crColor); [DllImport(\"gdi32.dll\")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect); [DllImport(\"gdi32.dll\")] public static extern IntPtr SelectObject(IntPtr hdc, IntPtr h); [DllImport(\"gdi32.dll\", SetLastError = true)] public static extern bool DeleteObject(IntPtr ho); }'; $hWndConsole = [NativeMethods]::GetConsoleWindow(); $hDC = [NativeMethods]::GetDC($hWndConsole); $redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF); $oldBrush = [NativeMethods]::SelectObject($hDC, $redBrush); [NativeMethods]::Ellipse($hDC, 0, 0, 100, 100); [NativeMethods]::SelectObject($hDC, $oldBrush); [NativeMethods]::DeleteObject($redBrush); [NativeMethods]::ReleaseDC([IntPtr]::Zero, $hDC);"') do break
+
+REM for /f "tokens=*" %%a in ('powershell -command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class NativeMethods { [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd); [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC); [DllImport(\"gdi32.dll\")] public static extern IntPtr CreateSolidBrush(int crColor); [DllImport(\"gdi32.dll\", SetLastError = true)] public static extern bool DeleteObject(IntPtr hObject); [DllImport(\"gdi32.dll\")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect); [DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow(); [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelProc lpfn, IntPtr hMod, uint dwThreadId); [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool UnhookWindowsHookEx(IntPtr hhk); [DllImport(\"user32.dll\")] public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam); public delegate IntPtr LowLevelProc(int nCode, IntPtr wParam, IntPtr lParam); public const int WH_CALLWNDPROCRET = 12; public const int WM_PAINT = 0x000F; }; $windowProc = [NativeMethods+LowLevelProc] { param([int]$nCode, [IntPtr]$wParam, [IntPtr]$lParam); if ($nCode >= 0) { $message = [System.Runtime.InteropServices.Marshal]::PtrToStructure($lParam, [System.Windows.Forms.Message]); if ($message.Msg -eq [NativeMethods]::WM_PAINT) { $hWndConsole = [NativeMethods]::GetConsoleWindow();$hDC = [NativeMethods]::GetDC($hWndConsole); $redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF); [NativeMethods]::Ellipse($hDC, 0, 0, 100, 100); [NativeMethods]::ReleaseDC($hWndConsole, $hDC); [NativeMethods]::DeleteObject($redBrush); }; }; return [NativeMethods]::CallNextHookEx([IntPtr]::Zero, $nCode, $wParam, $lParam); }; $hookId = [NativeMethods]::SetWindowsHookEx([NativeMethods]::WH_CALLWNDPROCRET, $windowProc, [IntPtr]::Zero, [System.Diagnostics.Process]::GetCurrentProcess().Id); Write-Host \"Press Enter to exit...\"; $null = $host.UI.RawUI.ReadKey(\"NoEcho,IncludeKeyDown\"); [NativeMethods]::UnhookWindowsHookEx($hookId);"') do echo %%a
+REM for /f "tokens=*" %%a in ('powershell -command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; Using System.Windows.Forms.dll; public static class NativeMethods { [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd); [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC); [DllImport(\"gdi32.dll\")] public static extern IntPtr CreateSolidBrush(int crColor); [DllImport(\"gdi32.dll\", SetLastError = true)] public static extern bool DeleteObject(IntPtr hObject); [DllImport(\"gdi32.dll\")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect); [DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow(); [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelProc lpfn, IntPtr hMod, uint dwThreadId); [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool UnhookWindowsHookEx(IntPtr hhk); [DllImport(\"user32.dll\")] public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam); public delegate IntPtr LowLevelProc(int nCode, IntPtr wParam, IntPtr lParam); public const int WH_CALLWNDPROCRET = 12; public const int WM_PAINT = 0x000F; }; $windowProc = [NativeMethods+LowLevelProc] { param([int]$nCode, [IntPtr]$wParam, [IntPtr]$lParam); if ($nCode -ge 0) { $message = [System.Runtime.InteropServices.Marshal]::PtrToStructure($lParam, [System.Windows.Forms.Message]); if ($message.Msg -eq [NativeMethods]::WM_PAINT) { $hWndConsole = [NativeMethods]::GetConsoleWindow(); $hDC = [NativeMethods]::GetDC($hWndConsole); $redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF); [NativeMethods]::Ellipse($hDC, 0, 0, 100, 100); [NativeMethods]::ReleaseDC($hWndConsole, $hDC); [NativeMethods]::DeleteObject($redBrush); }; }; return [NativeMethods]::CallNextHookEx([IntPtr]::Zero, $nCode, $wParam, $lParam); }; $hookId = [NativeMethods]::SetWindowsHookEx([NativeMethods]::WH_CALLWNDPROCRET, $windowProc, [IntPtr]::Zero, [System.Diagnostics.Process]::GetCurrentProcess().Id); Write-Host \"Press Enter to exit...\"; $null = $host.UI.RawUI.ReadKey(\"NoEcho,IncludeKeyDown\"); [NativeMethods]::UnhookWindowsHookEx($hookId);"') do echo %%a
+
+GoTo :EOF
+
+:PSReadFromEnvironementVariable
+set foo=a
+REM set bar=write-host test;
+set bar=$env:foo -or 0;
+REM set fff=[int]::TryParse($myVariable, [ref]$null) ? $myVariable : 0 | Write-Output
+REM for /f "tokens=*" %%a in ( 'powershell -command "$Env:Foo += '!'; $Env:Foo; iex $env:bar"' ) do echo %%a
+REM set bar=[int]::TryParse($env:foo, [ref]$parsedValue) ? $parsedValue : 0 | Write-Output
+
+for /f "tokens=*" %%a in ( 'powershell -command "iex $Env:bar"' ) do echo %%a
+GoTo :EOF
+
+:PowershellRunFromArray
+
+
+
+
+GoTo :EOF
+# Ensure lbound and ubound are defined and are numeric
+if (![int]::TryParse($env:lbound, [ref]$lbound) -or ![int]::TryParse($env:ubound, [ref]$ubound)) {
+    Write-Host "lbound and/or ubound environment variables are not properly defined or are not numeric."
+    exit
+}
+
+# Loop through the range
+for ($i = $lbound; $i -le $ubound; $i++) {
+    Write-Host "test $i"
+}
+
+
+for /f "tokens=*" %%a in ( 'powershell -command "$Env:Foo += '!'; $Env:Foo; iex $env:bar"' ) do echo %%a
+
+
+GoTo :EOF
+
+
+:EscapeSequenceTest
+echo|set /p="[?25l"         REM Hide cursor
+echo|set /p="[3A"          REM Move the cursor up 3 lines
+echo|set /p="Your text here" REM Print your text
+echo|set /p="[?25h"         REM Show cursor
+GoTo :EOF
+
+REM get hDC of desktop ?
+REM $hDC = [NativeMethods]::GetDC([IntPtr]::Zero);
+
+REM # Add the type definitions to the current session
+REM Add-Type -TypeDefinition $TypeDef -Language CSharp
+
+# Get the desktop's device context (null means desktop)
+$hDC = [NativeMethods]::GetDC([IntPtr]::Zero)
+
+# Create a red brush
+$redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF) # 0x00BBGGRR
+
+# Select the red brush into the device context
+$oldBrush = [NativeMethods]::SelectObject($hDC, $redBrush)
+
+# Draw a red ellipse
+[NativeMethods]::Ellipse($hDC, 0, 0, 100, 100) # Draws an ellipse with 100x100 size at (0,0)
+
+# Restore the old brush
+[NativeMethods]::SelectObject($hDC, $oldBrush)
+
+# Delete the red brush
+[NativeMethods]::DeleteObject($redBrush)
+
+# Release the device context
+[NativeMethods]::ReleaseDC([IntPtr]::Zero, $hDC)
+
+
+
+
+
+
+
+paint with callback
+
+
+# Define native methods
+Add-Type -TypeDefinition @"
+using System; using System.Runtime.InteropServices; 
+public static class NativeMethods { [DllImport("user32.dll", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd); [DllImport("user32.dll", SetLastError = true)] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC); [DllImport("gdi32.dll")] public static extern IntPtr CreateSolidBrush(int crColor); [DllImport("gdi32.dll", SetLastError = true)] public static extern bool DeleteObject(IntPtr hObject); [DllImport("gdi32.dll")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect); [DllImport("kernel32.dll")] public static extern IntPtr GetConsoleWindow(); [DllImport("user32.dll", SetLastError = true)] public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelProc lpfn, IntPtr hMod, uint dwThreadId); [DllImport("user32.dll", SetLastError = true)] public static extern bool UnhookWindowsHookEx(IntPtr hhk); [DllImport("user32.dll")] public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam); public delegate IntPtr LowLevelProc(int nCode, IntPtr wParam, IntPtr lParam); public const int WH_CALLWNDPROCRET = 12; public const int WM_PAINT = 0x000F; };
+$windowProc = [NativeMethods+LowLevelProc] { param([int]$nCode, [IntPtr]$wParam, [IntPtr]$lParam); if ($nCode -ge 0) { $message = [System.Runtime.InteropServices.Marshal]::PtrToStructure($lParam, [System.Windows.Forms.Message]); if ($message.Msg -eq [NativeMethods]::WM_PAINT) { $hWndConsole = [NativeMethods]::GetConsoleWindow(); $hDC = [NativeMethods]::GetDC($hWndConsole); $redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF); [NativeMethods]::Ellipse($hDC, 0, 0, 100, 100); [NativeMethods]::ReleaseDC($hWndConsole, $hDC); [NativeMethods]::DeleteObject($redBrush); }; }; return [NativeMethods]::CallNextHookEx([IntPtr]::Zero, $nCode, $wParam, $lParam); };
+$hookId = [NativeMethods]::SetWindowsHookEx([NativeMethods]::WH_CALLWNDPROCRET, $windowProc, [IntPtr]::Zero, [System.Diagnostics.Process]::GetCurrentProcess().Id); Write-Host "Press Enter to exit..."; $null = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown"); [NativeMethods]::UnhookWindowsHookEx($hookId);
+
+
+
+
+
+
+
+
+
+
+
 
 ::Usage Call :GetConsolehWND optional Output
 :GetConsoleHWND
@@ -114,267 +255,6 @@ set "_BPWRFH.main[2]=\"$^($rc.left^), $^($rc.top^), $^($rc.right^), $^($rc.bott
 set /a "_BPWRFH.main.ubound=2"
 GoTo :EOF
 
-:Concatenate-mini-DEMO
-
-echo -------------------------------
-Call :Concatenate "abc" "def" "ghi" _myConcatenated-Mini-1
-
-echo.&echo.&echo result for Call :Concatenate "abc" "def" "ghi" _myConcatenated-Mini-1
-echo Demonstrate concatenate of 3 strings by value, default separator of " " is used
-echo.&echo %_myConcatenated-Mini-1%
-
-echo -------------------------------
-
-set myvar=jkl
-set myothervar=mno
-set myotherothervar=pqr
-
-Call :Concatenate myvar myothervar myotherothervar _myConcatenated-Mini-2
-
-echo.&echo.&echo result for Call :Concatenate myvar myothervar myotherothervar _myConcatenated-Mini-2
-echo Demonstrate concatenate of 3 strings by reference, default separator of " " is used
-echo.&echo %_myConcatenated-Mini-2%
-
-
-echo -------------------------------
-
-set myarray[0]=stu
-set myarray[1]=vwx
-set myarray[2]=yzA
-set /a "myarray.ubound=2"
-
-Call :Concatenate myarray _myConcatenated-Mini-3
-
-echo.&echo.&echo result for Call :Concatenate myarray _myConcatenated-Mini-3
-echo Demonstrate concatenate of 3 strings in an array
-echo.&echo %_myConcatenated-Mini-3%
-
-echo -------------------------------
-
-Call :Concatenate "abc" "def" "ghi" myvar myothervar myotherothervar myarray _myConcatenated-Mini-4
-
-echo.&echo.&echo result for Call :Concatenate "abc" "def" "ghi" myvar myothervar myotherothervar myarray _myConcatenated-Mini-4
-echo Demonstrate concatenate with all 3 previous methods combined
-echo.&echo %_myConcatenated-Mini-4%
-
-echo -------------------------------
-
-Call :Concatenate SEPARATOR 1 "abc" "def" "ghi" myvar myothervar myotherothervar myarray _myConcatenated-Mini-5
-
-echo.&echo.&echo result for Call :Concatenate SEPARATOR 1 "abc" "def" "ghi" myvar myothervar myotherothervar myarray _myConcatenated-Mini-5
-echo Demonstrate same as previous, but a separator is specified to "1"
-echo.&echo %_myConcatenated-Mini-5%
-
-echo -------------------------------
-Call :Concatenate "abc" "def" "ghi" myvar SEPARATOR 1 myothervar myotherothervar myarray _myConcatenated-Mini-6
-
-echo.&echo.&echo result for Call :Concatenate "abc" "def" "ghi" myvar SEPARATOR 1 myothervar myotherothervar myarray _myConcatenated-Mini-6
-echo Demonstrate same as previous, but a separator is specified to "1" starting from myothervar/vwx only
-echo.&echo %_myConcatenated-Mini-6%
-
-echo -------------------------------
-Call :Concatenate "abc" SEPARATOR 1 "def" "ghi" myvar SEPARATOR 2 myothervar myotherothervar SEPARATOR " " myarray _myConcatenated-Mini-7
-
-echo.&echo.&echo result for Call :Concatenate "abc" SEPARATOR 1 "def" "ghi" myvar SEPARATOR 2 myothervar myotherothervar SEPARATOR " " myarray _myConcatenated-Mini-7
-echo Demonstrate same as previous, but multiple separators are used
-echo.&echo %_myConcatenated-Mini-7%
-
-echo -------------------------------
-
-
-GoTo :EOF
-
-:Concatenate-DEMO
-
-Call :ClearVariablesByPrefix %_Concatenate_prefix% _Concatenate
-
-set "debug="
-
-set myarray[0]=Mary had a little lamb,
-set myarray[1]=Its fleece was white as snow, yeah.
-set myarray[2]=Everywhere the child went,
-set myarray[3]=The little lamb was sure to go, yeah.
-set /a "myarray.lbound=0"
-set /a "myarray.ubound=3"
-
-set "myarray2[-1]= "
-set myarray2[0]=He followed her to school one day,
-set myarray2[1]=And broke the teacher's rule.
-set myarray2[2]=What a time did they have,
-set myarray2[3]=That day at school.
-set /a "myarray2.lbound=-1"
-set /a "myarray2.ubound=3"
-
-set "myarray3[-1]= "
-set myarray3[0]=Tisket, tasket,
-set myarray3[1]=A green and yellow basket.
-set myarray3[2]=Sent a letter to my baby,
-set myarray3[3]=On my way I passed it.
-set /a "myarray3.lbound=-1"
-set /a "myarray3.ubound=3"
-
-echo -------------------------------
-Call :Concatenate myarray myarray2 myarray3 _myConcatenatedString1
-
-echo.&echo.&echo result for Call :Concatenate myarray myarray2 myarray3 _myConcatenatedString1
-echo Demonstrate concatenate of all elements within 3 array, default separator of " " will be used
-echo.&echo %_myConcatenatedString1%
-
-echo -------------------------------
-Call :Concatenate SEPARATOR X myarray myarray2 myarray3 _myConcatenatedString2
-
-echo.&echo.&echo result for Call :Concatenate SEPARATOR X myarray myarray2 myarray3 _myConcatenatedString2
-echo demonstrate concatenation, same as previous but a custom separator is specified
-echo.&echo %_myConcatenatedString2%
-
-echo -------------------------------
-Call :Concatenate SEPARATOR X myarray SEPARATOR Y myarray2 SEPARATOR Z myarray3 _myConcatenatedString3
-
-echo.&echo.&echo result for Call :Concatenate SEPARATOR X myarray SEPARATOR Y myarray2 SEPARATOR Z myarray3 _myConcatenatedString3
-echo demonstrate concatenation, same as previous but a custom separator is specified on each new array
-echo.&echo %_myConcatenatedString3%
-
-echo -------------------------------
-Call :Concatenate "Mary had a little lamb," "Its fleece was white as snow, yeah." "Everywhere the child went," "The little lamb was sure to go, yeah." _myConcatenatedString4
-
-echo.&echo.&echo result for Call :Concatenate "Mary had a little lamb," "Its fleece was white as snow, yeah." "Everywhere the child went," "The little lamb was sure to go, yeah." _myConcatenatedString4
-echo demonstrate concatenation of plain arguments by value instead of arrays by reference
-echo.&echo %_myConcatenatedString4%
-
-echo -------------------------------
-Call :Concatenate "Mary had a little lamb," "Its fleece was white as snow, yeah." "Everywhere the child went," "The little lamb was sure to go, yeah." myarray2 myarray3 _myConcatenatedString5
-
-echo.&echo.&echo result for Call :Concatenate "Mary had a little lamb," "Its fleece was white as snow, yeah." "Everywhere the child went," "The little lamb was sure to go, yeah." myarray2 myarray3 _myConcatenatedString5
-echo demonstrate concatenation of plain argument by value but then also including two array elements by reference
-echo.&echo %_myConcatenatedString5%
-
-set myseparator=123
-set "myvalue=Its fleece was white as snow, yeah."
-set "myothervalue=The little lamb was sure to go, yeah."
-
-echo -------------------------------
-Call :Concatenate "Mary had a little lamb," myvalue "Everywhere the child went," myothervalue myarray2 SEPARATOR myseparator myarray3 _myConcatenatedString6
-
-echo.&echo.&echo result for Call :Concatenate "Mary had a little lamb," myvalue "Everywhere the child went," myothervalue myarray2 SEPARATOR myseparator myarray3 _myConcatenatedString6
-echo demonstrate concatenation of plain argument by value but then also including two array elements by reference
-echo however this time, the second and fourth elements are provided by non-array reference, and a separator is specified by reference for myarray3 
-echo.&echo %_myConcatenatedString6%
-
-
-
-rem Two empty lines above are essential
-set newline=^
-
-
-rem Two empty lines above are essential
-
-set debug=true
-echo.&echo.&echo.
-
-Call :Concatenate-debug SEPARATOR newline myarray myarray2 myarray3 TheOutput
-
-echo.&echo.&echo result for Call :Concatenate SEPARATOR newline myarray myarray2 myarray3 TheOutput
-echo.&echo %TheOutput%
-
-set TheOutput
-
-REM setlocal enabledelayedexpansion
-REM echo.&echo.!_myConcatenatedString!
-REM endlocal
-
-REM echo.&echo set _Concatenate_buffer&echo.
-REM set _Concatenate_buffer
-REM echo.&echo set _myConcatenatedString&echo.
-REM set _myConcatenatedString
-
-GoTo :EOF
-
-::Usage Call :Concatenate optional (SEPARATOR "X") InputArray1 InputArray2 InputArrayN OutputValue
-:Concatenate
-if "[%~1]" EQU "[SEPARATOR]" ( set "_Concatenate_separator=%~2" & shift & shift & GoTo :Concatenate )
-set "_Concatenate_prefix=_CA"
-if defined %1.ubound ( set "_Concatenate_input=%~1" ) else ( set "_Concatenate_input=Concatenate_placeholder" )
-if defined %1.lbound call set /a _Concatenate_lbound=%%%~1.lbound%%
-if defined %1.ubound call set /a _Concatenate_ubound=%%%~1.ubound%%
-if not defined %1.lbound set /a "_Concatenate_lbound=0"
-if not defined %1.ubound set /a "_Concatenate_ubound=0"
-set /a "_Concatenate_index=%_Concatenate_lbound%"
-setlocal enabledelayedexpansion
-if not defined %1.lbound if not defined %1.ubound if not defined %_Concatenate_input%[%_Concatenate_index%] if defined %1 set %_Concatenate_input%[%_Concatenate_index%]=!%1!
-if not defined %1.lbound if not defined %1.ubound if not defined %_Concatenate_input%[%_Concatenate_index%] set "%_Concatenate_input%[%_Concatenate_index%]=%~1"
-if defined !_Concatenate_separator! ( set _Concatenate_separator=!%_Concatenate_separator%! )
-if not defined _Concatenate_separator set "_Concatenate_separator= "
-:Concatenate-loop
-set _Concatenate_buffer=!_Concatenate_buffer!!%_Concatenate_input%[%_Concatenate_index%]!!_Concatenate_separator!
-set /a "_Concatenate_index+=1"
-if %_Concatenate_index% LEQ %_Concatenate_ubound% GoTo :Concatenate-loop
-for /f "tokens=* delims=" %%a in ('echo.!_Concatenate_buffer!') do (
-																endlocal
-																set _Concatenate_buffer=%%a
-																)
-if "[%~3]" NEQ "[]" ( shift & GoTo :Concatenate ) 
-setlocal enabledelayedexpansion
-for /f "tokens=* delims==" %%a in ('echo.!_Concatenate_buffer!') do (
-																endlocal
-																set %~2=%%a
-																)
-Call :ClearVariablesByPrefix %_Concatenate_prefix% _Concatenate
-GoTo :EOF
-
-
-::Usage Call :Concatenate optional (SEPARATOR "X") InputArray1 InputArray2 InputArrayN OutputValue
-:Concatenate-debug
-if "[%~1]" EQU "[SEPARATOR]" ( set "_Concatenate_separator=%~2" & shift & shift & GoTo :Concatenate-debug )
-set "_Concatenate_prefix=_CA"
-if defined %1.ubound ( set "_Concatenate_input=%~1" ) else ( set "_Concatenate_input=Concatenate_placeholder" )
-if defined %1.lbound call set /a _Concatenate_lbound=%%%~1.lbound%%
-if defined %1.ubound call set /a _Concatenate_ubound=%%%~1.ubound%%
-if not defined %1.lbound set /a "_Concatenate_lbound=0"
-if not defined %1.ubound set /a "_Concatenate_ubound=0"
-set /a "_Concatenate_index=%_Concatenate_lbound%"
-setlocal enabledelayedexpansion
-if not defined %1.lbound if not defined %1.ubound if not defined %_Concatenate_input%[%_Concatenate_index%] if defined %1 set %_Concatenate_input%[%_Concatenate_index%]=!%1!
-if not defined %1.lbound if not defined %1.ubound if not defined %_Concatenate_input%[%_Concatenate_index%] set "%_Concatenate_input%[%_Concatenate_index%]=%~1"
-if defined !_Concatenate_separator! ( set _Concatenate_separator=!%_Concatenate_separator%! )
-if not defined _Concatenate_separator set "_Concatenate_separator= "
-:Concatenate-debug-loop
-set _Concatenate_buffer=!_Concatenate_buffer!!%_Concatenate_input%[%_Concatenate_index%]!!_Concatenate_separator!
-set /a "_Concatenate_index+=1"
-if %_Concatenate_index% LEQ %_Concatenate_ubound% GoTo :Concatenate-debug-loop
-REM ----------DEBUG----------
-if "[%debug%]" NEQ "[true]" for /f "tokens=* delims=" %%a in ('echo.!_Concatenate_buffer!') do (
-																endlocal
-																REM ----------DEBUG----------
-																if "[%debug%]" EQU "[true]" echo This never runs 1 a%%aa
-																REM ----------DEBUG----------
-																set _Concatenate_buffer=%%a
-																)
-REM ----------DEBUG----------
-if "[%~3]" NEQ "[]" ( shift & GoTo :Concatenate-debug ) 
-
-REM ----------DEBUG----------
-if "[%debug%]" EQU "[true]" ( echo so close to working&echo. )
-if "[%debug%]" EQU "[true]" echo !_Concatenate_buffer!
-if "[%debug%]" EQU "[true]" ( echo.&echo but I can't get the text out of setlocal :^( )
-REM ----------DEBUG----------
-
-setlocal enabledelayedexpansion
-REM ----------DEBUG----------
-if "[%debug%]" NEQ "[true]" for /f "tokens=* delims==" %%a in ('echo.!_Concatenate_buffer!') do (
-																endlocal
-																REM ----------DEBUG----------
-																if "[%debug%]" EQU "[true]"  echo This never runs 2 a%%aa
-																REM ----------DEBUG----------
-																set %~2=%%a
-																)
-REM ----------DEBUG----------
-if "[%debug%]" EQU "[true]" echo set %~2=_Concatenate_buffer
-REM if "[%debug%]" EQU "[true]" set %~2=!_Concatenate_buffer!
-set %~2=!_Concatenate_buffer!
-REM ----------DEBUG----------
-if "[%debug%]" NEQ "[true]" Call :ClearVariablesByPrefix %_Concatenate_prefix% _Concatenate
-REM ----------DEBUG----------
-GoTo :EOF
 
 :: Usage Call :ClearVariablesByPrefix myPrefix
 :ClearVariablesByPrefix
@@ -414,8 +294,18 @@ if "[%~2]" NEQ "[]" shift & GoTo :GetC#.struct
 set "_GetC#.struct_search="
 GoTo :EOF
 
+:GetC#Structs
+GoTo :EOF
+
+:GetC#Imports-user32.dll
+GoTo :EOF
+
+:GetC#Imports-gdi32.dll
+GoTo :EOF
+
 :GetC#.import
 set "_GetC#.import_search=%~1"
+REM USER32
 Call :IfInStr _GetC#.import_search AdjustWindowRect 		&& set c#.imports.user32.AdjustWindowRect=[DllImport("user32.dll")] public static extern bool AdjustWindowRect(ref RECT lpRect, uint dwStyle, bool bMenu);&:: AdjustWindowRect - Calculates the required size of the window rectangle, based on the desired size of the client rectangle.
 Call :IfInStr _GetC#.import_search BeginPaint 				&& set c#.imports.user32.BeginPaint=[DllImport("user32.dll")] public static extern IntPtr BeginPaint(IntPtr hWnd, out PAINTSTRUCT lpPaint);&:: BeginPaint and EndPaint - Prepares the window for painting and cleans up after painting.
 Call :IfInStr _GetC#.import_search BringWindowToTop 		&& set c#.imports.user32.BringWindowToTop=[DllImport("user32.dll")] public static extern bool BringWindowToTop(IntPtr hWnd);&:: BringWindowToTop - Brings the specified window to the top of the Z order.
@@ -455,7 +345,7 @@ Call :IfInStr _GetC#.import_search SetWindowLong 			&& set c#.imports.user32.Set
 Call :IfInStr _GetC#.import_search SetWindowPos 			&& set c#.imports.user32.SetWindowPos=[DllImport("user32.dll", SetLastError = true)] public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);&:: SetWindowPos - Changes the size, position, and Z order of a child, pop-up, or top-level window.
 Call :IfInStr _GetC#.import_search ShowWindow 				&& set c#.imports.user32.ShowWindow=[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);&:: ShowWindow - Sets the specified window's show state.
 Call :IfInStr _GetC#.import_search WindowFromPoint 			&& set c#.imports.user32.WindowFromPoint=[DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(POINT Point);&:: WindowFromPoint - Retrieves a handle to the window that contains the specified point.
-
+REM GDI32
 Call :IfInStr _GetC#.import_search AddFontResource 			&& set c#.imports.gdi32.AddFontResource=[DllImport("gdi32.dll")] public static extern int AddFontResource(string lpFileName);&:: Adds a font resource from a specified file to the system.
 Call :IfInStr _GetC#.import_search Arc 						&& set c#.imports.gdi32.Arc=[DllImport("gdi32.dll")] public static extern bool Arc(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);&:: Arc - Draws an elliptical arc.
 Call :IfInStr _GetC#.import_search ArcTo 					&& set c#.imports.gdi32.ArcTo=[DllImport("gdi32.dll")] public static extern bool ArcTo(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXRadial1, int nYRadial1, int nXRadial2, int nYRadial2);&:: Draws an elliptical arc.
@@ -607,45 +497,6 @@ if not defined _IfInStr_SearchedString set _IfInStr_SearchedString=%~2
 call set _IfInStr_buffer=%%_IfInStr_SearchedString:%_IfInStr_SearchTerm%=%%
 set "_IfInStr_SearchTerm=" & set "_IfInStr_SearchedString=" & set "_IfInStr_buffer=" & if "[%_IfInStr_SearchedString%]" EQU "[%_IfInStr_buffer%]" ( exit /b 1 ) else ( exit /b 0 ) 
 
-:IfInStr-DEMO
-
-echo Testing IfInStr
-
-set "searchterm=123" & set "searchstring=123456"
-echo.&echo is %searchterm% in %searchstring% & Call :IfInStr %searchterm% %searchstring% && echo yes %searchterm% is in %searchstring% || echo no %searchterm% is not in %searchstring%
-
-set "searchterm=123" & set "searchstring=456123"
-echo.&echo is %searchterm% in %searchstring% & Call :IfInStr %searchterm% %searchstring% && echo yes %searchterm% is in %searchstring% || echo no %searchterm% is not in %searchstring%
-
-set "searchterm=123" & set "searchstring=4512367"
-echo.&echo is %searchterm% in %searchstring% & Call :IfInStr %searchterm% %searchstring% && echo yes %searchterm% is in %searchstring% || echo no %searchterm% is not in %searchstring%
-
-set "searchterm=dog" & set "searchstring=The fox lazy lazy browned quick dog jump dog dog"
-echo.&echo is %searchterm% in %searchstring% & Call :IfInStr %searchterm% "%searchstring%" && echo yes %searchterm% is in %searchstring% || echo no %searchterm% is not in %searchstring%
-
-set "searchterm=jump" & set "searchstring=The fox lazy lazy browned quick dog jump dog dog"
-echo.&echo is %searchterm% in %searchstring% & Call :IfInStr %searchterm% searchstring && echo yes %searchterm% is in %searchstring% || echo no %searchterm% is not in %searchstring%
-
-set "searchterm=" & set "searchstring=123456"
-echo.&echo is %searchterm% in %searchstring% & Call :IfInStr "%searchterm%" %searchstring% && echo yes %searchterm% is in %searchstring% || echo no %searchterm% is not in %searchstring%
-
-
-set "searchterm=123" & set "searchstring=123456"
-echo.&echo is %searchterm% in %searchstring% & Call :IfInStr searchterm searchstring && echo yes %searchterm% is in %searchstring% || echo no %searchterm% is not in %searchstring%
-
-set "searchterm=abcdef" & set "searchstring=123456"
-echo.&echo is %searchterm% in %searchstring% & Call :IfInStr %searchterm% %searchstring% && echo yes %searchterm% is in %searchstring% || echo no %searchterm% is not in %searchstring%
-
-set "searchterm=abc123" & set "searchstring=123456"
-echo.&echo is %searchterm% in %searchstring% & Call :IfInStr %searchterm% %searchstring% && echo yes %searchterm% is in %searchstring% || echo no %searchterm% is not in %searchstring%
-
-set "searchterm=12 3" & set "searchstring=123456"
-echo.&echo is %searchterm% in %searchstring% & Call :IfInStr searchterm %searchstring% && echo yes %searchterm% is in %searchstring% || echo no %searchterm% is not in %searchstring%
-
-
-GoTo :EOF
-
-
 
 :PrintWindowDimensionsFromHWND
 for /f "tokens=1-6" %%a in ('powershell -command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; [StructLayout(LayoutKind.Sequential)] public struct RECT { public int left; public int top; public int right; public int bottom; } public class WindowPos { [DllImport(\"user32.dll\")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect); }';  $rc = New-Object RECT; [WindowPos]::GetWindowRect([IntPtr]%~1, [ref]$rc) | Out-Null; \"$^($rc.left^), $^($rc.top^), $^($rc.right^), $^($rc.bottom^), $^($rc.right - $rc.left^) $^($rc.bottom - $rc.top^)\""') do ( 
@@ -669,18 +520,34 @@ public class ClientRect { [DllImport(\"user32.dll\")] public static extern bool 
 public class WindowPos { [DllImport(\"user32.dll\")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect); }';
 
 [StructLayout(LayoutKind.Sequential)] public struct RECT { public int left; public int top; public int right; public int bottom; } 
+
 public class ClientRect { [DllImport(\"user32.dll\")] public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect); }';
+
  $rc = New-Object RECT; [ClientRect]::GetClientRect([IntPtr]%~1, [ref]$rc) | Out-Null;
- \"$^($rc.right^), $^($rc.bottom^)\""') do ( echo width:%%a height:%%b  )
+ 
+ \"$^($rc.right^), $^($rc.bottom^)\""'
+ 
+ ) do ( echo width:%%a height:%%b  )
+ 
+ 
+ 
+ 
  
 [StructLayout(LayoutKind.Sequential)] public struct RECT { public int left; public int top; public int right; public int bottom; } 
+
 public class WindowPos { [DllImport(\"user32.dll\")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect); }';
+
   $rc = New-Object RECT; [WindowPos]::GetWindowRect([IntPtr]%~1, [ref]$rc) | Out-Null;
-  \"$^($rc.left^), $^($rc.top^), $^($rc.right^), $^($rc.bottom^), $^($rc.right - $rc.left^) $^($rc.bottom - $rc.top^)\""') do ( 
+  
+  \"$^($rc.left^), $^($rc.top^), $^($rc.right^), $^($rc.bottom^), $^($rc.right - $rc.left^) $^($rc.bottom - $rc.top^)\""'
+  
+  ) do ( 
 
 
 "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; 
+
 [StructLayout(LayoutKind.Sequential)] public struct RECT { public int left; public int top; public int right; public int bottom; } 
+
 public class WindowPos { [DllImport(\"user32.dll\")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect); }';  
 
 $rc = New-Object RECT;
@@ -696,6 +563,10 @@ $rc = New-Object RECT;
 public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
 MoveWindow - Changes the position and dimensions of the specified window.
+
+
+
+
 ::Usage: Call :MoveWindowPosition hWND newX newY
 :MoveWindowPosition
 for /f "tokens=*" %%i in ('powershell -command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class WindowMover { [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint); }'; [WindowMover]::MoveWindow([IntPtr]%~1, %~2, %~3, 0, 0, $false) | Out-Null; \"Moved\""') do (echo %%i)
@@ -717,8 +588,7 @@ GOTO :EOF
 
 SetWindowRgn - Sets the window region of a window. The window region determines the area within the window where the system permits drawing. The system does not display any portion of a window that lies outside of the window region.
 
-[DllImport("user32.dll")]
-public static extern int SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw);
+[DllImport("user32.dll")] public static extern int SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw);
 
 [StructLayout(LayoutKind.Sequential)] public struct POINT { public int x; public int y; }
 
@@ -733,17 +603,9 @@ LOGPEN - Defines the style, width, and color of a pen.
 
 LOGBRUSH - Defines the style, color, and pattern of a physical brush.
 [StructLayout(LayoutKind.Sequential)] public struct LOGBRUSH { public uint lbStyle; public uint lbColor; public uint lbHatch; }
-:GetC#Structs
 
-GoTo :EOF
 
-:GetC#Imports-user32.dll
 
-GoTo :EOF
-
-:GetC#Imports-gdi32.dll
-
-GoTo :EOF
 
 ::Usage: Call :SetEllipseWindow HWND
 :SetEllipseWindow2
@@ -839,6 +701,14 @@ GOTO :EOF
 
 --------------------------------------------------------------------------------------
 
+obtain device context from window
+GetDC(), BeginPaint() 
+then select GDI object
+draw shit
+then release device context
+ReleaseDC(), EndPaint()
+and delete the GDI objects
+
 Before drawing with GDI functions, you'll need to obtain a device context (DC) for the window or device where you want to draw.
  This can be achieved using functions like GetDC(), BeginPaint(), etc. Once you have a DC, you can select GDI objects (like pens and brushes)
  into the DC to control the appearance of the graphics you draw.
@@ -903,3 +773,30 @@ Pie
 RoundRect
 
 
+::Usage Call :Concatenate OutputValue optional (SEPARATOR "X") InputArray1 InputArray2 InputArrayN 
+:Concatenate
+if not defined _Concatenate_localscope ( setlocal enabledelayedexpansion & set "_Concatenate_localscope=true" )
+if not defined _Concatenate_output ( set "_Concatenate_output=%~1" & shift & GoTo :Concatenate )
+if "[%~1]" EQU "[SEPARATOR]" ( set "_Concatenate_separator=%~2" & shift & shift & GoTo :Concatenate )
+set "_Concatenate_prefix=_CA"
+if defined %1.ubound ( set "_Concatenate_input=%~1" ) else ( set "_Concatenate_input=_Concatenate_placeholder" & set "_Concatenate_placeholder[0]=" )
+if defined %1.lbound call set /a _Concatenate_lbound=%%%~1.lbound%%
+if defined %1.ubound call set /a _Concatenate_ubound=%%%~1.ubound%%
+if not defined %1.lbound set /a "_Concatenate_lbound=0"
+if not defined %1.ubound set /a "_Concatenate_ubound=0"
+set /a "_Concatenate_index=%_Concatenate_lbound%"
+if not defined %1.lbound if not defined %1.ubound if not defined %_Concatenate_input%[%_Concatenate_index%] if defined %1 set %_Concatenate_input%[%_Concatenate_index%]=!%1!
+if not defined %1.lbound if not defined %1.ubound if not defined %_Concatenate_input%[%_Concatenate_index%] set "%_Concatenate_input%[%_Concatenate_index%]=%~1"
+if defined !_Concatenate_separator! ( set _Concatenate_separator=!%_Concatenate_separator%! )
+if not defined _Concatenate_separator set "_Concatenate_separator= "
+:Concatenate-loop
+set _Concatenate_buffer=!_Concatenate_buffer!!%_Concatenate_input%[%_Concatenate_index%]!!_Concatenate_separator!
+set /a "_Concatenate_index+=1"
+if %_Concatenate_index% LEQ %_Concatenate_ubound% GoTo :Concatenate-loop
+if "[%~2]" NEQ "[]" ( shift & GoTo :Concatenate ) 
+for /f "tokens=* delims==" %%a in ('echo.!_Concatenate_buffer!') do (
+																endlocal
+																set %_Concatenate_output%=%%a
+																)
+Call :ClearVariablesByPrefix %_Concatenate_prefix% _Concatenate
+GoTo :EOF

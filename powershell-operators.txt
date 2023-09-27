@@ -1,0 +1,89 @@
+1. Arithmetic Operators:
+
+    - (Negation)
+    + (Addition)
+    - (Subtraction)
+    * (Multiplication)
+    / (Division)
+    % (Modulus)
+
+2. Assignment Operators:
+
+    = (Assignment)
+    += (Addition and assignment)
+    -= (Subtraction and assignment)
+    *= (Multiplication and assignment)
+    /= (Division and assignment)
+    %= (Modulus and assignment)
+
+3. Comparison Operators:
+
+    -eq (Equal to)
+    -ne (Not equal to)
+    -gt (Greater than)
+    -ge (Greater than or equal to)
+    -lt (Less than)
+    -le (Less than or equal to)
+    -like (Wildcard matching)
+    -notlike (Wildcard non-matching)
+    -match (Regex matching)
+    -notmatch (Regex non-matching)
+
+4. Contains/In Operators:
+
+    -contains (Contains an element)
+    -notcontains (Does not contain an element)
+    -in (Exists in a collection)
+    -notin (Does not exist in a collection)
+
+5. Logical Operators:
+
+    -and (Logical AND)
+    -or (Logical OR)
+    -xor (Logical exclusive OR)
+    -not (Logical NOT)
+    ! (Logical NOT)
+
+6. Redirection Operators:
+
+    > (Send output to a file/overwrite)
+    >> (Append output to a file)
+    2> (Redirect error output)
+    2>&1 (Redirect error and success output to same location)
+
+7. Type Operators:
+
+    -is (Is of a specific type)
+    -isnot (Is not of a specific type)
+    -as (Type conversion)
+
+8. Special Operators:
+
+    ., & (Call operator - Used to run a command, script, or script block)
+    [] (Array index operator)
+    .. (Range operator)
+    @() (Array sub-expression operator)
+    $() (Sub-expression operator)
+    :: (Static member operator)
+    -f (Format operator)
+    -c (Case-sensitive version for some of the comparison operators)
+    -replace (Regex replace operator)
+
+9. Pipeline Operators:
+
+    | (Pipe)
+
+10. Bitwise Operators:
+
+    -bAND (Bitwise AND)
+    -bOR (Bitwise OR)
+    -bXOR (Bitwise XOR)
+    -bNOT (Bitwise NOT)
+    -shl (Shift bits left)
+    -shr (Shift bits right)
+
+11. Null Conditional Operators (PowerShell 7.0+):
+
+    ?? (Null coalescing)
+    ??= (Null coalescing assignment)
+    ?. (Null conditional member access)

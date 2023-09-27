@@ -1,0 +1,13 @@
+Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; Using System.Windows.Forms; public static class NativeMethods { [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd); [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC); [DllImport(\"gdi32.dll\")] public static extern IntPtr CreateSolidBrush(int crColor); [DllImport(\"gdi32.dll\", SetLastError = true)] public static extern bool DeleteObject(IntPtr hObject); [DllImport(\"gdi32.dll\")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect); [DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow(); [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelProc lpfn, IntPtr hMod, uint dwThreadId); [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool UnhookWindowsHookEx(IntPtr hhk); [DllImport(\"user32.dll\")] public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam); public delegate IntPtr LowLevelProc(int nCode, IntPtr wParam, IntPtr lParam); public const int WH_CALLWNDPROCRET = 12; public const int WM_PAINT = 0x000F; }; 
+$windowProc = [NativeMethods+LowLevelProc] { param([int]$nCode, [IntPtr]$wParam, [IntPtr]$lParam); 
+if ($nCode -ge 0) { $message = [System.Runtime.InteropServices.Marshal]::PtrToStructure($lParam, [System.Windows.Forms.Message]); 
+if ($message.Msg -eq [NativeMethods]::WM_PAINT) { $hWndConsole = [NativeMethods]::GetConsoleWindow();
+$hDC = [NativeMethods]::GetDC($hWndConsole); $redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF); 
+[NativeMethods]::Ellipse($hDC, 0, 0, 100, 100); 
+[NativeMethods]::ReleaseDC($hWndConsole, $hDC); 
+[NativeMethods]::DeleteObject($redBrush); }; };
+return [NativeMethods]::CallNextHookEx([IntPtr]::Zero, $nCode, $wParam, $lParam); };
+$hookId = [NativeMethods]::SetWindowsHookEx([NativeMethods]::WH_CALLWNDPROCRET, $windowProc, [IntPtr]::Zero, [System.Diagnostics.Process]::GetCurrentProcess().Id);
+Write-Host \"Press Enter to exit...\"; 
+$null = $host.UI.RawUI.ReadKey(\"NoEcho,IncludeKeyDown\"); 
+[NativeMethods]::UnhookWindowsHookEx($hookId);
