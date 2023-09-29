@@ -188,9 +188,9 @@ set "_GBFS_File=%~1"
 set "_GBFS_Output=%~2"
 if "[%_GBFS_Output%]" EQU "[]" set "_GBFS_Output=batch"
 Call :GetLabels %_GBFS_File% %_GBFS_Output%.Labels %_GBFS_Output%.rows
-Call :GetEmptyLines %_GBFS_File% %_GBFS_Output%.Empty %_GBFS_Output%.rows
-Call :GetFunctionExits %_GBFS_File% %_GBFS_Output%.Exits %_GBFS_Output%.rows
-Call :GetEndOfFunction %_GBFS_File% %_GBFS_Output%.EndOf %_GBFS_Output%.rows
+REM Call :GetEmptyLines %_GBFS_File% %_GBFS_Output%.Empty %_GBFS_Output%.rows
+REM Call :GetFunctionExits %_GBFS_File% %_GBFS_Output%.Exits %_GBFS_Output%.rows
+REM Call :GetEndOfFunction %_GBFS_File% %_GBFS_Output%.EndOf %_GBFS_Output%.rows
 Call :ClearVariablesByPrefix _GBFS
 GoTo :EOF
 
@@ -1205,14 +1205,10 @@ call set "_RNFL_Labels_lbound=%%%~1.lbound%%"
 call set "_RNFL_Labels_ubound=%%%~1.ubound%%"
 if "[%_RNFL_Labels_lbound%]" EQU "[]" set /a "_RNFL_Labels_lbound=0"
 set "_RNFL_Rows=%~2"
-call set "_RNFL_Rows_lbound=%%%~2.lbound%%"
-call set "_RNFL_Rows_ubound=%%%~2.ubound%%"
-if "[%_RNFL_Rows_lbound%]" EQU "[]" set /a "_RNFL_Rows_lbound=0"
 set /a "_RNFL_Index=%_RNFL_Labels_lbound%"
 :RemoveNonFunctionLabels-loop
 Call set "_RNFL_CurrentLabel=%%%_RNFL_Labels%[%_RNFL_Index%].name%%" & call set "_RNFL_CurrentRow=%%%_RNFL_Labels%[%_RNFL_Index%]%%" 
-Call :IsFunctionLabelExcluded %_RNFL_CurrentLabel% && echo ( set "%_RNFL_Rows%[%_RNFL_CurrentRow%]=" ^& set %_RNFL_Rows%[%_RNFL_CurrentRow%].type=" ^& set "%_RNFL_Labels%[%_RNFL_Index%]=" ^& set "%_RNFL_Labels%[%_RNFL_Index%].name=" ^& set "%_RNFL_Labels%.name[%_RNFL_CurrentLabel%]=" )
-Call :IsFunctionLabelExcluded %_RNFL_CurrentLabel% && ( echo 1 & set "%_RNFL_Rows%[%_RNFL_CurrentRow%]=" & echo 2 & set "%_RNFL_Rows%[%_RNFL_CurrentRow%].type=" & echo 3 &  set "%_RNFL_Labels%[%_RNFL_Index%]=" & echo 4 & set "%_RNFL_Labels%[%_RNFL_Index%].name=" & echo 5 & set "%_RNFL_Labels%.name[%_RNFL_CurrentLabel%]=" )
+Call :IsFunctionLabelExcluded %_RNFL_CurrentLabel% && ( set "%_RNFL_Rows%[%_RNFL_CurrentRow%]=" & set "%_RNFL_Rows%[%_RNFL_CurrentRow%].type=" &  set "%_RNFL_Labels%[%_RNFL_Index%]=" & set "%_RNFL_Labels%[%_RNFL_Index%].name=" & set "%_RNFL_Labels%.name[%_RNFL_CurrentLabel%]=" )
 set /a "_RNFL_Index+=1"
 if %_RNFL_Index% LEQ %_RNFL_Labels_ubound% GoTo :RemoveNonFunctionLabels-loop
 Call :ClearVariablesByPrefix %_RemoveNonFunctionLabels_prefix% _RemoveNonFunctionLabels
