@@ -1,6 +1,11 @@
 @echo off
 :setup
 :main
+
+
+
+
+
 REM Call :GetConsoleAndPrintTitle-quick-DEMO
 REM Call :GetConsoleAndPrintTitle-DEMO
 REM Call :PrintWindowClientRectFromHWND-DEMO
@@ -8,11 +13,22 @@ REM call :PrintWindowRectangleFromHWND-DEMO
 REM Call :IfInStr-DEMO
 REM Call :Concatenate-DEMO
 REM call :Concatenate-mini-DEMO
-Call :SetEllipseWindow-DEMO
-REM Call :DrawOnConsole-test
+REM Call :SetEllipseWindow-DEMO
+Call :DrawOnConsole-test
 REM Call :PSReadFromEnvironementVariable
 REM call :EscapeSequenceTest
+REM call :powershelltest
 GoTo :EOF
+get buffers
+
+list buffers
+switch to buffer
+create buffer 
+delete buffer
+modify buffer properties
+read buffer text  , per row,  row to row, range of rows, region of columns and rows ? 
+modify buffer text (same as above)
+
 
 :GetConsoleAndPrintTitle-quick-DEMO
 
@@ -87,8 +103,37 @@ $oldBrush = [NativeMethods]::SelectObject($hDC, $redBrush);
 [NativeMethods]::ReleaseDC([IntPtr]::Zero, $hDC);
 "'
 
+'powershell -command "Add-Type -TypeDefinition '
+using System; 
+using System.Runtime.InteropServices; 
+public class NativeMethods { 
+[DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow(); 
+[DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd); 
+[DllImport(\"user32.dll\")] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC); 
+[DllImport(\"gdi32.dll\")] public static extern IntPtr CreateSolidBrush(int crColor); 
+[DllImport(\"gdi32.dll\")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect); 
+[DllImport(\"gdi32.dll\")] public static extern IntPtr SelectObject(IntPtr hdc, IntPtr h); [DllImport(\"gdi32.dll\", SetLastError = true)] 
+public static extern bool DeleteObject(IntPtr ho); 
+}'; 
+$hWndConsole = [NativeMethods]::GetConsoleWindow(); 
+$hDC = [NativeMethods]::GetDC($hWndConsole); 
+$redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF); 
+$oldBrush = [NativeMethods]::SelectObject($hDC, $redBrush); 
+[NativeMethods]::Ellipse($hDC, 0, 0, 100, 100); 
+[NativeMethods]::SelectObject($hDC, $oldBrush); 
+[NativeMethods]::DeleteObject($redBrush); 
+[NativeMethods]::ReleaseDC([IntPtr]::Zero, $hDC);
+"'
+
+
+
 :DrawOnConsole-test
-for /f "tokens=*" %%a in ('powershell -command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class NativeMethods { [DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow(); [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd); [DllImport(\"user32.dll\")] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC); [DllImport(\"gdi32.dll\")] public static extern IntPtr CreateSolidBrush(int crColor); [DllImport(\"gdi32.dll\")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect); [DllImport(\"gdi32.dll\")] public static extern IntPtr SelectObject(IntPtr hdc, IntPtr h); [DllImport(\"gdi32.dll\", SetLastError = true)] public static extern bool DeleteObject(IntPtr ho); }'; $hWndConsole = [NativeMethods]::GetConsoleWindow(); $hDC = [NativeMethods]::GetDC($hWndConsole); $redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF); $oldBrush = [NativeMethods]::SelectObject($hDC, $redBrush); [NativeMethods]::Ellipse($hDC, 0, 0, 100, 100); [NativeMethods]::SelectObject($hDC, $oldBrush); [NativeMethods]::DeleteObject($redBrush); [NativeMethods]::ReleaseDC([IntPtr]::Zero, $hDC);"') do break
+echo boop
+set _draw=Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class ConsoleAPI { [StructLayout(LayoutKind.Sequential)] public struct COORD { public short X; public short Y; };[StructLayout(LayoutKind.Sequential)] public struct SMALL_RECT { public short Left; public short Top; public short Right; public short Bottom; } [StructLayout(LayoutKind.Sequential)] public struct CONSOLE_SCREEN_BUFFER_INFO { public COORD dwSize; public COORD dwCursorPosition; public ushort wAttributes; public SMALL_RECT srWindow; public COORD dwMaximumWindowSize; } [DllImport("kernel32.dll", SetLastError = true)] public static extern bool GetConsoleScreenBufferInfo(IntPtr hConsoleOutput, out CONSOLE_SCREEN_BUFFER_INFO lpConsoleScreenBufferInfo); [DllImport("kernel32.dll", SetLastError = true)] public static extern IntPtr GetStdHandle(int nStdHandle); }'; function IsNumeric { param ([string]$str) return $str -match '^[0-9]+$' }; function ParseBounds { param ([string]$rangeStr) if (-not $rangeStr) { return 0, 0xFFF; }; $parts = $rangeStr -split '-'; if ($parts.Count -eq 1) { return [int]$parts[0], [int]$parts[0]; } else { return [int]$parts[0], [int]$parts[1]; }; }; function PrintAttributes { param ( [string]$prefix, [UInt16]$attributes ) "$prefix.attributes.foreground.red=" + $(if ($attributes -band 0x0004) {1} else {0}); "$prefix.attributes.foreground.green=" + $(if ($attributes -band 0x0002) {1} else {0}); "$prefix.attributes.foreground.blue=" + $(if ($attributes -band 0x0001) {1} else {0}); "$prefix.attributes.foreground.intensity=" + $(if ($attributes -band 0x0008) {1} else {0}); "$prefix.attributes.background.red=" + $(if ($attributes -band 0x0040) {1} else {0}); "$prefix.attributes.background.green=" + $(if ($attributes -band 0x0020) {1} else {0}); "$prefix.attributes.background.blue=" + $(if ($attributes -band 0x0010) {1} else {0}); "$prefix.attributes.background.intensity=" + $(if ($attributes -band 0x0080) {1} else {0}); "$prefix.attributes.leadingbyte=" + $(if ($attributes -band 0x0100) {1} else {0}); "$prefix.attributes.trailingbyte=" + $(if ($attributes -band 0x0200) {1} else {0}); "$prefix.attributes.grid.horizontal=" + $(if ($attributes -band 0x0400) {1} else {0}); "$prefix.attributes.grid.vertical.lowend=" + $(if ($attributes -band 0x0800) {1} else {0}); "$prefix.attributes.grid.vertical.highend=" + $(if ($attributes -band 0x1000) {1} else {0}); "$prefix.attributes.reverse=" + $(if ($attributes -band 0x4000) {1} else {0}); "$prefix.attributes.underscore=" + $(if ($attributes -band 0x8000) {1} else {0}); }; function PrintInfo { param ( [string]$prefix, [ConsoleAPI+CONSOLE_SCREEN_BUFFER_INFO]$csbi, [string]$idx, [IntPtr]$potentialHandle ) $format = if (IsNumeric $idx) { "{0}[{1}]" } else { "{0}.{1}" }; $buffer = $format -f $prefix, $idx; "$buffer.handle=$potentialHandle"; "$buffer.size.width=$($csbi.dwSize.X)"; "$buffer.size.height=$($csbi.dwSize.Y)"; "$buffer.cursor.x=$($csbi.dwCursorPosition.X)"; "$buffer.cursor.y=$($csbi.dwCursorPosition.Y)"; "$buffer.window.left=$($csbi.srWindow.Left)"; "$buffer.window.top=$($csbi.srWindow.Top)"; "$buffer.window.right=$($csbi.srWindow.Right)"; "$buffer.window.bottom=$($csbi.srWindow.Bottom)"; "$buffer.window.width=$(($csbi.srWindow.Right - $csbi.srWindow.Left + 1))"; "$buffer.window.height=$(($csbi.srWindow.Bottom - $csbi.srWindow.Top + 1))"; "$buffer.window.maxwidth=$($csbi.dwMaximumWindowSize.X)"; "$buffer.window.maxheight=$($csbi.dwMaximumWindowSize.Y)"; PrintAttributes $buffer $csbi.wAttributes; }; function ProcessRange { param ( [string]$prefix, [string]$rangeStr, [ref]$idx ) $startBound, $endBound = ParseBounds $rangeStr; for ($i = $startBound; $i -le $endBound; $i++) {$potentialHandle = [IntPtr]$i; $csbi = [ConsoleAPI+CONSOLE_SCREEN_BUFFER_INFO]::new(); if ([ConsoleAPI]::GetConsoleScreenBufferInfo($potentialHandle, [ref]$csbi)) { $idx.Value++; PrintInfo $prefix $csbi $idx.Value $potentialHandle; }; }; }; $prefix = 'console.screenbuffers'; $idx = -1; $argIndex = 1; if ($args[0] -eq '/?' -or $args[0] -eq '/h') { 'Usage: yourscript.ps1 optional <prefix> optional [range1] [range2] [rangeN] ...'; return; }; if ($args.Count -gt 0 -and -not (IsNumeric $args[0]) -and ($args[0] -notmatch '-')) {$prefix = $args[0]; $argIndex++; }; if ($args.Count -ge 1 -and $args[0] -eq 'active') { $prefix = 'console.screenbuffers'; }; $csbi = [ConsoleAPI+CONSOLE_SCREEN_BUFFER_INFO]::new(); $activeScreenBufferHandle = [ConsoleAPI]::GetStdHandle(-11); if ([ConsoleAPI]::GetConsoleScreenBufferInfo($activeScreenBufferHandle, [ref]$csbi)) { PrintInfo $prefix $csbi 'active' $activeScreenBufferHandle; }; if ($args.Count -ge 1 -and $args[0] -eq 'active') { return; }; if ($argIndex -lt $args.Count) { for (; $argIndex -lt $args.Count; $argIndex++) {ProcessRange $prefix $args[$argIndex] ([ref]$idx); }; } else { ProcessRange $prefix '' ([ref]$idx); }; if ($idx -ne -1) { "$prefix.ubound=$idx"; };
+for /f "usebackq tokens=*" %%a in (`powershell -command "%_draw:"=\"%" `) do echo %%a
+
+
+REM for /f "tokens=*" %%a in ('powershell -command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class NativeMethods { [DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow(); [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd); [DllImport(\"user32.dll\")] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC); [DllImport(\"gdi32.dll\")] public static extern IntPtr CreateSolidBrush(int crColor); [DllImport(\"gdi32.dll\")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect); [DllImport(\"gdi32.dll\")] public static extern IntPtr SelectObject(IntPtr hdc, IntPtr h); [DllImport(\"gdi32.dll\", SetLastError = true)] public static extern bool DeleteObject(IntPtr ho); }'; $hWndConsole = [NativeMethods]::GetConsoleWindow(); $hDC = [NativeMethods]::GetDC($hWndConsole); $redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF); $oldBrush = [NativeMethods]::SelectObject($hDC, $redBrush); [NativeMethods]::Ellipse($hDC, 0, 0, 100, 100); [NativeMethods]::SelectObject($hDC, $oldBrush); [NativeMethods]::DeleteObject($redBrush); [NativeMethods]::ReleaseDC([IntPtr]::Zero, $hDC);"') do break
 
 REM for /f "tokens=*" %%a in ('powershell -command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class NativeMethods { [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd); [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC); [DllImport(\"gdi32.dll\")] public static extern IntPtr CreateSolidBrush(int crColor); [DllImport(\"gdi32.dll\", SetLastError = true)] public static extern bool DeleteObject(IntPtr hObject); [DllImport(\"gdi32.dll\")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect); [DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow(); [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelProc lpfn, IntPtr hMod, uint dwThreadId); [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool UnhookWindowsHookEx(IntPtr hhk); [DllImport(\"user32.dll\")] public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam); public delegate IntPtr LowLevelProc(int nCode, IntPtr wParam, IntPtr lParam); public const int WH_CALLWNDPROCRET = 12; public const int WM_PAINT = 0x000F; }; $windowProc = [NativeMethods+LowLevelProc] { param([int]$nCode, [IntPtr]$wParam, [IntPtr]$lParam); if ($nCode >= 0) { $message = [System.Runtime.InteropServices.Marshal]::PtrToStructure($lParam, [System.Windows.Forms.Message]); if ($message.Msg -eq [NativeMethods]::WM_PAINT) { $hWndConsole = [NativeMethods]::GetConsoleWindow();$hDC = [NativeMethods]::GetDC($hWndConsole); $redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF); [NativeMethods]::Ellipse($hDC, 0, 0, 100, 100); [NativeMethods]::ReleaseDC($hWndConsole, $hDC); [NativeMethods]::DeleteObject($redBrush); }; }; return [NativeMethods]::CallNextHookEx([IntPtr]::Zero, $nCode, $wParam, $lParam); }; $hookId = [NativeMethods]::SetWindowsHookEx([NativeMethods]::WH_CALLWNDPROCRET, $windowProc, [IntPtr]::Zero, [System.Diagnostics.Process]::GetCurrentProcess().Id); Write-Host \"Press Enter to exit...\"; $null = $host.UI.RawUI.ReadKey(\"NoEcho,IncludeKeyDown\"); [NativeMethods]::UnhookWindowsHookEx($hookId);"') do echo %%a
 REM for /f "tokens=*" %%a in ('powershell -command "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; Using System.Windows.Forms.dll; public static class NativeMethods { [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr GetDC(IntPtr hWnd); [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC); [DllImport(\"gdi32.dll\")] public static extern IntPtr CreateSolidBrush(int crColor); [DllImport(\"gdi32.dll\", SetLastError = true)] public static extern bool DeleteObject(IntPtr hObject); [DllImport(\"gdi32.dll\")] public static extern bool Ellipse(IntPtr hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect); [DllImport(\"kernel32.dll\")] public static extern IntPtr GetConsoleWindow(); [DllImport(\"user32.dll\", SetLastError = true)] public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelProc lpfn, IntPtr hMod, uint dwThreadId); [DllImport(\"user32.dll\", SetLastError = true)] public static extern bool UnhookWindowsHookEx(IntPtr hhk); [DllImport(\"user32.dll\")] public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam); public delegate IntPtr LowLevelProc(int nCode, IntPtr wParam, IntPtr lParam); public const int WH_CALLWNDPROCRET = 12; public const int WM_PAINT = 0x000F; }; $windowProc = [NativeMethods+LowLevelProc] { param([int]$nCode, [IntPtr]$wParam, [IntPtr]$lParam); if ($nCode -ge 0) { $message = [System.Runtime.InteropServices.Marshal]::PtrToStructure($lParam, [System.Windows.Forms.Message]); if ($message.Msg -eq [NativeMethods]::WM_PAINT) { $hWndConsole = [NativeMethods]::GetConsoleWindow(); $hDC = [NativeMethods]::GetDC($hWndConsole); $redBrush = [NativeMethods]::CreateSolidBrush(0x0000FF); [NativeMethods]::Ellipse($hDC, 0, 0, 100, 100); [NativeMethods]::ReleaseDC($hWndConsole, $hDC); [NativeMethods]::DeleteObject($redBrush); }; }; return [NativeMethods]::CallNextHookEx([IntPtr]::Zero, $nCode, $wParam, $lParam); }; $hookId = [NativeMethods]::SetWindowsHookEx([NativeMethods]::WH_CALLWNDPROCRET, $windowProc, [IntPtr]::Zero, [System.Diagnostics.Process]::GetCurrentProcess().Id); Write-Host \"Press Enter to exit...\"; $null = $host.UI.RawUI.ReadKey(\"NoEcho,IncludeKeyDown\"); [NativeMethods]::UnhookWindowsHookEx($hookId);"') do echo %%a
@@ -109,9 +154,9 @@ GoTo :EOF
 :PowershellRunFromArray
 
 
-
-
 GoTo :EOF
+
+
 # Ensure lbound and ubound are defined and are numeric
 if (![int]::TryParse($env:lbound, [ref]$lbound) -or ![int]::TryParse($env:ubound, [ref]$ubound)) {
     Write-Host "lbound and/or ubound environment variables are not properly defined or are not numeric."
@@ -125,7 +170,22 @@ for ($i = $lbound; $i -le $ubound; $i++) {
 
 
 for /f "tokens=*" %%a in ( 'powershell -command "$Env:Foo += '!'; $Env:Foo; iex $env:bar"' ) do echo %%a
+for /f "tokens=*" %%a in ( 'powershell -command "iex $Env:bar"' ) do echo %%a
 
+
+GoTo :EOF
+
+:powershelltest
+
+REM for /f "tokens=*" %%a in ( 'powershell -command "$Env:Foo += '!'; $Env:Foo; iex $env:bar"' ) do echo %%a
+
+REM for /f "tokens=*" %%a in ( 'powershell -command "$Env:Foo += '!'; $Env:Foo; iex $env:bar"' ) do echo %%a
+set foo=a
+echo yes
+powershell -command "for ($i = $lbound; $i -le $ubound; $i++) { Write-Host \"test $i\" };"
+REM powershell -command "iex if ( true = true ) { Write-Host \"test $i\" };"
+for /f "tokens=*" %%a in ( 'powershell -command "$Env:Foo += '!'; $Env:Foo; iex $env:bar"' ) do echo %%a
+echo no
 
 GoTo :EOF
 
@@ -484,6 +544,17 @@ Call :IfInStr _GetC#.using_search System                         && set "c#.usin
 Call :IfInStr _GetC#.using_search System.Runtime.InteropServices && set "c#.using.System.Runtime.InteropServices=using System.Runtime.InteropServices;"
 if "[%~2]" NEQ "[]" shift & GoTo :GetC#.using
 set "_GetC#.using_search="
+GoTo :EOF
+
+::Usage Call :AppendToArray OutputArray Input1 Input2 InputN
+:: Input can be, value, byref variable or byref array or implied w
+:AppendToArray
+set "_AppendToArray_prefix=_ATA"
+
+
+GoTo :EOF
+
+:OverwriteInString
 GoTo :EOF
 
 ::Usage Call :IfInStr SearchingTerm SearchedString

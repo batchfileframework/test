@@ -1,0 +1,118 @@
+#include <windows.h>
+#include <stdio.h>
+
+/* void interpretAttributes(WORD attributes) {
+    // Foreground colors
+    if (attributes & FOREGROUND_BLUE)     printf("Foreground: Blue\n");
+    if (attributes & FOREGROUND_GREEN)    printf("Foreground: Green\n");
+    if (attributes & FOREGROUND_RED)      printf("Foreground: Red\n");
+    if (attributes & FOREGROUND_INTENSITY) printf("Foreground: Intense\n");
+
+    // Background colors
+    if (attributes & BACKGROUND_BLUE)     printf("Background: Blue\n");
+    if (attributes & BACKGROUND_GREEN)    printf("Background: Green\n");
+    if (attributes & BACKGROUND_RED)      printf("Background: Red\n");
+    if (attributes & BACKGROUND_INTENSITY) printf("Background: Intense\n");
+
+    // Common attributes
+    if (attributes & COMMON_LVB_LEADING_BYTE)   printf("Leading Byte\n");
+    if (attributes & COMMON_LVB_TRAILING_BYTE)  printf("Trailing Byte\n");
+    if (attributes & COMMON_LVB_GRID_HORIZONTAL) printf("Grid Horizontal\n");
+    if (attributes & COMMON_LVB_GRID_LVERTICAL)  printf("Grid Vertical (Low End Graphics Characters)\n");
+    if (attributes & COMMON_LVB_GRID_RVERTICAL)  printf("Grid Vertical (High End Graphics Characters)\n");
+    if (attributes & COMMON_LVB_REVERSE_VIDEO)   printf("Reverse Video\n");
+    if (attributes & COMMON_LVB_UNDERSCORE)      printf("Underscore\n");
+} */
+
+#include <stdio.h>
+#include <windows.h>
+
+void interpretAttributes(WORD attributes) {
+    // Foreground colors
+    printf("Foreground Blue: %s\n", (attributes & FOREGROUND_BLUE) ? "ON" : "OFF");
+    printf("Foreground Green: %s\n", (attributes & FOREGROUND_GREEN) ? "ON" : "OFF");
+    printf("Foreground Red: %s\n", (attributes & FOREGROUND_RED) ? "ON" : "OFF");
+    printf("Foreground Intensity: %s\n", (attributes & FOREGROUND_INTENSITY) ? "ON" : "OFF");
+
+    // Background colors
+    printf("Background Blue: %s\n", (attributes & BACKGROUND_BLUE) ? "ON" : "OFF");
+    printf("Background Green: %s\n", (attributes & BACKGROUND_GREEN) ? "ON" : "OFF");
+    printf("Background Red: %s\n", (attributes & BACKGROUND_RED) ? "ON" : "OFF");
+    printf("Background Intensity: %s\n", (attributes & BACKGROUND_INTENSITY) ? "ON" : "OFF");
+
+    // Common attributes
+    printf("Leading Byte: %s\n", (attributes & COMMON_LVB_LEADING_BYTE) ? "ON" : "OFF");
+    printf("Trailing Byte: %s\n", (attributes & COMMON_LVB_TRAILING_BYTE) ? "ON" : "OFF");
+    printf("Grid Horizontal: %s\n", (attributes & COMMON_LVB_GRID_HORIZONTAL) ? "ON" : "OFF");
+    printf("Grid Vertical (Low End Graphics Characters): %s\n", (attributes & COMMON_LVB_GRID_LVERTICAL) ? "ON" : "OFF");
+    printf("Grid Vertical (High End Graphics Characters): %s\n", (attributes & COMMON_LVB_GRID_RVERTICAL) ? "ON" : "OFF");
+    printf("Reverse Video: %s\n", (attributes & COMMON_LVB_REVERSE_VIDEO) ? "ON" : "OFF");
+    printf("Underscore: %s\n", (attributes & COMMON_LVB_UNDERSCORE) ? "ON" : "OFF");
+}
+
+// Sample usage:
+// interpretAttributes(csbi.wAttributes);
+
+
+// Sample usage:
+// interpretAttributes(csbi.wAttributes);
+
+int main() {
+    HANDLE potentialHandle;
+    DWORD dwBytesRead;
+    CHAR buffer[2];
+
+/*     for (DWORD i = 0x4; i <= 0xFFF; i += 1) {  // Typical handle values increment by 4.
+        potentialHandle = (HANDLE)i;
+        
+        // Try to read from the handle. If it succeeds, it might be a valid screen buffer.
+        if (ReadConsole(potentialHandle, buffer, 1, &dwBytesRead, NULL)) {
+            printf("Found potential screen buffer handle: 0x%lX\n", (unsigned long)potentialHandle);
+        } else {
+            // printf("no potential screen buffer handle: 0x%lX\n", (unsigned long)potentialHandle);
+        }
+    } */
+	
+/* 	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	for (DWORD i = 0x4; i <= 0xFFFF; i += 1) {  // Typical handle values increment by 4.
+		potentialHandle = (HANDLE)i;
+		
+		// Try to fetch information about the screen buffer. If it succeeds, it might be a valid screen buffer.
+		if (GetConsoleScreenBufferInfo(potentialHandle, &csbi)) {
+			printf("Found potential screen buffer handle: 0x%lX\n", (unsigned long)potentialHandle);
+		} else {
+			printf("No potential screen buffer handle: 0x%lX\n", (unsigned long)potentialHandle);
+		}
+	} */
+	
+	
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+	for (DWORD i = 0x4; i <= 0xFFF; i += 1) {  // Typical handle values increment by 4.
+		potentialHandle = (HANDLE)i;
+		
+		// Try to fetch information about the screen buffer.
+		if (GetConsoleScreenBufferInfo(potentialHandle, &csbi)) {
+			printf("Found potential screen buffer handle: 0x%lX\n", (unsigned long)potentialHandle);
+			
+			// Print the contents of CONSOLE_SCREEN_BUFFER_INFO
+			printf("Size: (%d, %d)\n", csbi.dwSize.X, csbi.dwSize.Y);
+			printf("CursorPosition: (%d, %d)\n", csbi.dwCursorPosition.X, csbi.dwCursorPosition.Y);
+			interpretAttributes(csbi.wAttributes);
+			printf("Window left-top: (%d, %d), right-bottom: (%d, %d)\n",
+				   csbi.srWindow.Left, csbi.srWindow.Top, csbi.srWindow.Right, csbi.srWindow.Bottom);
+			printf("MaximumWindowSize: (%d, %d)\n", csbi.dwMaximumWindowSize.X, csbi.dwMaximumWindowSize.Y);
+			printf("\n");
+		} else {
+			// printf("No potential screen buffer handle: 0x%lX\n", (unsigned long)potentialHandle);
+		}
+	}
+	
+	
+	
+	
+
+
+    return 0;
+}

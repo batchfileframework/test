@@ -1,0 +1,1 @@
+write-host 'Printing text using write-host : This test worked correctly';
